@@ -1,0 +1,463 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:openim/core/controller/client_config_controller.dart';
+import 'package:openim/pages/conversation/conversation_logic.dart';
+import 'package:openim/routes/app_navigator.dart';
+import 'package:openim_common/openim_common.dart';
+import 'package:sprintf/sprintf.dart';
+
+import '../friend_list_logic.dart';
+import 'select_contacts_view.dart';
+
+enum SelAction {
+  /// 转发到最近聊天，转发到好友，转发到群里，转发到组织架构
+  forward,
+
+  /// 发送名片到该聊天：可从好友，组织架构
+  carte,
+
+  /// 创建群聊：可从好友，组织架构
+  crateGroup,
+
+  /// 添加群成员：可从好友，组织架构
+  addMember,
+
+  /// 推荐：可推荐给最近聊天，好友，群里，组织架构
+  recommend,
+
+  /// 创建tag组，可从好友, 组织架构
+  createTag,
+
+  /// 朋友圈：可见或部分可见 选择从 好友，群
+  whoCanWatch,
+
+  /// 朋友圈：提醒谁看 只有好友
+  remindWhoToWatch,
+
+  /// 下发通知 好友，组织架构，群，标签，最近会话
+  notificationIssued,
+}
+
+class SelectContactsLogic
+    extends GetxController /*implements OrganizationMultiSelBridge*/ {
+  final checkedList = <String, dynamic>{}.obs; // 已经选中的
+  final defaultCheckedIDList = <String>{}.obs; // 默认选中，且不能修改
+  List<String>? excludeIDList; // 剔除某些数据
+  late SelAction action;
+  late bool openSelectedSheet;
+  String? groupID;
+  final conversationList = <ConversationInfo>[].obs;
+  String? ex;
+  bool? showRadioButton;
+  final inputCtrl = TextEditingController();
+  final clientConfigLogic = Get.find<ClientConfigController>();
+  final friendListLogic = Get.find<FriendListLogic>();
+  late RxList<ISUserInfo> friendList;
+
+  @override
+  void onInit() {
+    action = Get.arguments['action'];
+    showRadioButton = Get.arguments['showRadioButton'];
+    groupID = Get.arguments['groupID'];
+    excludeIDList = Get.arguments['excludeIDList'];
+
+    if (excludeIDList != null && excludeIDList!.isNotEmpty) {
+      friendList = friendListLogic.friendList
+          .where((friend) => !excludeIDList!.contains(friend.userID))
+          .toList()
+          .obs;
+    } else {
+      friendList = friendListLogic.friendList;
+    }
+
+    // Defer reactive updates to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final defaultList = Get.arguments['defaultCheckedIDList'] ?? [];
+      final checkedMap = Get.arguments['checkedList'] ?? {};
+
+      if (defaultList.isNotEmpty) {
+        defaultCheckedIDList.addAll(defaultList);
+      }
+      if (checkedMap.isNotEmpty) {
+        checkedList.addAll(checkedMap);
+      }
+    });
+
+    openSelectedSheet = Get.arguments['openSelectedSheet'];
+    ex = Get.arguments['ex'];
+    // PackageBridge.organizationBridge = this;
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    inputCtrl.dispose();
+    // PackageBridge.organizationBridge = null;
+    super.onClose();
+  }
+
+  @override
+  void onReady() {
+    _queryConversationList();
+    if (openSelectedSheet) viewSelectedContactsList();
+    super.onReady();
+  }
+
+  bool get isMultiModel => true; //action != SelAction.carte;
+
+  /// 隐藏群
+  bool get hiddenGroup =>
+      action == SelAction.carte ||
+      action == SelAction.crateGroup ||
+      action == SelAction.addMember ||
+      action == SelAction.createTag ||
+      action == SelAction.remindWhoToWatch;
+
+  /// 隐藏最近会话
+  bool get hiddenConversations =>
+      action == SelAction.carte ||
+      action == SelAction.crateGroup ||
+      action == SelAction.addMember ||
+      action == SelAction.createTag ||
+      action == SelAction.whoCanWatch ||
+      action == SelAction.remindWhoToWatch;
+
+  /// 隐藏标签组
+  bool get hiddenTagGroup =>
+      action == SelAction.forward ||
+      action == SelAction.carte ||
+      action == SelAction.crateGroup ||
+      action == SelAction.addMember ||
+      action == SelAction.recommend ||
+      action == SelAction.createTag ||
+      action == SelAction.whoCanWatch ||
+      action == SelAction.remindWhoToWatch;
+
+  bool get isShowFriendListOnly => (action == SelAction.crateGroup ||
+      action == SelAction.addMember ||
+      action == SelAction.carte);
+
+  bool shouldShowMemberCount(String ownerUserID) =>
+      clientConfigLogic.shouldShowMemberCount(ownerUserID: ownerUserID);
+
+  /// 最近会话
+  _queryConversationList() async {
+    if (!hiddenConversations) {
+      final cons = Get.find<ConversationLogic>().list;
+
+      final futures = cons.map((con) async {
+        if (con.isGroupChat) {
+          final result = await OpenIM.iMManager.groupManager
+              .isJoinedGroup(groupID: con.groupID!);
+          return result ? con : null;
+        }
+        return con;
+      }).toList();
+
+      final results = await Future.wait(futures);
+      final filteredCons =
+          results.where((con) => con != null).cast<ConversationInfo>().toList();
+
+      // Use post-frame callback to avoid setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        conversationList.addAll(filteredCons);
+      });
+    }
+  }
+
+  /// 处理最近会话的选择
+  void toggleConversationChecked(ConversationInfo info) {
+    if (isMultiModel) {
+      final key = parseID(info);
+      if (checkedList.containsKey(key)) {
+        checkedList.remove(key);
+      } else {
+        if (checkedList.length >= 999) {
+          IMViews.showToast(sprintf(StrRes.selectAllMaxUserHint, [999]));
+          return;
+        }
+        checkedList.putIfAbsent(key ?? '', () => info);
+      }
+    } else {
+      confirmSelectedItem(info);
+    }
+  }
+
+  /// 检查最近会话是否被选中
+  bool isConversationChecked(ConversationInfo info) {
+    return checkedList.containsKey(parseID(info));
+  }
+
+  /// 发送到选中的会话
+  void sendToSelectedConversations() async {
+    if (checkedList.isEmpty) return;
+
+    // 根据action类型处理
+    if (action == SelAction.forward || action == SelAction.recommend) {
+      final sure = await Get.dialog(
+          barrierColor: Colors.transparent,
+          ForwardHintDialog(
+            title: ex ?? '',
+            checkedList: checkedList.values.toList(),
+            controller: inputCtrl,
+          ));
+      if (sure == true) {
+        IMViews.showToast(StrRes.sentSuccessfully);
+        Get.back(result: {
+          "checkedList": checkedList.values,
+          "customEx": inputCtrl.text.trim(),
+        });
+      }
+    } else {
+      Get.back(result: checkedList);
+    }
+  }
+
+  static String? parseID(e) {
+    if (e is ConversationInfo) {
+      return e.isSingleChat ? e.userID : e.groupID;
+    } else if (e is GroupInfo) {
+      return e.groupID;
+    } else if (e is UserInfo || e is FriendInfo || e is UserFullInfo) {
+      return e.userID;
+    } else if (e is TagInfo) {
+      return e.tagID;
+    } else {
+      return null;
+    }
+  }
+
+  static String? parseName(e) {
+    if (e is ConversationInfo) {
+      return e.showName;
+    } else if (e is GroupInfo) {
+      return e.groupName;
+    } else if (e is UserInfo || e is FriendInfo || e is UserFullInfo) {
+      return e.nickname;
+    } else if (e is TagInfo) {
+      return e.tagName;
+    } else {
+      return null;
+    }
+  }
+
+  static String? parseFaceURL(e) {
+    if (e is ConversationInfo) {
+      return e.faceURL;
+    } else if (e is GroupInfo) {
+      return e.faceURL;
+    } else if (e is UserInfo || e is FriendInfo || e is UserFullInfo) {
+      return e.faceURL;
+    } else {
+      return null;
+    }
+  }
+
+  bool isChecked(info) => checkedList.containsKey(parseID(info));
+
+  bool isDefaultChecked(info) => defaultCheckedIDList.contains(parseID(info));
+
+  Function()? onTap(dynamic info) {
+    return isDefaultChecked(info) ? null : () => toggleChecked(info);
+  }
+
+  removeItem(dynamic info) {
+    checkedList.remove(parseID(info));
+  }
+
+  toggleChecked(dynamic info) {
+    if (isMultiModel) {
+      final key = parseID(info);
+      if (checkedList.containsKey(key)) {
+        checkedList.remove(key);
+      } else {
+        if (checkedList.length >= 999) {
+          IMViews.showToast(sprintf(StrRes.selectAllMaxUserHint, [999]));
+          return;
+        }
+        checkedList.putIfAbsent(key ?? '', () => info);
+      }
+    } else {
+      confirmSelectedItem(info);
+    }
+  }
+
+  /// 邀请群成员，标记已入群的人员
+  updateDefaultCheckedList(List<String> userIDList) async {
+    if (groupID != null) {
+      var list = await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+        groupID: groupID!,
+        userIDList: userIDList,
+      );
+      // Use post-frame callback to avoid setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        defaultCheckedIDList.addAll(list.map((e) => e.userID!));
+      });
+    }
+  }
+
+  String get checkedStrTips {
+    if (checkedList.isEmpty) return '';
+
+    final names = checkedList.values
+        .map(parseName)
+        .where((name) => name != null)
+        .cast<String>()
+        .toList();
+
+    if (names.length <= 2) {
+      return names.join('、');
+    } else if (names.length == 3) {
+      return '${names[0]}、${names[1]}、${names[2]}';
+    } else {
+      return '${names[0]}、${names[1]} ${StrRes.nOthers.replaceAll('%s', '${names.length - 2}')}';
+    }
+  }
+
+  viewSelectedContactsList() => Get.bottomSheet(
+        barrierColor: Colors.transparent,
+        Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                child: Container(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32.r),
+                  topRight: Radius.circular(32.r),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9CA3AF).withOpacity(0.08),
+                    offset: const Offset(0, -3),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Content
+                  Container(
+                    constraints: BoxConstraints(maxHeight: 548.h),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32.r),
+                        topRight: Radius.circular(32.r),
+                      ),
+                      child: SelectedContactsListView(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+      );
+
+  selectFromMyFriend() async {
+    final result = await AppNavigator.startSelectContactsFromFriends();
+    if (null != result) {
+      Get.back(result: result);
+    }
+  }
+
+  selectFromMyGroup() async {
+    final result = await AppNavigator.startSelectContactsFromGroup();
+    if (null != result) {
+      Get.back(result: result);
+    }
+  }
+
+  // selectFromOrganization() async {
+  //   final result = await ONavigator.startSelectContactsFromOrganization();
+  //   if (null != result) {
+  //     Get.back(result: result);
+  //   }
+  // }
+
+  void selectFromSearch() async {
+    final result = await AppNavigator.startSelectContactsFromSearch();
+    if (null != result) {
+      Get.back(result: result);
+    }
+  }
+
+  selectTagGroup() async {}
+
+  confirmSelectedList() async {
+    if (action == SelAction.forward || action == SelAction.recommend) {
+      final sure = await Get.dialog(
+          barrierColor: Colors.transparent,
+          ForwardHintDialog(
+            title: ex ?? '',
+            checkedList: checkedList.values.toList(),
+            controller: inputCtrl,
+          ));
+      if (sure == true) {
+        Get.back(result: {
+          "checkedList": checkedList.values,
+          "customEx": inputCtrl.text.trim(),
+        });
+      }
+    } else {
+      if (action == SelAction.carte) {
+        final sure = await Get.dialog(
+            barrierColor: Colors.transparent,
+            CustomDialog(
+              title: StrRes.sendCarteConfirmHint,
+            ));
+        if (sure != true) return;
+        Get.back(
+            result: checkedList.values
+                .map((e) => UserInfo.fromJson(e.toJson()))
+                .toList());
+      } else if (action == SelAction.crateGroup) {
+        if (checkedList.values.length <= 1) {
+          IMViews.showToast(StrRes.selectContactsMinimum.trArgs(["2"]));
+          return;
+        }
+        Get.back(result: checkedList);
+      } else {
+        Get.back(result: checkedList);
+      }
+    }
+  }
+
+  confirmSelectedItem(dynamic info) async {
+    if (action == SelAction.carte) {
+      final sure = await Get.dialog(
+          barrierColor: Colors.transparent,
+          CustomDialog(
+            title: StrRes.sendCarteConfirmHint,
+          ));
+      if (sure == true) {
+        Get.back(result: UserInfo.fromJson(info.toJson()));
+      }
+    }
+  }
+
+  bool get enabledConfirmButton =>
+      (checkedList.isNotEmpty &&
+          checkedList.length <= 999 &&
+          action != SelAction.crateGroup) ||
+      action == SelAction.remindWhoToWatch ||
+      (action == SelAction.crateGroup && checkedList.length >= 2);
+
+  Widget get checkedConfirmView =>
+      isMultiModel ? CheckedConfirmView() : const SizedBox();
+}

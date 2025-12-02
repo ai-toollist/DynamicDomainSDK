@@ -1,0 +1,143 @@
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:openim_common/openim_common.dart';
+
+class ResetPasswordLogic extends GetxController {
+  // Form key for validation
+  final formKey = GlobalKey<FormState>();
+
+  // Controllers
+  final phoneNumberCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+  final confirmPasswordCtrl = TextEditingController();
+  final smsCodeCtrl = TextEditingController();
+
+  // Focus nodes
+  final phoneFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
+  final passwordConfirmationFocusNode = FocusNode();
+
+  // Observable state for button
+  var isButtonEnabled = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Add listeners for real-time validation
+    phoneNumberCtrl.addListener(_validateForm);
+    passwordCtrl.addListener(_validateForm);
+    confirmPasswordCtrl.addListener(_validateForm);
+    smsCodeCtrl.addListener(_validateForm);
+
+    // Initial validation
+    _validateForm();
+  }
+
+  @override
+  void onReady() {
+    phoneFocusNode.requestFocus();
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    // Remove listeners
+    phoneNumberCtrl.removeListener(_validateForm);
+    passwordCtrl.removeListener(_validateForm);
+    confirmPasswordCtrl.removeListener(_validateForm);
+    smsCodeCtrl.removeListener(_validateForm);
+
+    // Dispose controllers
+    phoneNumberCtrl.dispose();
+    passwordCtrl.dispose();
+    confirmPasswordCtrl.dispose();
+    smsCodeCtrl.dispose();
+
+    // Dispose focus nodes
+    phoneFocusNode.dispose();
+    passwordFocusNode.dispose();
+    passwordConfirmationFocusNode.dispose();
+
+    super.onClose();
+  }
+
+  /// Validate form and update button state
+  void _validateForm() {
+    final phoneValid = phoneNumberCtrl.text.trim().isNotEmpty;
+    final passwordValid = passwordCtrl.text.trim().isNotEmpty;
+    final confirmPasswordValid = confirmPasswordCtrl.text.trim().isNotEmpty;
+    final smsCodeValid = smsCodeCtrl.text.trim().isNotEmpty;
+
+    isButtonEnabled.value =
+        phoneValid && passwordValid && confirmPasswordValid && smsCodeValid;
+  }
+
+  Future<bool> onSendVerificationCode() async {
+    final phoneNumber = phoneNumberCtrl.text.trim();
+
+    // Remove spaces and dashes for validation
+    String cleanPhone = phoneNumber.replaceAll(RegExp(r'[\s\-]'), '');
+
+    // Remove country code if present
+    if (cleanPhone.startsWith('+86')) {
+      cleanPhone = cleanPhone.substring(3);
+    } else if (cleanPhone.startsWith('86')) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+
+    // Validate using shared utility
+    if (phoneNumber.isEmpty || !IMUtils.isChinaMobile(cleanPhone)) {
+      IMViews.showToast(StrRes.pleaseEnterCorrectPhoneNumber);
+      return false;
+    }
+    try {
+      final result = await LoadingView.singleton.wrap(
+        asyncFunction: () => GatewayApi.sendVerificationCode(
+          phoneNumber: phoneNumber,
+          use: 'passwordReset',
+        ),
+      );
+      if (result == true) {
+        IMViews.showToast(StrRes.verificationCodeSent);
+        return true;
+      }
+    } catch (error) {
+      Logger.print(error);
+    }
+    return false;
+  }
+
+  /// Reset password with form validation
+  onResetPassword() async {
+    // Validate form first
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
+    // Additional password validation
+    if (!IMUtils.isValidPassword(passwordCtrl.text)) {
+      IMViews.showToast(StrRes.wrongPasswordFormat);
+      return;
+    }
+
+    // Check if passwords match
+    if (passwordCtrl.text != confirmPasswordCtrl.text) {
+      IMViews.showToast(StrRes.twicePwdNoSame);
+      return;
+    }
+
+    // Call API to reset password
+    final result = await LoadingView.singleton.wrap(
+      asyncFunction: () => GatewayApi.resetPassword(
+        password: passwordCtrl.text,
+        phoneNumber: phoneNumberCtrl.text,
+        smsCode: smsCodeCtrl.text,
+      ),
+    );
+
+    if (result) {
+      IMViews.showToast(StrRes.resetSuccessful);
+      Get.back();
+    }
+  }
+}

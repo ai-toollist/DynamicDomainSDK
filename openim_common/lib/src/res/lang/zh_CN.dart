@@ -816,6 +816,7 @@ const Map<String, String> zh_CN = {
   "camera_flashlight_on": "打开闪光灯",
 
   // New messages count
+  "newMessageCount": "%s条新消息",
   "newMessagesCount": "%s条新消息",
 
   // Chat Analytics

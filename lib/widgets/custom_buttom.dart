@@ -63,7 +63,7 @@ class _CustomButtomState extends State<CustomButtom> {
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
                         color: widget.colorIcon ?? const Color(0xFF757575),
-                        fontSize: widget.fontSize ?? 16.sp,
+                        fontSize: widget.fontSize ?? 17.sp,
                         fontWeight: FontWeight.w600,
                       ),
                       textAlign: TextAlign.center,

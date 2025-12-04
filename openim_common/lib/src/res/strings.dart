@@ -1381,6 +1381,7 @@ class StrRes {
   static String get cameraFlashlightOn => 'camera_flashlight_on'.tr;
 
   // New messages count
+  static String get newMessageCount => 'newMessageCount'.tr;
   static String get newMessagesCount => 'newMessagesCount'.tr;
 
   // Chat Analytics

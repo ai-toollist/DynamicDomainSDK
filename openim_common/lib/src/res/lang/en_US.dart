@@ -847,6 +847,7 @@ const Map<String, String> en_US = {
   "camera_flashlight_on": "Turn on flashlight",
 
   // New messages count
+  "newMessageCount": "%s new message",
   "newMessagesCount": "%s new messages",
 
   // Chat Analytics

@@ -1,5 +1,5 @@
 buildscript {
-    val kotlinVersion = "1.9.23"
+    val kotlinVersion = "2.1.0"
     extra["kotlin_version"] = kotlinVersion
     repositories {
         maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public/") }

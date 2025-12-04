@@ -14,6 +14,7 @@ import 'package:sprintf/sprintf.dart';
 import '../../../core/controller/im_controller.dart';
 import '../../conversation/conversation_logic.dart';
 import '../../../core/controller/trtc_controller.dart';
+import '../select_contacts/select_contacts_logic.dart';
 
 class UserProfilePanelLogic extends GetxController {
   final clientConfigLogic = Get.find<ClientConfigController>();
@@ -132,6 +133,8 @@ class UserProfilePanelLogic extends GetxController {
   bool get isGroupMemberPage => null != groupID && groupID!.isNotEmpty;
 
   bool get isFriendship => userInfo.value.isFriendship == true;
+
+  bool get isBlacklisted => userInfo.value.isBlacklist == true;
 
   ///用户是否允许添加好友
   bool get isAllowAddFriend => userInfo.value.allowAddFriend == 1;
@@ -433,6 +436,118 @@ class UserProfilePanelLogic extends GetxController {
       );
 
   void viewDynamics() => {};
+
+  /// Set friend remark
+  void setFriendRemark() => AppNavigator.startSetFriendRemark();
+
+  /// Toggle blacklist
+  void toggleBlacklist() {
+    if (userInfo.value.isBlacklist == true) {
+      removeBlacklist();
+    } else {
+      addBlacklist();
+    }
+  }
+
+  /// Add to blacklist
+  void addBlacklist() async {
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(title: StrRes.areYouSureAddBlacklist));
+    if (confirm == true) {
+      await OpenIM.iMManager.friendshipManager.addBlacklist(
+        userID: userInfo.value.userID!,
+      );
+      userInfo.update((val) {
+        val?.isBlacklist = true;
+        val?.isFriendship = false;
+      });
+      _getUsersInfo();
+    }
+  }
+
+  /// Remove from blacklist
+  void removeBlacklist() async {
+    await OpenIM.iMManager.friendshipManager.removeBlacklist(
+      userID: userInfo.value.userID!,
+    );
+    userInfo.update((val) {
+      val?.isBlacklist = false;
+    });
+    _getUsersInfo();
+  }
+
+  /// Delete friend
+  void deleteFromFriendList() async {
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(
+          title: StrRes.areYouSureDelFriend,
+          rightText: StrRes.delete,
+        ));
+    if (confirm == true) {
+      await LoadingView.singleton.wrap(asyncFunction: () async {
+        await OpenIM.iMManager.friendshipManager.deleteFriend(
+          userID: userInfo.value.userID!,
+        );
+        userInfo.update((val) {
+          val?.isFriendship = false;
+        });
+        final userIDList = [
+          userInfo.value.userID,
+          OpenIM.iMManager.userID,
+        ];
+        userIDList.sort();
+        final conversationID = 'si_${userIDList.join('_')}';
+        await OpenIM.iMManager.conversationManager
+            .deleteConversationAndDeleteAllMsg(conversationID: conversationID);
+        conversationLogic.list
+            .removeWhere((e) => e.conversationID == conversationID);
+      });
+      IMViews.showToast(StrRes.friendDeletedSuccessfully);
+      if (offAllWhenDelFriend == true) {
+        AppNavigator.startBackMain();
+      } else {
+        Get.back();
+      }
+    }
+  }
+
+  /// Recommend to friend
+  void recommendToFriend() async {
+    final result = await AppNavigator.startSelectContacts(
+      action: SelAction.recommend,
+      ex: '[${StrRes.carte}] ${userInfo.value.nickname}',
+    );
+    if (null != result) {
+      final customEx = result['customEx'];
+      final checkedList = result['checkedList'];
+      for (var info in checkedList) {
+        final userID = IMUtils.convertCheckedToUserID(info);
+        final groupID = IMUtils.convertCheckedToGroupID(info);
+        if (customEx is String && customEx.isNotEmpty) {
+          OpenIM.iMManager.messageManager.sendMessage(
+            message: await OpenIM.iMManager.messageManager.createTextMessage(
+              text: customEx,
+            ),
+            userID: userID,
+            groupID: groupID,
+            offlinePushInfo: Config.offlinePushInfo,
+          );
+        }
+        OpenIM.iMManager.messageManager.sendMessage(
+          message: await OpenIM.iMManager.messageManager.createCardMessage(
+            userID: userInfo.value.userID!,
+            nickname: userInfo.value.nickname!,
+            faceURL: userInfo.value.faceURL,
+          ),
+          userID: userID,
+          groupID: groupID,
+          offlinePushInfo: Config.offlinePushInfo,
+        );
+      }
+    }
+  }
 }
 
 class UserCacheManager {

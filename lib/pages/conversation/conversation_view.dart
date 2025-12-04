@@ -86,15 +86,14 @@ class _ConversationPageState extends State<ConversationPage> {
               CustomButtom(
                 key: _newButtonKey,
                 onPressed: () => _showActionPopup(),
-                icon:Icons.grid_view,
+                icon: Icons.grid_view,
                 colorIcon: Theme.of(context).primaryColor,
                 colorButton: Theme.of(context).primaryColor.withOpacity(0.15),
               ),
               SizedBox(width: 12.w)
             ],
           ),
-          actions: [
-          ],
+          actions: [],
           body: Column(
             children: [
               if (!logic.isConnected.value) _buildNetworkUnavailableBanner(),
@@ -308,7 +307,8 @@ class _ConversationPageState extends State<ConversationPage> {
 
   void _showActionPopup() {
     final homeLogic = Get.find<HomeLogic>();
-    final RenderBox button = _newButtonKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox button =
+        _newButtonKey.currentContext!.findRenderObject() as RenderBox;
     final Offset buttonPosition = button.localToGlobal(Offset.zero);
     final menuWidth = 200.w;
     final double left = buttonPosition.dx + button.size.width - menuWidth;
@@ -1115,7 +1115,8 @@ class _ConversationPageState extends State<ConversationPage> {
     if (text.isEmpty) return text;
     try {
       // Remove invalid UTF-16 surrogate pairs
-      return text.replaceAll(RegExp(r'[\uD800-\uDBFF](?![\uDC00-\uDFFF])'), '')
+      return text
+          .replaceAll(RegExp(r'[\uD800-\uDBFF](?![\uDC00-\uDFFF])'), '')
           .replaceAll(RegExp(r'(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]'), '');
     } catch (e) {
       return text;
@@ -1200,8 +1201,16 @@ class _ConversationPageState extends State<ConversationPage> {
       margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: const Color(0xFFE0F2FE).withOpacity(.25),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
+        /// viền cạnh dưới 
+        border: Border(
+          bottom: BorderSide(
+            color: AppColor.iconColor,
+            width: 0.5.w,
+          ),
+        )
+
       ),
       child: Material(
         color: Colors.transparent,
@@ -1234,77 +1243,85 @@ class _ConversationPageState extends State<ConversationPage> {
                           ),
                         ),
                         20.horizontalSpace,
-                        Row(
-                          children: [
-                            Text(
-                              logic.getTime(info),
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w400,
-                                color: const Color(0xFF9E9E9E),
-                              ),
+                        if (info.isPinned!) ...[
+                          Padding(
+                            padding: EdgeInsets.only(left: 6.w),
+                            child: Icon(
+                              CupertinoIcons.pin,
+                              size: 14.w,
+                              color: Theme.of(Get.context!).primaryColor,
                             ),
-                            if (info.isPinned!) ...[
-                              Padding(
-                                padding: EdgeInsets.only(left: 6.w),
-                                child: Icon(
-                                  CupertinoIcons.pin,
-                                  size: 14.w,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+                          ),
+                        ],
                       ],
                     ),
                     // 2.verticalSpace,
                     Row(
                       children: [
                         Expanded(
-                          child: MatchTextView(
-                            text: _sanitizeText(logic.getContent(info)),
-                            textStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 14.sp,
-                              fontWeight: logic.getUnreadCount(info) > 0
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              color: const Color(0xFF9E9E9E),
-                            ),
-                            allAtMap: logic.getAtUserMap(info),
-                            prefixSpan: TextSpan(
-                              text: _sanitizeText(logic.getPrefixTag(info) ?? ""),
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 14.sp,
-                                fontWeight: logic.getUnreadCount(info) > 0
-                                    ? FontWeight.w600
-                                    : FontWeight.w500,
-                                color: const Color(0xFF3B82F6),
-                              ),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            patterns: <MatchPattern>[
-                              MatchPattern(
-                                type: PatternType.at,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  fontWeight: logic.getUnreadCount(info) > 0
-                                      ? FontWeight
-                                          .w900 // In đậm pattern khi có tin nhắn chưa đọc
-                                      : FontWeight.w400,
-                                  color: const Color(0xFF6B7280),
+                          child: logic.getUnreadCount(info) > 0
+                              ? Text(
+                                  (logic.getUnreadCount(info) == 1
+                                          ? StrRes.newMessageCount
+                                          : StrRes.newMessagesCount)
+                                      .replaceFirst(
+                                          '%s',
+                                          logic
+                                              .getUnreadCount(info)
+                                              .toString()),
+                                  style: TextStyle(
+                                    fontFamily: 'FilsonPro',
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF1E40AF),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : MatchTextView(
+                                  text: _sanitizeText(logic.getContent(info)),
+                                  textStyle: TextStyle(
+                                    fontFamily: 'FilsonPro',
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color: const Color(0xFF9E9E9E),
+                                  ),
+                                  allAtMap: logic.getAtUserMap(info),
+                                  prefixSpan: TextSpan(
+                                    text: _sanitizeText(
+                                        logic.getPrefixTag(info) ?? ""),
+                                    style: TextStyle(
+                                      fontFamily: 'FilsonPro',
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF3B82F6),
+                                    ),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  patterns: <MatchPattern>[
+                                    MatchPattern(
+                                      type: PatternType.at,
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: const Color(0xFF6B7280),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
                         ),
                         8.horizontalSpace,
-                        _buildUnreadIndicator(info),
+                        Text(
+                          logic.getTime(info),
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF9E9E9E),
+                          ),
+                        ),
                       ],
                     ),
                   ],

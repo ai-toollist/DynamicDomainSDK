@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:openim/constants/app_color.dart';
+import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -182,6 +183,14 @@ class GroupSetupPage extends StatelessWidget {
                       : null,
                   child: Row(
                     children: [
+                      if (logic.isOwnerOrAdmin) ...[
+                        HugeIcon(
+                          icon: HugeIcons.strokeRoundedEdit02,
+                          size: 16.w,
+                          color: const Color(0xFF6B7280),
+                        ),
+                        15.horizontalSpace,
+                      ],
                       Expanded(
                         child: Text(
                           logic.groupInfo.value.groupName ?? '',
@@ -195,15 +204,7 @@ class GroupSetupPage extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (logic.isOwnerOrAdmin) ...[
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedEdit02,
-                          size: 16.w,
-                          color: const Color(0xFF6B7280),
-                        ),
-                        15.horizontalSpace,
-                      ],
-                    ],
+                                        ],
                   ),
                 ),
                 6.verticalSpace,
@@ -246,21 +247,14 @@ class GroupSetupPage extends StatelessWidget {
           ),
 
           // QR Code button
-          GestureDetector(
-            onTap: logic.viewGroupQrcode,
-            child: Container(
-              width: 30.w,
-              height: 30.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4F42FF).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: const HugeIcon(
-                icon: HugeIcons.strokeRoundedQrCode01,
-                color: AppColor.iconColor,
-              ),
-            ),
-          ),
+          
+          CustomButtom(
+          onPressed: logic.viewGroupQrcode,
+          icon: CupertinoIcons.qrcode,
+          colorButton: const Color(0xFF34D399).withOpacity(0.1),
+          colorIcon: const Color.fromARGB(255, 11, 133, 88),
+          fontSize: 30.sp,
+        ),
         ],
       ),
     );

@@ -8,16 +8,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:openim/constants/app_color.dart';
 
 import 'package:openim/core/controller/im_controller.dart';
-import 'package:openim/routes/app_navigator.dart';
-import 'package:openim/widgets/base_page.dart';
-import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:soft_edge_blur/soft_edge_blur.dart';
 
 import 'conversation_logic.dart';
 import '../home/home_logic.dart';
@@ -36,7 +31,6 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -47,63 +41,116 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => BasePage(
-          showAppBar: true,
-          centerTitle: false,
-          showLeading: false,
-          customAppBar: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Obx(() => Stack(
+            alignment: Alignment.topCenter,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${logic.titleText} (${logic.conversationCount.value})',
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20.sp,
-                        color: Colors.black,
-                      ),
+              // 1. Header Background
+              Container(
+                height: 180.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      primaryColor.withOpacity(0.7),
+                      primaryColor,
+                      primaryColor.withOpacity(0.9),
+                    ],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${logic.titleText} (${logic.conversationCount.value})',
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 24.sp,
+                                color: Colors.white,
+                              ),
+                            ),
+                            GestureDetector(
+                              key: _newButtonKey,
+                              onTap: () => _showActionPopup(),
+                              child: Container(
+                                padding: EdgeInsets.all(8.w),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Icon(
+                                  Icons.grid_view,
+                                  color: Colors.white,
+                                  size: 20.w,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        4.verticalSpace,
+                        Obx(
+                          () => Text(
+                            logic.getUnreadText,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Obx(
-                      () {
-                        return Text(
-                          logic.getUnreadText,
-                          style: const TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFFBDBDBD),
-                          ).copyWith(fontSize: 12.sp),
-                        );
-                      },
+                  ),
+                ),
+              ),
+
+              // 2. Main Content Card
+              Container(
+                margin: EdgeInsets.only(top: 100.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(30.r)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    20.verticalSpace,
+                    // Network unavailable banner
+                    if (!logic.isConnected.value)
+                      _buildNetworkUnavailableBanner(),
+                    // Announcement list
+                    _buildAnnouncementList(),
+                    // Content
+                    Expanded(
+                      child: _buildContentContainer(),
                     ),
                   ],
                 ),
               ),
-              CustomButtom(
-                key: _newButtonKey,
-                onPressed: () => _showActionPopup(),
-                icon: Icons.grid_view,
-                colorIcon: Theme.of(context).primaryColor,
-                colorButton: Theme.of(context).primaryColor.withOpacity(0.15),
-              ),
-              SizedBox(width: 12.w)
             ],
-          ),
-          actions: [],
-          body: Column(
-            children: [
-              if (!logic.isConnected.value) _buildNetworkUnavailableBanner(),
-              _buildAnnouncementList(),
-              Expanded(
-                child: _buildContentContainer(),
-              ),
-            ],
-          ),
-        ));
+          )),
+    );
   }
 
   Widget _buildAnnouncementList() {
@@ -213,20 +260,8 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildContentContainer() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.08),
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: Colors.white,
       ),
       child: Obx(() {
         final filteredList = logic.filteredList;
@@ -296,8 +331,21 @@ class _ConversationPageState extends State<ConversationPage> {
               Positioned(
                 top: 0.h,
                 left: 16.w,
-                child: CustomButtom(
-                    onPressed: logic.exitAIChatMode, icon: CupertinoIcons.back),
+                child: GestureDetector(
+                  onTap: logic.exitAIChatMode,
+                  child: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Icon(
+                      CupertinoIcons.back,
+                      size: 20.w,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                ),
               ),
           ],
         );
@@ -1206,7 +1254,7 @@ class _ConversationPageState extends State<ConversationPage> {
         /// viền cạnh dưới 
         border: Border(
           bottom: BorderSide(
-            color: AppColor.iconColor,
+            color: Theme.of(Get.context!).primaryColor.withOpacity(0.1),
             width: 0.5.w,
           ),
         )

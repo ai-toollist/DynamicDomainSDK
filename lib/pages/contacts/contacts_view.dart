@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/widgets/friend_item_view.dart';
-import 'package:openim/widgets/base_page.dart';
-import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
@@ -50,203 +48,211 @@ class _ContactsPageState extends State<ContactsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => BasePage(
-          showAppBar: true,
-          customAppBar: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                StrRes.contacts,
-                style: TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20.sp,
-                  color: Colors.black,
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          // 1. Header Background
+          Container(
+            height: 180.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  primaryColor.withOpacity(0.7),
+                  primaryColor,
+                  primaryColor.withOpacity(0.9),
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          StrRes.contacts,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                        GestureDetector(
+                          key: _newButtonKey,
+                          onTap: () => _showActionPopup(),
+                          child: Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Icon(
+                              Icons.grid_view,
+                              color: Colors.white,
+                              size: 20.w,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    4.verticalSpace,
+                    Obx(
+                      () => Text(
+                        '${StrRes.friends}: ${logic.friendListLogic.friendList.length}, ${StrRes.groups}: ${groupListLogic.createdList.length + groupListLogic.joinedList.length}',
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14.sp,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Obx(
-                () {
-                  return Text(
-                    ' ${StrRes.friends}: ' +
-                        logic.friendListLogic.friendList.length.toString() +
-                        ", ${StrRes.groups}: " +
-                        (groupListLogic.createdList.length +
-                                groupListLogic.joinedList.length)
-                            .toString(),
-                    style: const TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFFBDBDBD),
-                    ).copyWith(fontSize: 12.sp),
-                  );
-                },
-              ),
-            ],
-          ),
-          centerTitle: false,
-          showLeading: false,
-          actions: [
-            CustomButtom(
-              key: _newButtonKey,
-              onPressed: () => _showActionPopup(),
-              icon: Icons.grid_view,
-              colorIcon: Theme.of(context).primaryColor,
-              colorButton: Theme.of(context).primaryColor.withOpacity(0.15),
             ),
-            SizedBox(width: 12.w)
-          ],
-          body: _buildContentContainer(),
-        ));
-  }
+          ),
 
-  Widget _buildContentContainer() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        children: [
-          TabBar(
-            controller: _tabController,
-            indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide(
-                color: Color(0xFF9E9E9E),
-                width: 2.0,
-              ),
-              insets: EdgeInsets.symmetric(horizontal: 16.0),
+          // 2. Main Content Card
+          Container(
+            margin: EdgeInsets.only(top: 100.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
-            indicatorPadding: EdgeInsets.all(2.w),
-            dividerColor: Colors.transparent,
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-            labelColor: const Color(0xFF374151),
-            unselectedLabelColor: const Color(0xFF9CA3AF),
-            labelStyle: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-            ),
-            tabs: [
-              Tab(
-                icon: logic.friendApplicationCount > 0
-                    ? Container(
-                        padding: EdgeInsets.symmetric(vertical: 7.h),
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              StrRes.friends,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            5.horizontalSpace,
-                            Container(
-                              constraints: BoxConstraints(
-                                  minWidth: 24.w, minHeight: 24.h),
-                              padding: EdgeInsets.symmetric(horizontal: 6.w),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFEF4444),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  logic.friendApplicationCount > 99
-                                      ? '99+'
-                                      : logic.friendApplicationCount.toString(),
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Text(
-                        StrRes.friends,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-              Tab(
-                icon: logic.groupApplicationCount > 0
-                    ? Container(
-                        padding: EdgeInsets.symmetric(vertical: 7.h),
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              StrRes.groups,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            8.horizontalSpace,
-                            Container(
-                              constraints: BoxConstraints(
-                                  minWidth: 24.w, minHeight: 24.h),
-                              padding: EdgeInsets.symmetric(horizontal: 6.w),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFEF4444),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  logic.groupApplicationCount > 99
-                                      ? '99+'
-                                      : logic.groupApplicationCount.toString(),
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Text(
-                        StrRes.groups,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-          // Tab Bar View
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
+            child: Column(
               children: [
-                _buildFriendsTab(),
-                _buildGroupsTab(),
+                20.verticalSpace,
+                // Tab Bar
+                TabBar(
+                  controller: _tabController,
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(
+                      color: primaryColor,
+                      width: 3.0,
+                    ),
+                    insets: EdgeInsets.symmetric(horizontal: 16.0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  indicatorPadding: EdgeInsets.zero,
+                  dividerColor: Colors.transparent,
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                  labelColor: primaryColor,
+                  unselectedLabelColor: const Color(0xFF9CA3AF),
+                  labelStyle: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  unselectedLabelStyle: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  tabs: [
+                    Tab(
+                      child: Obx(() => Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(StrRes.friends),
+                              if (logic.friendApplicationCount > 0) ...[
+                                5.horizontalSpace,
+                                Container(
+                                  constraints: BoxConstraints(
+                                      minWidth: 20.w, minHeight: 20.h),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 6.w),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFEF4444),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      logic.friendApplicationCount > 99
+                                          ? '99+'
+                                          : logic.friendApplicationCount
+                                              .toString(),
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          )),
+                    ),
+                    Tab(
+                      child: Obx(() => Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(StrRes.groups),
+                              if (logic.groupApplicationCount > 0) ...[
+                                5.horizontalSpace,
+                                Container(
+                                  constraints: BoxConstraints(
+                                      minWidth: 20.w, minHeight: 20.h),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 6.w),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFEF4444),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      logic.groupApplicationCount > 99
+                                          ? '99+'
+                                          : logic.groupApplicationCount
+                                              .toString(),
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          )),
+                    ),
+                  ],
+                ),
+                const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+                // Tab Bar View
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildFriendsTab(),
+                      _buildGroupsTab(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -628,7 +634,7 @@ class _ContactsPageState extends State<ContactsPage>
                       ),
                       child: Center(
                         child: Text(
-                          count! > 99 ? '99+' : count.toString(),
+                          count > 99 ? '99+' : count.toString(),
                           style: TextStyle(
                             fontFamily: 'FilsonPro',
                             fontSize: 12.sp,
@@ -704,7 +710,6 @@ class _ContactsPageState extends State<ContactsPage>
                     ),
                     isCircle: true,
                     borderRadius: BorderRadius.circular(50.r),
-                    // showDefaultAvatar: true,
                   ),
                 ),
               ),

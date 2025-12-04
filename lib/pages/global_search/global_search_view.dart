@@ -13,7 +13,6 @@ import 'package:hugeicons/hugeicons.dart';
 
 import '../../widgets/file_download_progress.dart';
 import 'global_search_logic.dart';
-import '../../widgets/base_page.dart';
 
 class GlobalSearchPage extends StatefulWidget {
   const GlobalSearchPage({super.key});
@@ -32,14 +31,12 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
 
-    // Đăng ký callback để logic có thể điều khiển TabController
     logic.onTabChanged = (index) {
       if (_tabController.index != index) {
         _tabController.animateTo(index);
       }
     };
 
-    // Listen to tab changes and update logic index
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         logic.index.value = _tabController.index;
@@ -49,109 +46,198 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
 
   @override
   void dispose() {
-    logic.onTabChanged = null; // Cleanup callback
+    logic.onTabChanged = null;
     _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+
     return TouchCloseSoftKeyboard(
-      child: BasePage(
-        showAppBar: true,
-        centerTitle: false,
-        showLeading: false,
-        customAppBar: WechatStyleSearchBox(
-          controller: logic.searchCtrl,
-          focusNode: logic.focusNode,
-          hintText: StrRes.search,
-          enabled: true,
-          autofocus: true,
-          onSubmitted: (_) => logic.search(),
-          onCleared: () =>
-              logic.clearSearch(), // Clear search and reset to initial state
-          margin: EdgeInsets.zero,
-          backgroundColor: const Color(0xFFF8FAFC),
-          searchIconColor: const Color(0xFF6B7280),
-        ),
-        body: _buildContentContainer(),
-      ),
-    );
-  }
-
-  Widget _buildContentContainer() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Column(
-        children: [
-          // Search Box
-
-          // Tab Bar
-          TabBar(
-            controller: _tabController,
-            indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide(
-                color: Color(0xFF9E9E9E),
-                width: 2.0,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            // 1. Header Background
+            Container(
+              height: 130.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    primaryColor.withOpacity(0.7),
+                    primaryColor,
+                    primaryColor.withOpacity(0.9),
+                  ],
+                ),
               ),
-              insets: EdgeInsets.symmetric(horizontal: 16.0),
             ),
-            indicatorPadding: EdgeInsets.all(2.w),
-            dividerColor: Colors.transparent,
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-            labelColor: const Color(0xFF374151),
-            unselectedLabelColor: const Color(0xFF9CA3AF),
-            labelStyle: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-            ),
-            isScrollable: false,
-            labelPadding: EdgeInsets.symmetric(horizontal: 0.w),
-            padding: EdgeInsets.zero,
-            tabs: [
-              Tab(text: StrRes.globalSearchAll),
-              Tab(text: StrRes.globalSearchContacts),
-              Tab(text: StrRes.globalSearchGroup),
-              Tab(text: StrRes.messages),
-              Tab(text: StrRes.globalSearchChatFile),
-            ],
-          ),
-          // Tab Bar View
-          Expanded(
-            child: Obx(() {
-              // Show initial empty state when user hasn't searched yet
-              if (!logic.hasSearched.value) {
-                return _initialEmptyState;
-              }
-              // Show "no results" empty state when search returned no results
-              if (logic.isSearchNotResult) {
-                return _emptyListView;
-              }
-              // Show normal search results
-              return TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildAllListView(),
-                  _buildContactsListView(),
-                  _buildGroupListView(),
-                  _buildChatHistoryListView(),
-                  _buildFileListView(),
+
+            // 2. Main Content Card
+            Container(
+              margin: EdgeInsets.only(top: 70.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
                 ],
-              );
-            }),
-          ),
-        ],
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 40.h), // Space for Search Box overlap
+
+                  // Tab Bar
+                  TabBar(
+                    controller: _tabController,
+                    indicator: UnderlineTabIndicator(
+                      borderSide: BorderSide(
+                        color: primaryColor,
+                        width: 3.0,
+                      ),
+                      insets: EdgeInsets.symmetric(horizontal: 16.0),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    indicatorPadding: EdgeInsets.zero,
+                    dividerColor: Colors.transparent,
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    labelColor: primaryColor,
+                    unselectedLabelColor: const Color(0xFF9CA3AF),
+                    labelStyle: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    unselectedLabelStyle: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    tabs: [
+                      Tab(text: StrRes.globalSearchAll),
+                      Tab(text: StrRes.globalSearchContacts),
+                      Tab(text: StrRes.globalSearchGroup),
+                      Tab(text: StrRes.messages),
+                      Tab(text: StrRes.globalSearchChatFile),
+                    ],
+                  ),
+                  
+                  const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+                  // Tab Bar View
+                  Expanded(
+                    child: Obx(() {
+                      if (!logic.hasSearched.value) {
+                        return _initialEmptyState;
+                      }
+                      if (logic.isSearchNotResult) {
+                        return _emptyListView;
+                      }
+                      return TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildAllListView(),
+                          _buildContactsListView(),
+                          _buildGroupListView(),
+                          _buildChatHistoryListView(),
+                          _buildFileListView(),
+                        ],
+                      );
+                    }),
+                  ),
+                ],
+              ),
+            ),
+
+            // 3. Search Box (Overlapping)
+            Positioned(
+              top: 30.h,
+              left: 20.w,
+              right: 20.w,
+              child: Container(
+                height: 56.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    16.horizontalSpace,
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedSearch01,
+                      size: 24.w,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                    12.horizontalSpace,
+                    Expanded(
+                      child: TextField(
+                        controller: logic.searchCtrl,
+                        focusNode: logic.focusNode,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF374151),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: StrRes.search,
+                          hintStyle: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF9CA3AF),
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (_) => logic.search(),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                    ),
+                    logic.searchCtrl.text.isNotEmpty
+                        ? GestureDetector(
+                            onTap: () {
+                              logic.clearSearch();
+                              setState(() {});
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(12.w),
+                              child: Icon(
+                                CupertinoIcons.clear_circled_solid,
+                                size: 20.w,
+                                color: const Color(0xFF9CA3AF),
+                              ),
+                            ),
+                          )
+                        : SizedBox(width: 16.w),
+                  ],
+                ),
+              ),
+            ),      
+          ],
+        ),
       ),
     );
   }
@@ -413,32 +499,20 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     Function()? onSeeMore,
   }) =>
       Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              offset: const Offset(2, 2),
-              blurRadius: 4,
-            ),
-            BoxShadow(
-              color: Colors.white.withOpacity(0.8),
-              offset: const Offset(-1, -1),
-              blurRadius: 4,
+              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
             ),
           ],
           border: Border.all(
-            color: Colors.white,
-            width: 1.5,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.9),
-              const Color(0xFFF8FAFC),
-            ],
-            stops: const [0.05, 0.3],
+            color: const Color(0xFFF3F4F6),
+            width: 1,
           ),
         ),
         child: Column(
@@ -454,32 +528,19 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF374151),
                   letterSpacing: 0.3,
-                  shadows: [
-                    Shadow(
-                      offset: const Offset(0, 0.5),
-                      blurRadius: 1,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ],
                 ),
               ),
             ),
+            const Divider(height: 1, color: Color(0xFFF3F4F6)),
             ...children,
-            if (null != seeMoreStr)
+            if (null != seeMoreStr) ...[
+              const Divider(height: 1, color: Color(0xFFF3F4F6)),
               GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: onSeeMore,
                 child: Container(
                   height: 48.h,
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  decoration: const BoxDecoration(
-                    border: BorderDirectional(
-                      top: BorderSide(
-                        color: Color(0xFFF3F4F6),
-                        width: 1,
-                      ),
-                    ),
-                  ),
                   child: Row(
                     children: [
                       Text(
@@ -501,6 +562,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                   ),
                 ),
               ),
+            ],
           ],
         ),
       );
@@ -512,75 +574,71 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     bool showDivider = false,
     Function()? onTap,
   }) =>
-      Container(
-        color: Colors.white,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Row(
-                children: [
-                  AvatarView(
-                    width: 50.w,
-                    height: 50.h,
-                    text: showName,
-                    url: faceURL,
-                    textStyle: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                    isCircle: false,
-                    borderRadius: BorderRadius.circular(50.r),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                AvatarView(
+                  width: 48.w,
+                  height: 48.h,
+                  text: showName,
+                  url: faceURL,
+                  textStyle: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
-                  16.horizontalSpace,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  isCircle: true,
+                ),
+                16.horizontalSpace,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SearchKeywordText(
+                        text: showName ?? '',
+                        keyText: RegExp.escape(logic.searchKey),
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF374151),
+                        ),
+                        keyStyle: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF4F42FF),
+                        ),
+                      ),
+                      if (content != null) ...[
+                        4.verticalSpace,
                         SearchKeywordText(
-                          text: showName ?? '',
+                          text: content,
                           keyText: RegExp.escape(logic.searchKey),
                           style: TextStyle(
                             fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF424242),
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF9CA3AF),
                           ),
                           keyStyle: TextStyle(
                             fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF424242),
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF4F42FF),
                           ),
                         ),
-                        if (content != null) ...[
-                          8.verticalSpace,
-                          SearchKeywordText(
-                            text: content,
-                            keyText: RegExp.escape(logic.searchKey),
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF9E9E9E),
-                            ),
-                            keyStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF9E9E9E),
-                            ),
-                          ),
-                        ],
                       ],
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -596,92 +654,88 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     bool isGroup = false,
     Function()? onTap,
   }) =>
-      Container(
-        color: Colors.white,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Row(
-                children: [
-                  fileIcon ??
-                      AvatarView(
-                        width: 50.w,
-                        height: 50.h,
-                        text: showName,
-                        url: faceURL,
-                        isGroup: isGroup,
-                        textStyle: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                        isCircle: false,
-                        borderRadius: BorderRadius.circular(50.r),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                fileIcon ??
+                    AvatarView(
+                      width: 48.w,
+                      height: 48.h,
+                      text: showName,
+                      url: faceURL,
+                      isGroup: isGroup,
+                      textStyle: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
-                  16.horizontalSpace,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                showName ?? '',
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF424242),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (time != null) ...[
-                              20.horizontalSpace,
-                              Text(
-                                time,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFF9E9E9E),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        if (content != null) ...[
-                          8.verticalSpace,
-                          SearchKeywordText(
-                            text: content,
-                            keyText: RegExp.escape(logic.searchKey),
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF9E9E9E),
-                            ),
-                            keyStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF9E9E9E),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ],
+                      isCircle: true,
                     ),
+                16.horizontalSpace,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              showName ?? '',
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF374151),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (time != null) ...[
+                            12.horizontalSpace,
+                            Text(
+                              time,
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xFF9CA3AF),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      if (content != null) ...[
+                        4.verticalSpace,
+                        SearchKeywordText(
+                          text: content,
+                          keyText: RegExp.escape(logic.searchKey),
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF6B7280),
+                          ),
+                          keyStyle: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF4F42FF),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -694,71 +748,67 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
   }) {
     final shouldShowCount = logic.shouldShowMemberCount(info.groupID);
 
-    return Container(
-      color: Colors.white,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: Row(
-              children: [
-                AvatarView(
-                  width: 50.w,
-                  height: 50.h,
-                  text: info.groupName,
-                  url: info.faceURL,
-                  isGroup: true,
-                  textStyle: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                  isCircle: false,
-                  borderRadius: BorderRadius.circular(50.r),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: Row(
+            children: [
+              AvatarView(
+                width: 48.w,
+                height: 48.h,
+                text: info.groupName,
+                url: info.faceURL,
+                isGroup: true,
+                textStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-                16.horizontalSpace,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SearchKeywordText(
-                        text: info.groupName ?? '',
-                        keyText: RegExp.escape(logic.searchKey),
+                isCircle: true,
+              ),
+              16.horizontalSpace,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SearchKeywordText(
+                      text: info.groupName ?? '',
+                      keyText: RegExp.escape(logic.searchKey),
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF374151),
+                      ),
+                      keyStyle: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF4F42FF),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (shouldShowCount) ...[
+                      4.verticalSpace,
+                      Text(
+                        '${info.memberCount ?? 0} ${StrRes.members}',
                         style: TextStyle(
                           fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF424242),
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF9CA3AF),
                         ),
-                        keyStyle: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF424242),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      if (shouldShowCount) ...[
-                        8.verticalSpace,
-                        Text(
-                          '${info.memberCount ?? 0} ${StrRes.members}',
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF9E9E9E),
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

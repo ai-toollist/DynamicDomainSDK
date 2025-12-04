@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import 'package:openim/core/controller/im_controller.dart';
 import 'package:openim_common/openim_common.dart';
-import 'package:sprintf/sprintf.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'conversation_logic.dart';
@@ -1019,145 +1017,6 @@ class _ConversationPageState extends State<ConversationPage> {
     return AnimatedDot(index: index);
   }
 
-  Widget _buildTabFilter() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      height: 36.h,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: const Color(0xFFE2E8F0),
-          width: 0.5,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.r),
-        child: Stack(
-          children: [
-            // Animated selection indicator
-            Obx(() => AnimatedPositioned(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOutCubic,
-                  left: logic.selectedTabIndex.value * (Get.width - 32.w) / 2,
-                  top: 0,
-                  bottom: 0,
-                  width: (Get.width - 32.w) / 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 3,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
-
-            // Tab buttons
-            Row(
-              children: List.generate(
-                logic.tabTitles.length,
-                (index) => Expanded(
-                  child: Obx(() {
-                    final isSelected = logic.selectedTabIndex.value == index;
-
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => logic.switchTab(index),
-                        child: SizedBox(
-                          height: double.infinity,
-                          child: Center(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AnimatedOpacity(
-                                  opacity: isSelected ? 1.0 : 0.7,
-                                  duration: const Duration(milliseconds: 200),
-                                  child: Icon(
-                                    index == 0
-                                        ? CupertinoIcons.chat_bubble_2
-                                        : CupertinoIcons.tray_full,
-                                    size: 15.w,
-                                    color: isSelected
-                                        ? const Color(0xFF3B82F6)
-                                        : const Color(0xFF64748B),
-                                  ),
-                                ),
-                                SizedBox(width: 5.w),
-                                AnimatedDefaultTextStyle(
-                                  duration: const Duration(
-                                    milliseconds: 200,
-                                  ),
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 13.sp,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                    color: isSelected
-                                        ? const Color(0xFF3B82F6)
-                                        : const Color(0xFF64748B),
-                                    letterSpacing: 0.2,
-                                  ),
-                                  child: Text(logic.tabTitles[index]),
-                                ),
-                                if (index == 1) ...[
-                                  SizedBox(width: 5.w),
-                                  Obx(() {
-                                    final unreadCount = logic.list
-                                        .where((conversation) =>
-                                            conversation.unreadCount > 0)
-                                        .length;
-                                    if (unreadCount == 0) {
-                                      return const SizedBox();
-                                    }
-
-                                    return Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 5.w, vertical: 1.h),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? const Color(0xFFEF4444)
-                                            : const Color(0xFF94A3B8),
-                                        borderRadius:
-                                            BorderRadius.circular(7.r),
-                                      ),
-                                      child: Text(
-                                        unreadCount > 99
-                                            ? '99+'
-                                            : '$unreadCount',
-                                        style: TextStyle(
-                                          fontFamily: 'FilsonPro',
-                                          fontSize: 9.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   String _sanitizeText(String text) {
     if (text.isEmpty) return text;
@@ -1420,75 +1279,6 @@ class _ConversationPageState extends State<ConversationPage> {
           ),
       ],
     );
-  }
-
-  Widget _buildUnreadIndicator(ConversationInfo info) {
-    if (logic.isNotDisturb(info)) {
-      final count = logic.getUnreadCount(info);
-      return Row(
-        children: [
-          if (count > 0)
-            Container(
-              constraints: BoxConstraints(minWidth: 24.w, minHeight: 24.h),
-              padding: EdgeInsets.symmetric(horizontal: 6.w),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEF4444),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  count > 99 ? '99+' : count.toString(),
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          5.horizontalSpace,
-          Container(
-            width: 24.w,
-            height: 24.h,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE5E7EB),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                CupertinoIcons.bell_slash,
-                size: 14.w,
-                color: const Color(0xFF6B7280),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      final count = logic.getUnreadCount(info);
-      if (count <= 0) return const SizedBox();
-
-      return Container(
-        constraints: BoxConstraints(minWidth: 24.w, minHeight: 24.h),
-        padding: EdgeInsets.symmetric(horizontal: 6.w),
-        decoration: const BoxDecoration(
-          color: Color(0xFFEF4444),
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: Text(
-            count > 99 ? '99+' : count.toString(),
-            style: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   Widget _buildNetworkUnavailableBanner() {

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -9,10 +11,8 @@ import 'package:openim/pages/auth/widget/password_field.dart';
 import 'package:openim/pages/auth/widget/phone_field.dart';
 import 'package:openim/pages/auth/widget/phone_code_field.dart';
 import 'package:openim/pages/auth/widget/nickname_field.dart';
-import 'package:openim/pages/auth/widget/invite_code_field.dart';
 import 'package:openim/pages/auth/widget/terms_and_conditions_text.dart';
 import 'package:openim/routes/app_navigator.dart';
-import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 
 class AuthView extends StatelessWidget {

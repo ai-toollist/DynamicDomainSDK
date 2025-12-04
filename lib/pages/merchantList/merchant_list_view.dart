@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:openim/pages/merchantList/merchant_list_logic.dart';
 import 'package:openim/widgets/merchant_item.dart';
 import 'package:openim_common/openim_common.dart';

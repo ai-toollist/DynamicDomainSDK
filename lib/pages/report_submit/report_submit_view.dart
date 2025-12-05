@@ -21,9 +21,10 @@ class ReportDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TouchCloseSoftKeyboard(
-      child: GradientScaffoldWithBack(
+      child: GradientScaffold(
         title: StrRes.reportSubmit,
         subtitle: logic.reportReason.value,
+        showBackButton: true,
         headerTrailing: CustomButton(
           icon: CupertinoIcons.paperplane,
           onTap: logic.submitReport,

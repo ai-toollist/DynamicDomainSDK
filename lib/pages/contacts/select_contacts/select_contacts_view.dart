@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
@@ -12,8 +12,8 @@ import 'package:sprintf/sprintf.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../widgets/friend_item_view.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'select_contacts_logic.dart';
-import '../../../widgets/base_page.dart';
 
 class SelectContactsPage extends StatelessWidget {
   final logic = Get.find<SelectContactsLogic>();
@@ -22,201 +22,119 @@ class SelectContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
-      centerTitle: false,
-      showLeading: true,
+    return GradientScaffold(
       title: StrRes.selectContacts,
+      showBackButton: true,
+      searchBox: WechatStyleSearchBox(
+        hintText: StrRes.search,
+        enabled: true,
+        autofocus: false,
+        controller: logic.searchCtrl,
+        onChanged: logic.performSearch,
+        onCleared: logic.clearSearch,
+        margin: EdgeInsets.zero,
+      ),
       body: _buildContentContainer(),
     );
   }
 
   Widget _buildContentContainer() {
-    return Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF9CA3AF).withOpacity(0.08),
-              offset: const Offset(0, 4),
-              blurRadius: 12,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            // Content Container
-            // Search Box
-            Container(
-              margin: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 8.h),
-              child: Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: const Color(0xFFF3F4F6),
-                    width: 1,
+    return Column(
+      children: [
+        // Content based on search or normal view
+        Expanded(
+          child: Obx(() {
+            final hasSearchText = logic.searchText.value.isNotEmpty;
+            final displayResults = hasSearchText ? logic.searchResults : null;
+
+            // Show friend list only mode
+            if (logic.isShowFriendListOnly) {
+              if (hasSearchText) {
+                if (displayResults!.isEmpty) {
+                  return _buildNoDataView();
+                }
+                return _buildSearchResultsList(displayResults);
+              }
+              // Show all friends
+              return WrapAzListView<ISUserInfo>(
+                data: logic.friendList,
+                itemCount: logic.friendList.length,
+                itemBuilder: (_, friend, index) => Obx(() => FriendItemView(
+                  info: friend,
+                  showDivider: index != logic.friendList.length - 1,
+                  checked: logic.isChecked(friend),
+                  enabled: !logic.isDefaultChecked(friend),
+                  onTap: () => logic.toggleChecked(friend),
+                  showRadioButton: logic.showRadioButton,
+                )),
+              );
+            }
+
+            // Normal view with categories and conversations
+            if (hasSearchText) {
+              if (displayResults!.isEmpty) {
+                return _buildNoDataView();
+              }
+              return _buildSearchResultsList(displayResults);
+            }
+
+            // Show normal list with categories
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildCategoryItemView(
+                    label: StrRes.chooseFriends,
+                    onTap: logic.selectFromMyFriend,
+                    isFirst: true,
+                    isLast: logic.hiddenGroup,
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      CupertinoIcons.search,
-                      size: 18.w,
-                      color: const Color(0xFF9CA3AF),
+                  if (!logic.hiddenGroup)
+                    _buildCategoryItemView(
+                      label: StrRes.chooseGroups,
+                      onTap: logic.selectFromMyGroup,
+                      isLast: true,
                     ),
-                    8.horizontalSpace,
-                    Expanded(
-                      child: TextField(
-                        controller: logic.searchCtrl,
-                        onChanged: (value) => logic.performSearch(value),
-                        onTap: () => logic.selectFromSearch(),
-                        decoration: InputDecoration(
-                          hintText: StrRes.search,
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                          hintStyle: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF9CA3AF),
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF374151),
-                        ),
-                      ),
-                    ),
-                    Obx(() => logic.searchText.value.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () => logic.clearSearch(),
-                            child: Icon(
-                              CupertinoIcons.xmark_circle_fill,
-                              size: 18.w,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                          )
-                        : const SizedBox.shrink()),
-                  ],
-                ),
-              ),
-            ),
-
-            // Display filtered list or normal list
-            Expanded(
-              child: Obx(() {
-                final hasSearchText = logic.searchText.value.isNotEmpty;
-                final displayResults = hasSearchText ? logic.searchResults : null;
-
-                // Show friend list only mode
-                if (logic.isShowFriendListOnly) {
-                  if (hasSearchText) {
-                    if (displayResults!.isEmpty) {
-                      return _buildNoDataView();
-                    }
-                    return _buildSearchResultsList(displayResults);
-                  }
-                  // Show all friends
-                  return WrapAzListView<ISUserInfo>(
-                    data: logic.friendList,
-                    itemCount: logic.friendList.length,
-                    itemBuilder: (_, friend, index) => Obx(() => FriendItemView(
-                      info: friend,
-                      showDivider: index != logic.friendList.length - 1,
-                      checked: logic.isChecked(friend),
-                      enabled: !logic.isDefaultChecked(friend),
-                      onTap: () => logic.toggleChecked(friend),
-                      showRadioButton: logic.showRadioButton,
-                    )),
-                  );
-                }
-
-                // Normal view with categories and conversations
-                if (hasSearchText) {
-                  if (displayResults!.isEmpty) {
-                    return _buildNoDataView();
-                  }
-                  return _buildSearchResultsList(displayResults);
-                }
-
-                // Show normal list with categories
-                return CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Column(
+                  if (logic.conversationList.isNotEmpty) ...[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                      child: Row(
                         children: [
-                          _buildCategoryItemView(
-                            label: StrRes.chooseFriends,
-                            onTap: logic.selectFromMyFriend,
-                            isFirst: true,
-                            isLast: logic.hiddenGroup,
-                          ),
-                          if (!logic.hiddenGroup)
-                            _buildCategoryItemView(
-                              label: StrRes.chooseGroups,
-                              onTap: logic.selectFromMyGroup,
-                              isLast: true,
+                          Text(
+                            StrRes.recentConversations,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF64748B),
                             ),
+                          ),
+                          const Spacer(),
+                          Obx(() => logic.checkedList.isNotEmpty
+                              ? _buildSendButton()
+                              : const SizedBox.shrink()),
                         ],
                       ),
                     ),
-                    if (logic.conversationList.isNotEmpty) ...[
-                      SliverToBoxAdapter(
-                        child: Container(
-                          margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                          child: Row(
-                            children: [
-                              Text(
-                                StrRes.recentConversations,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF64748B),
-                                ),
-                              ),
-                              const Spacer(),
-                              Obx(() => logic.checkedList.isNotEmpty
-                                  ? _buildSendButton()
-                                  : const SizedBox.shrink()),
-                            ],
-                          ),
-                        ),
+                    ...List.generate(
+                      logic.conversationList.length,
+                      (index) => _buildConversationItemView(
+                        logic.conversationList[index],
+                        index == 0,
+                        index == logic.conversationList.length - 1,
                       ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, index) => _buildConversationItemView(
-                            logic.conversationList[index],
-                            index == 0,
-                            index == logic.conversationList.length - 1,
-                          ),
-                          childCount: logic.conversationList.length,
-                        ),
-                      ),
-                    ],
+                    ),
                   ],
-                );
-              }),
-            ),
-            logic.checkedConfirmView,
-          ],
-        ));
-  }
+                  16.verticalSpace,
+                ],
+              ),
+            );
+          }),
+        ),
 
-  Widget _buildNoDataView() {
+        logic.checkedConfirmView,
+      ],
+    );
+  }  Widget _buildNoDataView() {
     return Center(
       child: Text(
         StrRes.noData,

@@ -80,8 +80,9 @@ class ReportReasonListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GradientScaffoldWithBack(
+    return GradientScaffold(
       title: StrRes.report,
+      showBackButton: true,
       headerTrailing: Container(
         width: 44.w,
         height: 44.w,

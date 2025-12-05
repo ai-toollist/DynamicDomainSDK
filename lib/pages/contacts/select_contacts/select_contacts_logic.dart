@@ -397,7 +397,7 @@ class SelectContactsLogic
   // }
 
   void selectFromSearch() {
-    // Just focus on the search field, don't do anything else
+    AppNavigator.startSelectContactsFromSearch();
   }
 
   void performSearch(String query) {

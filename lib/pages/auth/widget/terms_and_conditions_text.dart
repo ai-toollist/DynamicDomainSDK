@@ -11,6 +11,7 @@ class TermsAndConditionsText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor= Theme.of(context).primaryColor;
     return Container(
       width: double.infinity,
       // margin: EdgeInsets.symmetric(vertical: 5.h),
@@ -41,7 +42,7 @@ class TermsAndConditionsText extends StatelessWidget {
                       fontFamily: 'FilsonPro',
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4F42FF),
+                      color: primaryColor,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
@@ -63,7 +64,7 @@ class TermsAndConditionsText extends StatelessWidget {
                       fontFamily: 'FilsonPro',
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4F42FF),
+                      color: primaryColor,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {

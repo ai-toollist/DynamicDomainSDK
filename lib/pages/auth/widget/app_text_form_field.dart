@@ -96,8 +96,8 @@ class AppTextFormField extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Color(0xFF4F42FF),
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(14),
@@ -131,7 +131,7 @@ class AppTextFormField extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: const Color(0xFF374151),
         ),
-        cursorColor: const Color(0xFF4F42FF),
+        cursorColor: Theme.of(context).primaryColor,
       ),
     );
   }

@@ -50,13 +50,29 @@ class InviteCodeView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // LOGO
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
+                   Container(
+                    width: 80.w,
+                    height: 80.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withOpacity(0.2),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child:  ClipRRect(
+                      borderRadius: BorderRadius.circular(90),
                       child: Image.asset(
                         "assets/images/app-icon.png",
                         width: 74.w,
                       ),
                     ),
+                  ),
+                
                     30.verticalSpace,
 
                     // 标题

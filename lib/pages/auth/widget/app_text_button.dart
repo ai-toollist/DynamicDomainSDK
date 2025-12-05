@@ -38,7 +38,7 @@ class AppTextButton extends StatelessWidget {
           BoxShadow(
             color: const Color(0xFF3B82F6).withOpacity(0.25),
             offset: const Offset(0, 4),
-            blurRadius: 12,
+            blurRadius: 4,
           ),
         ],
       ),

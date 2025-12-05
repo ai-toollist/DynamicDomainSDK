@@ -61,7 +61,6 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     return TouchCloseSoftKeyboard(
       child: GradientScaffold(
         title: StrRes.globalSearch,
-        showBackButton: true,
         searchBox: _buildSearchBox(),
         body: Column(
           children: [

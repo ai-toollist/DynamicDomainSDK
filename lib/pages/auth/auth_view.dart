@@ -22,13 +22,14 @@ class AuthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
     return TouchCloseSoftKeyboard(
       isGradientBg: false,
       child: Scaffold(
         body: Stack(
           children: [
             // Animated radial gradient background (same as invite_code_view)
-            _buildAnimatedGradientBackground(),
+            _buildAnimatedGradientBackground(primaryColor),
             // Main content với form nổi lên ở giữa
             SafeArea(
               child: Column(
@@ -39,7 +40,7 @@ class AuthView extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: AnimationLimiter(
-                          child: _buildFloatingForm(context),
+                          child: _buildFloatingForm(context, primaryColor),
                         ),
                       ),
                     ),
@@ -54,7 +55,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildAnimatedGradientBackground() {
+  Widget _buildAnimatedGradientBackground(Color primaryColor) {
     return Obx(
       () => TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: logic.gradientOpacity.value),
@@ -68,8 +69,8 @@ class AuthView extends StatelessWidget {
                 center: const Alignment(0.0, -1.0),
                 radius: 1.8,
                 colors: [
-                  const Color(0xFF4A90E2).withOpacity(value * 0.9),
-                  const Color(0xFFB3D4F5).withOpacity(value * 0.5),
+                  primaryColor.withOpacity(value * 0.9),
+                  primaryColor.withOpacity(value * 0.5),
                   Colors.white.withOpacity(0.0),
                 ],
                 stops: const [0.0, 0.4, 1.0],
@@ -82,7 +83,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildFloatingForm(BuildContext context) {
+  Widget _buildFloatingForm(BuildContext context, Color primaryColor) {
     // Tính toán chiều cao cố định cho form (giới hạn trong màn hình)
     final screenHeight = MediaQuery.of(context).size.height;
     final formHeight = screenHeight * 0.9; // 90% màn hình - cố định
@@ -101,7 +102,7 @@ class AuthView extends StatelessWidget {
               borderRadius: BorderRadius.circular(24.r),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF3B82F6).withOpacity(0.15),
+                  color: primaryColor.withOpacity(0.15),
                   blurRadius: 30,
                   spreadRadius: 5,
                   offset: const Offset(0, 10),
@@ -120,10 +121,10 @@ class AuthView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max, // Chiếm toàn bộ chiều cao cố định
                 children: [
                   // Header với logo (fixed, không scroll)
-                  _buildFormHeader(),
+                  _buildFormHeader(primaryColor),
                   // Form content với scroll bên trong - căn giữa nếu nội dung ngắn
                   Flexible(
-                    child: _buildFormContent(),
+                    child: _buildFormContent(primaryColor),
                   ),
                 ],
               ),
@@ -134,7 +135,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildFormHeader() {
+  Widget _buildFormHeader(Color primaryColor) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 10.h),
@@ -143,8 +144,8 @@ class AuthView extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF3B82F6).withOpacity(0.05),
-            const Color(0xFF4F42FF).withOpacity(0.02),
+            primaryColor.withOpacity(0.05),
+            primaryColor.withOpacity(0.02),
           ],
         ),
       ),
@@ -165,19 +166,17 @@ class AuthView extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF3B82F6).withOpacity(0.2),
+                          color: primaryColor.withOpacity(0.2),
                           blurRadius: 15,
                           spreadRadius: 2,
                         ),
                       ],
                     ),
-                    child: Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          "assets/images/app-icon.png",
-                          width: 56.w,
-                        ),
+                    child:  ClipRRect(
+                      borderRadius: BorderRadius.circular(90),
+                      child: Image.asset(
+                        "assets/images/app-icon.png",
+                        width: 74.w,
                       ),
                     ),
                   ),
@@ -226,7 +225,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildFormContent() {
+  Widget _buildFormContent(Color primaryColor) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start, // Căn giữa nội dung
@@ -234,15 +233,15 @@ class AuthView extends StatelessWidget {
         // Mode Toggle (Login / Register) - Fixed
         Padding(
           padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0),
-          child: _buildModeToggle(),
+          child: _buildModeToggle(primaryColor),
         ),
         // Scrollable form fields
         Flexible(
           child: Obx(() {
             if (logic.currentFormMode.value == AuthFormMode.login) {
-              return _buildLoginFields();
+              return _buildLoginFields(primaryColor);
             } else {
-              return _buildRegisterFields();
+              return _buildRegisterFields(primaryColor);
             }
           }),
         ),
@@ -250,7 +249,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildModeToggle() {
+  Widget _buildModeToggle(Color primaryColor) {
     return Obx(() => Container(
           decoration: BoxDecoration(
             color: const Color(0xFFF3F4F6),
@@ -271,16 +270,6 @@ class AuthView extends StatelessWidget {
                           ? Colors.white
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(10.r),
-                      boxShadow: logic.currentFormMode.value ==
-                              AuthFormMode.login
-                          ? [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Text(
                       StrRes.login,
@@ -294,7 +283,7 @@ class AuthView extends StatelessWidget {
                                 : FontWeight.w500,
                         color:
                             logic.currentFormMode.value == AuthFormMode.login
-                                ? const Color(0xFF3B82F6)
+                                ? primaryColor
                                 : const Color(0xFF6B7280),
                       ),
                     ),
@@ -337,7 +326,7 @@ class AuthView extends StatelessWidget {
                                 : FontWeight.w500,
                         color:
                             logic.currentFormMode.value == AuthFormMode.register
-                                ? const Color(0xFF3B82F6)
+                                ? primaryColor
                                 : const Color(0xFF6B7280),
                       ),
                     ),
@@ -349,7 +338,7 @@ class AuthView extends StatelessWidget {
         ));
   }
 
-  Widget _buildLoginFields() {
+  Widget _buildLoginFields(Color primaryColor) {
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h),
       child: Form(
@@ -387,7 +376,7 @@ class AuthView extends StatelessWidget {
                         fillColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                             if (states.contains(WidgetState.selected)) {
-                              return Colors.blue;
+                              return primaryColor;
                             }
                             return Colors.transparent;
                           },
@@ -422,7 +411,7 @@ class AuthView extends StatelessWidget {
               child: Obx(() => AppTextButton(
                     buttonText: StrRes.login,
                     backgroundColor: logic.isLoginFormValid.value
-                        ? const Color(0xFF3B82F6)
+                        ? primaryColor
                         : const Color(0xFF9CA3AF),
                     textStyle: TextStyle(
                       fontFamily: 'FilsonPro',
@@ -439,7 +428,7 @@ class AuthView extends StatelessWidget {
                     },
                   )),
             ),
-            Gap(14.h),
+            Gap(16.h),
             // Forgot Password - Centered
             Center(
               child: GestureDetector(
@@ -451,13 +440,13 @@ class AuthView extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'FilsonPro',
                     fontSize: 14.sp,
-                    color: const Color(0xFF3B82F6),
+                    color: primaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
-            // Gap(10.h),
+            Gap(4.h),
             // Agree Terms and Conditions - Left aligned
             Align(
               alignment: Alignment.centerLeft,
@@ -471,7 +460,7 @@ class AuthView extends StatelessWidget {
                     fillColor: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
                         if (states.contains(WidgetState.selected)) {
-                          return const Color(0xFF4F42FF);
+                          return primaryColor;
                         }
                         return Colors.transparent;
                       },
@@ -488,7 +477,7 @@ class AuthView extends StatelessWidget {
                 ),
               ),
             ),
-            Gap(14.h),
+            Gap(16.h),
             // Switch to Register
             Center(
               child: GestureDetector(
@@ -504,8 +493,8 @@ class AuthView extends StatelessWidget {
                       TextSpan(text: StrRes.noAccountYetQuestion),
                       TextSpan(
                         text: ' ${StrRes.registerNow}',
-                        style: const TextStyle(
-                          color: Color(0xFF3B82F6),
+                        style: TextStyle(
+                          color: primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -515,14 +504,14 @@ class AuthView extends StatelessWidget {
               ),
             ),
             // Version info
-            _buildVersionInfo(),
+            _buildVersionInfo(primaryColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRegisterFields() {
+  Widget _buildRegisterFields(Color primaryColor) {
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h),
       child: Form(
@@ -563,7 +552,7 @@ class AuthView extends StatelessWidget {
               child: Obx(() => AppTextButton(
                     buttonText: StrRes.createAccount,
                     backgroundColor: logic.isRegisterFormValid.value
-                        ? const Color(0xFF3B82F6)
+                        ? primaryColor
                         : const Color(0xFF9CA3AF),
                     textStyle: TextStyle(
                       fontFamily: 'FilsonPro',
@@ -591,7 +580,7 @@ class AuthView extends StatelessWidget {
                   fillColor: WidgetStateProperty.resolveWith<Color>(
                     (Set<WidgetState> states) {
                       if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFF4F42FF);
+                        return primaryColor;
                       }
                       return Colors.transparent;
                     },
@@ -635,14 +624,14 @@ class AuthView extends StatelessWidget {
             //   ),
             // ),
             // Version info
-            _buildVersionInfo(),
+            _buildVersionInfo(primaryColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildVersionInfo() {
+  Widget _buildVersionInfo(Color primaryColor) {
     return Obx(
       () => Visibility(
         visible: logic.versionInfoShow.value,
@@ -681,7 +670,7 @@ class AuthView extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
                         fontSize: 11.sp,
-                        color: const Color(0xFF3B82F6),
+                        color: primaryColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -305,185 +305,264 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final primaryColor = theme.primaryColor;
+
     return WillPopScope(
       onWillPop: logic.willPop(),
       child: ChatVoiceRecordLayout(
         onCompleted: logic.sendVoice,
         builder: (bar) => Obx(() {
-          return BasePage(
-            showAppBar: true,
-            centerTitle: false,
-            showLeading: true,
-            customAppBar: _userInfo(),
-            leadingAction:
-                logic.multiSelMode.value ? logic.closeMultiSelMode : Get.back,
-            actions: [
-              if (logic.showAudioAndVideoCall) ...[
-                CustomButton(
-                  margin: const EdgeInsets.only(right: 5),
-                  onTap: logic.onTapAudioCall,
-                  icon: Icons.call,
-                  colorButton: theme.primaryColor.withOpacity(0.15),
-                  colorIcon: theme.primaryColor,
-                ),
-                CustomButton(
-                  margin: const EdgeInsets.only(right: 5),
-                  onTap: logic.onTapVideoCall,
-                  icon: Icons.videocam_outlined,
-                  colorButton: theme.primaryColor.withOpacity(0.15),
-                  colorIcon: theme.primaryColor,
-                ),
-              ],
-              CustomButton(
-                onTap: logic.chatSetup,
-                icon: Icons.more_horiz,
-                colorButton: Colors.black.withOpacity(0.1),
-                colorIcon: const Color(0xFF6B7280),
-                margin: EdgeInsets.only(right: 10.w),
-              ),
-            ],
-            body: Column(
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Stack(
               children: [
-                _buildCuteMinimalistContent(
-                  child: WaterMarkBgView(
-                    text: '',
-                    path: logic.background.value,
-                    backgroundColor: const Color(0xFFFFFFFF),
-                    topView: _topNoticeView,
-                    bottomView: logic.isBanned
-                        ? ChatGroupBannedBox(
-                            text: StrRes.groupBannedMessage,
-                          )
-                        : ChatInputBox(
-                            key: logic.chatInputBoxStateKey,
-                            allAtMap: logic.atUserNameMappingMap,
-                            forceCloseToolboxSub: logic.forceCloseToolbox,
-                            controller: logic.inputCtrl,
-                            focusNode: logic.focusNode,
-                            enabled: !logic.isMuted,
-                            hintText: logic.hintText,
-                            inputFormatters: [
-                              AtTextInputFormatter(logic.openAtList)
-                            ],
-                            isMultiModel: logic.multiSelMode.value,
-                            isNotInGroup: logic.isInvalidGroup,
-                            quoteContent: logic.quoteContent.value,
-                            onClearQuote: () => logic.setQuoteMsg(null),
-                            onSend: (v) => logic.sendTextMsg(),
-                            onTapAlbum: logic.onTapAlbum,
-                            onTapCamera: logic.onTapCamera,
-                            onTapFile: logic.onTapFile,
-                            onTapCard: logic.onTapCarte,
-                            toolbox: ChatToolBox(
-                              onTapAlbum: logic.onTapAlbum,
-                              onTapCamera: logic.onTapCamera,
-                              onTapCard: logic.onTapCarte,
-                              onTapFile: logic.onTapFile,
-                              showAudioCall: logic.showAudioAndVideoCall,
-                              showVideoCall: logic.showAudioAndVideoCall,
-                              height: logic.keyboardHeight.value,
+                // 1. Gradient Header Background
+                Container(
+                  height: 160.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        primaryColor.withOpacity(0.8),
+                        primaryColor,
+                        primaryColor.withOpacity(0.9),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 2. Main Content (White Card)
+                Column(
+                  children: [
+                    SizedBox(height: 110.h),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(32.r)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, -5),
                             ),
-                            voiceRecordBar: bar,
-                            emojiView: Obx(
-                              () => ChatEmojiView(
-                                key: ValueKey(
-                                    'emoji_view_${logic.favoriteEmojiList.length}'),
-                                textEditingController: logic.inputCtrl,
-                                favoriteList: logic.favoriteEmojiList,
-                                onAddFavorite: logic.openEmojiPicker,
-                                onSelectedFavorite: (index, emoji) =>
-                                    logic.inputCtrl.text += emoji,
-                                height: logic.keyboardHeight.value,
-                              ),
-                            ),
-                            multiOpToolbox: ChatMultiSelToolbox(
-                              onDelete: logic.mergeDelete,
-                              onMergeForward: () => logic.forward(null),
-                            ),
-                            callbackKeyboardHeight: (double height) =>
-                                logic.keyboardHeight.value = height,
-                          ),
-                    child: AnimationLimiter(
-                      child: Stack(
-                        children: [
-                          ChatListView(
-                            onTouch: () => logic.closeToolbox(),
-                            itemCount: logic.messageList.length,
-                            controller: logic.scrollController,
-                            onScrollToBottomLoad: logic.onScrollToBottomLoad,
-                            onScrollToTop: logic.onScrollToTop,
-                            itemBuilder: (_, index) {
-                              final message = logic.indexOfMessage(index);
-                              if (logic.isMessageHidden(message)) {
-                                return const SizedBox.shrink();
-                              }
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 400),
-                                child: SlideAnimation(
-                                  curve: Curves.easeOutCubic,
-                                  verticalOffset: 40.0,
-                                  child: FadeInAnimation(
-                                    curve: Curves.easeOutCubic,
-                                    child: _buildItemView(message),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          if (logic.scrollingCacheMessageList.isNotEmpty)
-                            Positioned(
-                              bottom: 20,
-                              right: 16,
-                              child: GestureDetector(
-                                onTap: logic.onScrollBottom,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 12.h, horizontal: 16.w),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF4F42FF)
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFF9CA3AF)
-                                            .withOpacity(0.08),
-                                        offset: const Offset(0, 2),
-                                        blurRadius: 6,
-                                      ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(32.r)),
+                          child: WaterMarkBgView(
+                            text: '',
+                            path: logic.background.value,
+                            backgroundColor: const Color(0xFFFFFFFF),
+                            topView: _topNoticeView,
+                            bottomView: logic.isBanned
+                                ? ChatGroupBannedBox(
+                                    text: StrRes.groupBannedMessage,
+                                  )
+                                : ChatInputBox(
+                                    key: logic.chatInputBoxStateKey,
+                                    allAtMap: logic.atUserNameMappingMap,
+                                    forceCloseToolboxSub:
+                                        logic.forceCloseToolbox,
+                                    controller: logic.inputCtrl,
+                                    focusNode: logic.focusNode,
+                                    enabled: !logic.isMuted,
+                                    hintText: logic.hintText,
+                                    inputFormatters: [
+                                      AtTextInputFormatter(logic.openAtList)
                                     ],
-                                    border: Border.all(
-                                      color: const Color(0xFFF3F4F6),
-                                      width: 1,
+                                    isMultiModel: logic.multiSelMode.value,
+                                    isNotInGroup: logic.isInvalidGroup,
+                                    quoteContent: logic.quoteContent.value,
+                                    onClearQuote: () => logic.setQuoteMsg(null),
+                                    onSend: (v) => logic.sendTextMsg(),
+                                    onTapAlbum: logic.onTapAlbum,
+                                    onTapCamera: logic.onTapCamera,
+                                    onTapFile: logic.onTapFile,
+                                    onTapCard: logic.onTapCarte,
+                                    toolbox: ChatToolBox(
+                                      onTapAlbum: logic.onTapAlbum,
+                                      onTapCamera: logic.onTapCamera,
+                                      onTapCard: logic.onTapCarte,
+                                      onTapFile: logic.onTapFile,
+                                      showAudioCall:
+                                          logic.showAudioAndVideoCall,
+                                      showVideoCall:
+                                          logic.showAudioAndVideoCall,
+                                      height: logic.keyboardHeight.value,
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.keyboard_arrow_down,
-                                        color: const Color(0xFF4F42FF),
-                                        size: 18.w,
+                                    voiceRecordBar: bar,
+                                    emojiView: Obx(
+                                      () => ChatEmojiView(
+                                        key: ValueKey(
+                                            'emoji_view_${logic.favoriteEmojiList.length}'),
+                                        textEditingController: logic.inputCtrl,
+                                        favoriteList: logic.favoriteEmojiList,
+                                        onAddFavorite: logic.openEmojiPicker,
+                                        onSelectedFavorite: (index, emoji) =>
+                                            logic.inputCtrl.text += emoji,
+                                        height: logic.keyboardHeight.value,
                                       ),
-                                      6.horizontalSpace,
-                                      Text(
-                                        StrRes.newMessagesCount.replaceFirst(
-                                            '%s',
-                                            '${logic.scrollingCacheMessageList.length}'),
-                                        style: TextStyle(
-                                          fontFamily: 'FilsonPro',
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color(0xFF4F42FF),
+                                    ),
+                                    multiOpToolbox: ChatMultiSelToolbox(
+                                      onDelete: logic.mergeDelete,
+                                      onMergeForward: () => logic.forward(null),
+                                    ),
+                                    callbackKeyboardHeight: (double height) =>
+                                        logic.keyboardHeight.value = height,
+                                  ),
+                            child: AnimationLimiter(
+                              child: Stack(
+                                children: [
+                                  ChatListView(
+                                    onTouch: () => logic.closeToolbox(),
+                                    itemCount: logic.messageList.length,
+                                    controller: logic.scrollController,
+                                    onScrollToBottomLoad:
+                                        logic.onScrollToBottomLoad,
+                                    onScrollToTop: logic.onScrollToTop,
+                                    itemBuilder: (_, index) {
+                                      final message =
+                                          logic.indexOfMessage(index);
+                                      if (logic.isMessageHidden(message)) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return AnimationConfiguration
+                                          .staggeredList(
+                                        position: index,
+                                        duration: const Duration(
+                                            milliseconds: 400),
+                                        child: SlideAnimation(
+                                          curve: Curves.easeOutCubic,
+                                          verticalOffset: 40.0,
+                                          child: FadeInAnimation(
+                                            curve: Curves.easeOutCubic,
+                                            child: _buildItemView(message),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  if (logic
+                                      .scrollingCacheMessageList.isNotEmpty)
+                                    Positioned(
+                                      bottom: 20,
+                                      right: 16,
+                                      child: GestureDetector(
+                                        onTap: logic.onScrollBottom,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
+                                              horizontal: 16.w),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4F42FF)
+                                                .withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(16.r),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFF9CA3AF)
+                                                    .withOpacity(0.08),
+                                                offset: const Offset(0, 2),
+                                                blurRadius: 6,
+                                              ),
+                                            ],
+                                            border: Border.all(
+                                              color: const Color(0xFFF3F4F6),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color: const Color(0xFF4F42FF),
+                                                size: 18.w,
+                                              ),
+                                              6.horizontalSpace,
+                                              Text(
+                                                StrRes.newMessagesCount
+                                                    .replaceFirst(
+                                                        '%s',
+                                                        '${logic.scrollingCacheMessageList.length}'),
+                                                style: TextStyle(
+                                                  fontFamily: 'FilsonPro',
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  color:
+                                                      const Color(0xFF4F42FF),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
+                                    ),
+                                ],
                               ),
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // 3. Custom AppBar (Overlay)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 8.h),
+                      child: Row(
+                        children: [
+                          CustomButton(
+                            onTap: logic.multiSelMode.value
+                                ? logic.closeMultiSelMode
+                                : Get.back,
+                            icon: Icons.arrow_back_ios_new_rounded,
+                            colorIcon: Colors.white,
+                            colorButton: Colors.white.withOpacity(0.2),
+                            padding: EdgeInsets.all(10.w),
+                          ),
+                          12.horizontalSpace,
+                          Expanded(child: _userInfo()),
+                          if (logic.showAudioAndVideoCall) ...[
+                            CustomButton(
+                              margin: const EdgeInsets.only(right: 8),
+                              onTap: logic.onTapAudioCall,
+                              icon: Icons.call,
+                              colorButton: Colors.white.withOpacity(0.2),
+                              colorIcon: Colors.white,
+                              padding: EdgeInsets.all(10.w),
+                            ),
+                            CustomButton(
+                              margin: const EdgeInsets.only(right: 8),
+                              onTap: logic.onTapVideoCall,
+                              icon: Icons.videocam_outlined,
+                              colorButton: Colors.white.withOpacity(0.2),
+                              colorIcon: Colors.white,
+                              padding: EdgeInsets.all(10.w),
+                            ),
+                          ],
+                          CustomButton(
+                            onTap: logic.chatSetup,
+                            icon: Icons.more_horiz,
+                            colorButton: Colors.white.withOpacity(0.2),
+                            colorIcon: Colors.white,
+                            padding: EdgeInsets.all(10.w),
+                          ),
                         ],
                       ),
                     ),
@@ -497,28 +576,21 @@ class ChatPage extends StatelessWidget {
     );
   }
 
-  Row _userInfo() {
+  Widget _userInfo() {
     return Row(
       children: [
         Stack(
           children: [
             Container(
-              margin: const EdgeInsets.only(bottom: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF9CA3AF).withOpacity(0.1),
-                    offset: const Offset(0, 2),
-                    blurRadius: 8,
-                  ),
-                ],
+                border: Border.all(color: Colors.white, width: 2.w),
               ),
               child: GestureDetector(
                 onTap: !logic.multiSelMode.value ? logic.chatSetup : null,
                 child: AvatarView(
-                  width: 48.w,
-                  height: 48.h,
+                  width: 42.w,
+                  height: 42.h,
                   url: logic.faceUrl.value,
                   text: logic.nickname.value,
                   isCircle: true,
@@ -534,7 +606,7 @@ class ChatPage extends StatelessWidget {
             ),
           ],
         ),
-        16.horizontalSpace,
+        12.horizontalSpace,
         Expanded(
           child: GestureDetector(
             onTap: logic.onClickTitle,
@@ -550,20 +622,23 @@ class ChatPage extends StatelessWidget {
                           fontFamily: 'FilsonPro',
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w700,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (logic.memberStr.isNotEmpty)
-                      Text(
-                        logic.memberStr,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF6B7280),
+                      Padding(
+                        padding: EdgeInsets.only(left: 8.w),
+                        child: Text(
+                          logic.memberStr,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
                         ),
                       ),
                   ],
@@ -582,7 +657,7 @@ class ChatPage extends StatelessWidget {
                                     .toLowerCase()
                                     .contains(StrRes.online.toLowerCase())
                                 ? const Color(0xFF34D399)
-                                : const Color.fromARGB(255, 138, 148, 144),
+                                : Colors.white.withOpacity(0.6),
                           ),
                         ),
                         Flexible(
@@ -592,7 +667,7 @@ class ChatPage extends StatelessWidget {
                               fontFamily: 'FilsonPro',
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF6B7280),
+                              color: Colors.white.withOpacity(0.8),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

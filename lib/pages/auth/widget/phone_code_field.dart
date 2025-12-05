@@ -129,7 +129,7 @@ class _CodeSendButton extends StatelessWidget {
           style: TextButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             backgroundColor: canSend
-                ? const Color(0xFF3B82F6)
+                ? Theme.of(context).primaryColor
                 : const Color(0xFF9CA3AF).withOpacity(0.3),
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(

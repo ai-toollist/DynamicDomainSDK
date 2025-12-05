@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:search_keyword_text/search_keyword_text.dart';
@@ -64,25 +65,15 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
           alignment: Alignment.topCenter,
           children: [
             // 1. Header Background
-            Container(
-              height: 150.h,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor.withOpacity(0.7),
-                    primaryColor,
-                    primaryColor.withOpacity(0.9),
-                  ],
-                ),
-              ),
+            GradientHeader.main(
+              title: StrRes.globalSearch,
+              subtitle: "",
+              height: 150,
             ),
 
             // 2. Main Content Card
             Container(
-              margin: EdgeInsets.only(top: 90.h),
+              margin: EdgeInsets.only(top: 120.h),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
@@ -96,7 +87,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 40.h), // Space for Search Box overlap
+                  SizedBox(height: 50.h), // Space for Search Box overlap
 
                   // Tab Bar
                   TabBar(
@@ -166,7 +157,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
 
             // 3. Search Box (Overlapping)
             Positioned(
-              top: 50.h,
+              top: 90.h,
               left: 20.w,
               right: 20.w,
               child: Container(

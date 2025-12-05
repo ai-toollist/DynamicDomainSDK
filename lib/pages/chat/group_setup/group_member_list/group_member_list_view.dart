@@ -9,8 +9,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:openim/widgets/base_page.dart';
 import 'package:openim/widgets/custom_buttom.dart';
+import 'package:openim/widgets/gradient_header.dart';
 
 import 'group_member_list_logic.dart';
 
@@ -22,288 +22,245 @@ class GroupMemberListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => BasePage(
-          showAppBar: true,
-          centerTitle: false,
-          showLeading: true,
-          customAppBar: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(() => Scaffold(
+          backgroundColor: Colors.white,
+          body: Stack(
+            alignment: Alignment.topCenter,
             children: [
-              Text(
-                logic.opType == GroupMemberOpType.del
+              // 1. Header Background
+              GradientHeader(
+                leading: Row(children: [
+                      IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () => Get.back(),
+                    ),
+                     Text(
+                     logic.opType == GroupMemberOpType.del
                     ? StrRes.removeGroupMember
                     : StrRes.groupMember,
-                style: const TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 23,
-                  color: Colors.black,
-                ).copyWith(fontSize: 23.sp),
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20.sp,
+                        color: Colors.white,
+                      ),
+                    ) 
+                    ],),
+                trailing: logic.opType == GroupMemberOpType.view
+                    ? PopButton(
+                        popCtrl: logic.poController,
+                        horizontalMargin: 1.w,
+                        menus: [
+                          PopMenuInfo(
+                              text: StrRes.addMember, onTap: logic.addMember),
+                          if (logic.isOwnerOrAdmin)
+                            PopMenuInfo(
+                                text: StrRes.delMember, onTap: logic.delMember),
+                        ],
+                        child: CustomButton(
+                          onTap: () => logic.poController.showMenu(),
+                          icon: Ionicons.ellipsis_horizontal,
+                          colorButton: Colors.white.withOpacity(0.3),
+                          colorIcon: Colors.white,
+                        ),
+                      )
+                    : null,
+                height: 210,
               ),
-              Text(
-                StrRes.manageGroupMembers,
-                style: const TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFBDBDBD),
-                ).copyWith(fontSize: 12.sp),
+
+              // 2. Main Content Card
+              Container(
+                margin: EdgeInsets.only(top: 140.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                  child: _buildContentContainer(),
+                ),
+              ),
+
+              // 3. Search Box (Overlapping)
+              Positioned(
+                top: 100.h,
+                left: 20.w,
+                right: 20.w,
+                child: Container(
+                  height: 56.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      16.horizontalSpace,
+                      Icon(
+                        Ionicons.search,
+                        size: 24.w,
+                        color: const Color(0xFF9CA3AF),
+                      ),
+                      12.horizontalSpace,
+                      Expanded(
+                        child: TextField(
+                          controller: logic.searchCtrl,
+                          focusNode: logic.focusNode,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF374151),
+                          ),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: StrRes.search,
+                            hintStyle: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onSubmitted: (_) => logic.search(),
+                          onChanged: (_) {
+                            if (logic.searchCtrl.text.trim().isNotEmpty) {
+                              logic.search();
+                            } else {
+                              logic.clearSearch();
+                            }
+                          },
+                        ),
+                      ),
+                      if (logic.searchCtrl.text.isNotEmpty)
+                        GestureDetector(
+                          onTap: () {
+                            logic.searchCtrl.clear();
+                            logic.clearSearch();
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 16.w),
+                            child: Icon(
+                              Icons.close,
+                              size: 20.w,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-          actions: logic.opType == GroupMemberOpType.view
-              ? [
-                  CustomButton(
-                    margin: EdgeInsets.only(right: 10.w, top: 6.h, bottom: 6.h),
-                    onTap: () => logic.poController.showMenu(),
-                    icon: Ionicons.ellipsis_horizontal,
-                    colorButton: Colors.white.withOpacity(0.3),
-                    colorIcon: Colors.white,
-                  ),
-                  PopButton(
-                    popCtrl: logic.poController,
-                    horizontalMargin: 1.w,
-                    menus: [
-                      PopMenuInfo(
-                          text: StrRes.addMember, onTap: logic.addMember),
-                      if (logic.isOwnerOrAdmin)
-                        PopMenuInfo(
-                            text: StrRes.delMember, onTap: logic.delMember),
-                    ],
-                    child: const SizedBox(),
-                  ),
-                ]
-              : null,
-          body: _buildContentContainer(),
         ));
   }
 
   Widget _buildContentContainer() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.08),
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: AnimationLimiter(
-          child: Column(
-            children: [
-              // Search Box Section
-              AnimationConfiguration.staggeredList(
-                position: 0,
-                duration: const Duration(milliseconds: 400),
-                child: SlideAnimation(
-                  curve: Curves.easeOutCubic,
-                  verticalOffset: 40.0,
-                  child: FadeInAnimation(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: logic.search,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 14.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF9FAFB),
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    const Color(0xFF9CA3AF).withOpacity(0.06),
-                                offset: const Offset(0, 2),
-                                blurRadius: 6.r,
-                              ),
-                            ],
-                            border: Border.all(
-                              color: const Color(0xFFF3F4F6),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Ionicons.search,
-                                size: 20.w,
-                                color: const Color(0xFF6B7280),
-                              ),
-                              12.horizontalSpace,
-                              Text(
-                                StrRes.search,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+    return Column(
+      children: [
+        SizedBox(height: 40.h),
 
-              16.verticalSpace,
-
-              // @Everyone option for group at
-              if (logic.isOwnerOrAdmin && logic.isShowEveryone)
-                AnimationConfiguration.staggeredList(
-                  position: 1,
-                  duration: const Duration(milliseconds: 400),
-                  child: SlideAnimation(
-                    curve: Curves.easeOutCubic,
-                    verticalOffset: 40.0,
-                    child: FadeInAnimation(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: logic.selectEveryone,
-                          borderRadius: BorderRadius.circular(16.r),
-                          child: logic.isOwnerOrAdmin &&
-                                  logic.isShowEveryone &&
-                                  logic.opType == GroupMemberOpType.at
-                              ? Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w, vertical: 16.h),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 42.w,
-                                        height: 42.w,
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xFF3B82F6),
-                                              Color(0xFF1D4ED8)
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.r),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(0xFF3B82F6)
-                                                  .withOpacity(0.25),
-                                              offset: const Offset(0, 2),
-                                              blurRadius: 8,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '@',
-                                            style: TextStyle(
-                                              fontFamily: 'FilsonPro',
-                                              fontSize: 20.sp,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      16.horizontalSpace,
-                                      Text(
-                                        StrRes.everyone,
-                                        style: TextStyle(
-                                          fontFamily: 'FilsonPro',
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: const Color(0xFF374151),
-                                        ),
+        // @Everyone option for group at
+        if (logic.isOwnerOrAdmin && logic.isShowEveryone)
+          AnimationConfiguration.staggeredList(
+            position: 1,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              curve: Curves.easeOutCubic,
+              verticalOffset: 40.0,
+              child: FadeInAnimation(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: logic.selectEveryone,
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: logic.isOwnerOrAdmin &&
+                            logic.isShowEveryone &&
+                            logic.opType == GroupMemberOpType.at
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 16.h),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 42.w,
+                                  height: 42.w,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF3B82F6),
+                                        Color(0xFF1D4ED8)
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.circular(12.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF3B82F6)
+                                            .withOpacity(0.25),
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 8,
                                       ),
                                     ],
                                   ),
-                                )
-                              : const SizedBox(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-              // Member List
-              Flexible(
-                child: SmartRefresher(
-                  controller: logic.controller,
-                  onLoading: logic.onLoad,
-                  enablePullDown: false,
-                  enablePullUp: true,
-                  header: IMViews.buildHeader(),
-                  footer: IMViews.buildFooter(),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: AnimationLimiter(
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: logic.memberList.length,
-                        itemBuilder: (_, index) =>
-                            AnimationConfiguration.staggeredList(
-                          position: index + 2,
-                          duration: const Duration(milliseconds: 400),
-                          child: SlideAnimation(
-                            curve: Curves.easeOutCubic,
-                            verticalOffset: 40.0,
-                            child: FadeInAnimation(
-                              child: Obx(
-                                () => Column(
-                                  children: [
-                                    _buildItemView(
-                                      logic.memberList[index],
-                                      showDivider:
-                                          index != logic.memberList.length - 1,
-                                      isFirst: index == 0,
-                                      isLast:
-                                          index == logic.memberList.length - 1,
-                                    ),
-                                    if (index != logic.memberList.length - 1)
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: logic.isMultiSelMode
-                                                ? 90.w
-                                                : 74.w),
-                                        child: Container(
-                                          height: 1,
-                                          color: const Color(0xFFF3F4F6),
-                                        ),
+                                  child: Center(
+                                    child: Text(
+                                      '@',
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
                                       ),
-                                  ],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                16.horizontalSpace,
+                                Text(
+                                  StrRes.everyone,
+                                  style: TextStyle(
+                                    fontFamily: 'FilsonPro',
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
+                          )
+                        : const SizedBox(),
                   ),
                 ),
               ),
-
-              // Bottom confirm section for multi-select mode
-              if (logic.isMultiSelMode) _buildCheckedConfirmView(),
-            ],
+            ),
           ),
+
+        // Member List
+        Flexible(
+          child: _buildMemberListWithEmptyState(),
         ),
-      ),
+
+        // Bottom confirm section for multi-select mode
+        if (logic.isMultiSelMode) _buildCheckedConfirmView(),
+      ],
     );
   }
 
@@ -422,6 +379,71 @@ class GroupMemberListPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildMemberListWithEmptyState() => Obx(
+        () => logic.isSearching.value && logic.isSearchNotResult
+            ? Center(
+                child: Text(
+                  StrRes.searchNotFound,
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                ),
+              )
+            : _buildMemberListView(),
+      );
+
+  Widget _buildMemberListView() => SmartRefresher(
+        controller: logic.controller,
+        onLoading: logic.onLoad,
+        enablePullDown: false,
+        enablePullUp: !logic.isSearching.value,
+        header: IMViews.buildHeader(),
+        footer: IMViews.buildFooter(),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16.r),
+          child: AnimationLimiter(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: logic.displayList.length,
+              itemBuilder: (_, index) => AnimationConfiguration.staggeredList(
+                position: index + 2,
+                duration: const Duration(milliseconds: 400),
+                child: SlideAnimation(
+                  curve: Curves.easeOutCubic,
+                  verticalOffset: 40.0,
+                  child: FadeInAnimation(
+                    child: Obx(
+                      () => Column(
+                        children: [
+                          _buildItemView(
+                            logic.displayList[index],
+                            showDivider: index != logic.displayList.length - 1,
+                            isFirst: index == 0,
+                            isLast: index == logic.displayList.length - 1,
+                          ),
+                          if (index != logic.displayList.length - 1)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: logic.isMultiSelMode ? 90.w : 74.w),
+                              child: Container(
+                                height: 1,
+                                color: const Color(0xFFF3F4F6),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
 
   Widget _buildCheckedConfirmView() => Container(
         constraints: BoxConstraints(
@@ -664,7 +686,7 @@ class SelectedMemberListView extends StatelessWidget {
                         curve: Curves.easeOutCubic,
                         verticalOffset: 40.0,
                         child: FadeInAnimation(
-                          child: _buildItemView(
+                          child: _buildCheckedItemView(
                             logic.checkedList[index],
                             isLast: index == logic.checkedList.length - 1,
                           ),
@@ -679,7 +701,7 @@ class SelectedMemberListView extends StatelessWidget {
     );
   }
 
-  Widget _buildItemView(GroupMembersInfo membersInfo, {bool isLast = false}) =>
+  Widget _buildCheckedItemView(GroupMembersInfo membersInfo, {bool isLast = false}) =>
       Material(
         color: Colors.transparent,
         child: InkWell(
@@ -766,3 +788,7 @@ class SelectedMemberListView extends StatelessWidget {
         ),
       );
 }
+
+
+
+

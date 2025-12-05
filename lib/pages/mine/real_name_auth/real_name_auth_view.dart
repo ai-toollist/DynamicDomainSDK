@@ -9,6 +9,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/constants/app_color.dart';
 import 'package:openim/widgets/custom_buttom.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:openim/pages/auth/widget/app_text_button.dart';
 import 'real_name_auth_logic.dart';
@@ -20,88 +21,69 @@ class RealNameAuthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
           // 1. Header Background
-          Container(
-            height: 200.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  primaryColor.withOpacity(0.7),
-                  primaryColor,
-                  primaryColor.withOpacity(0.9),
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          GradientHeader.custom(
+            height: 200,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () => Get.back(),
-                          behavior: HitTestBehavior.translucent,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.w),
-                            child: Icon(
-                              Icons.arrow_back_ios,
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      behavior: HitTestBehavior.translucent,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.w),
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                          size: 20.sp,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            StrRes.realNameAuth,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 24.sp,
                               color: Colors.white,
-                              size: 20.sp,
+                              height: 1.2,
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                StrRes.realNameAuth,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 24.sp,
-                                  color: Colors.white,
-                                  height: 1.2,
-                                ),
-                              ),
-                              6.verticalSpace,
-                              Text(
-                                StrRes.identityVerification,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13.sp,
-                                  color: Colors.white.withOpacity(0.85),
-                                ),
-                              ),
-                            ],
+                          6.verticalSpace,
+                          Text(
+                            StrRes.identityVerification,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13.sp,
+                              color: Colors.white.withOpacity(0.85),
+                            ),
                           ),
-                        ),
-                        10.horizontalSpace,
-                        CustomButton(
-                          icon: CupertinoIcons.refresh,
-                          onTap: logic.loadAuthInfo,
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                    10.horizontalSpace,
+                    CustomButton(
+                      icon: CupertinoIcons.refresh,
+                      onTap: logic.loadAuthInfo,
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
 

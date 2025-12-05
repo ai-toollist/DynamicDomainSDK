@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../widgets/custom_buttom.dart';
+import '../../widgets/gradient_header.dart';
 import '../../../widgets/menu_item_widgets.dart';
 import 'mine_logic.dart';
 
@@ -27,37 +28,9 @@ class MinePage extends StatelessWidget {
           alignment: Alignment.topCenter,
           children: [
             // 1. Header Background
-            Container(
-              height: 180.h,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor.withOpacity(0.7),
-                    primaryColor,
-                    primaryColor.withOpacity(0.9),
-                  ],
-                ),
-              ),
-              child: SafeArea(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 12.h,left: 16.h),
-                    child: Text(
-                      StrRes.mine,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            GradientHeader(
+              title: StrRes.mine,
+              height: 180,
             ),
             // 2. Main Content Card
             Container(
@@ -131,16 +104,22 @@ class MinePage extends StatelessWidget {
                           icon: CupertinoIcons.qrcode,
                           label: StrRes.qrcode,
                           onTap: logic.viewMyQrcode,
+                          colorButton: primaryColor.withOpacity(.15),
+                          colorIcon: primaryColor,
                         ),
                         CustomButton(
                           icon: CupertinoIcons.person,
                           label: StrRes.information,
                           onTap: logic.viewMyInfo,
+                          colorButton: primaryColor.withOpacity(.15),
+                          colorIcon: primaryColor,
                         ),
                         CustomButton(
                           icon: CupertinoIcons.settings,
                           label: StrRes.settings,
                           onTap: logic.accountSetup,
+                          colorButton: primaryColor.withOpacity(.15),
+                          colorIcon: primaryColor,
                         ),
                       ],
                     ),

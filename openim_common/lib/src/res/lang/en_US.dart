@@ -532,6 +532,7 @@ const Map<String, String> en_US = {
   "mergeForward": "Merge Forward",
   "quicklyFindChatHistory": "Quickly find chat history",
   "notFoundChatHistory": "No \"%s\" related content found",
+  "globalSearch": "Global Search",
   "globalSearchAll": "All",
   "globalSearchContacts": "Contacts",
   "globalSearchGroup": "Groups",

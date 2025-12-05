@@ -511,6 +511,7 @@ const Map<String, String> zh_CN = {
   "mergeForward": "合并转发",
   "quicklyFindChatHistory": "快速查找聊天记录",
   "notFoundChatHistory": "没有找到\"%s\"相关内容",
+  "globalSearch": "全局搜索",
   "globalSearchAll": "综合",
   "globalSearchContacts": "联系人",
   "globalSearchGroup": "群组",

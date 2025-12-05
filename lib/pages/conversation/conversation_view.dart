@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import 'package:openim/core/controller/im_controller.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -49,72 +50,13 @@ class _ConversationPageState extends State<ConversationPage> {
             alignment: Alignment.topCenter,
             children: [
               // 1. Header Background
-              Container(
-                height: 210.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      primaryColor.withOpacity(0.7),
-                      primaryColor,
-                      primaryColor.withOpacity(0.9),
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${logic.titleText} (${logic.conversationCount.value})',
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 24.sp,
-                                color: Colors.white,
-                              ),
-                            ),
-                            GestureDetector(
-                              key: _newButtonKey,
-                              onTap: () => _showActionPopup(),
-                              child: Container(
-                                padding: EdgeInsets.all(8.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Icon(
-                                  Icons.grid_view,
-                                  color: Colors.white,
-                                  size: 20.w,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        4.verticalSpace,
-                        Obx(
-                          () => Text(
-                            logic.getUnreadText,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14.sp,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              GradientHeader.main(
+                title:
+                    '${logic.titleText} (${logic.conversationCount.value})',
+                subtitle: logic.getUnreadText,
+                trailing: HeaderActionButton(
+                  buttonKey: _newButtonKey,
+                  onTap: _showActionPopup,
                 ),
               ),
 

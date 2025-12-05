@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_buttom.dart';
+import '../../../widgets/gradient_header.dart';
 import 'user_profile _panel_logic.dart';
 
 class UserProfilePanelPage extends StatelessWidget {
@@ -17,8 +18,6 @@ class UserProfilePanelPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -27,20 +26,9 @@ class UserProfilePanelPage extends StatelessWidget {
           alignment: Alignment.topCenter,
           children: [
             // 1. Header Background
-            Container(
-              height: 180.h,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor.withOpacity(0.7),
-                    primaryColor,
-                    primaryColor.withOpacity(0.9),
-                  ],
-                ),
-              ),
+            const GradientHeader(
+              height: 180,
+              showSafeArea: false,
             ),
 
             // 2. Main Content Card

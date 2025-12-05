@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_buttom.dart';
+import '../../../widgets/gradient_header.dart';
 import '../../../widgets/menu_item_widgets.dart';
 import 'chat_setup_logic.dart';
 
@@ -27,20 +28,9 @@ class ChatSetupPage extends StatelessWidget {
           alignment: Alignment.topCenter,
           children: [
             // 1. Header Background
-            Container(
-              height: 180.h,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor.withOpacity(0.7),
-                    primaryColor,
-                    primaryColor.withOpacity(0.9),
-                  ],
-                ),
-              ),
+            const GradientHeader(
+              height: 180,
+              showSafeArea: false,
             ),
 
             // 2. Main Content Card

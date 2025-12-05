@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 import '../../../widgets/custom_buttom.dart';
+import '../../../widgets/gradient_header.dart';
 import '../../../widgets/menu_item_widgets.dart';
 import 'group_setup_logic.dart';
 
@@ -33,20 +34,9 @@ class GroupSetupPage extends StatelessWidget {
                 Column(
                   children: [
                     // 1. Header Background
-                    Container(
-                      height: 190.h,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            primaryColor.withOpacity(0.7),
-                            primaryColor,
-                            primaryColor.withOpacity(0.9),
-                          ],
-                        ),
-                      ),
+                    const GradientHeader(
+                      height: 190,
+                      showSafeArea: false,
                     ),
 
                     // 2. Main Content Card

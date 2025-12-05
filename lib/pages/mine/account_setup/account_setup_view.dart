@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:hugeicons/hugeicons.dart';
 
+import '../../../widgets/gradient_header.dart';
 import '../../../widgets/settings_menu.dart';
 import '../../../widgets/section_title.dart';
 import 'account_setup_logic.dart';
@@ -18,66 +19,31 @@ class AccountSetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
           // 1. Header Background
-          Container(
-            height: 180.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  primaryColor.withOpacity(0.8),
-                  primaryColor,
-                  primaryColor.withOpacity(0.95),
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          padding: EdgeInsets.all(8.w),
-                          color: Colors.transparent,
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                            size: 20.w,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          StrRes.accountSetup,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20.sp,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 36.w), // Balance the back button
-                    ],
-                  ),
+          GradientHeader(
+            leading: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () => Get.back(),
                 ),
-              ),
+                Text(
+                  StrRes.accountSetup,
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20.sp,
+                    color: Colors.white,
+                  ),
+                )
+              ],
             ),
+            height: 150,
           ),
 
           // 2. Main Content
@@ -258,4 +224,3 @@ class AccountSetupPage extends StatelessWidget {
     );
   }
 }
-

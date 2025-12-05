@@ -996,6 +996,8 @@ class StrRes {
 
   static String get notFoundChatHistory => 'notFoundChatHistory'.tr;
 
+  static String get globalSearch => 'globalSearch'.tr;
+
   static String get globalSearchAll => 'globalSearchAll'.tr;
 
   static String get globalSearchContacts => 'globalSearchContacts'.tr;

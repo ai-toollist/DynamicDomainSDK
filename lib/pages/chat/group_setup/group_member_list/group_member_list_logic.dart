@@ -26,10 +26,14 @@ class GroupMemberListLogic extends GetxController {
   final groupSetupLogic = Get.find<GroupSetupLogic>();
   final controller = RefreshController();
   final memberList = <GroupMembersInfo>[].obs;
+  final searchResults = <GroupMembersInfo>[].obs;
   final checkedList = <GroupMembersInfo>[].obs;
   final poController = CustomPopupMenuController();
+  final searchCtrl = TextEditingController();
+  final focusNode = FocusNode();
   int count = 500;
   final myGroupMemberLevel = 1.obs;
+  final isSearching = false.obs;
   late GroupInfo groupInfo;
   late GroupMemberOpType opType;
   late StreamSubscription mISub;
@@ -64,6 +68,8 @@ class GroupMemberListLogic extends GetxController {
   @override
   void onClose() {
     mISub.cancel();
+    searchCtrl.dispose();
+    focusNode.dispose();
     super.onClose();
   }
 
@@ -222,6 +228,36 @@ class GroupMemberListLogic extends GetxController {
   }
 
   void search() async {
+    final key = searchCtrl.text.trim();
+    if (key.isNotEmpty) {
+      final list = await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.groupManager.searchGroupMembers(
+          groupID: groupInfo.groupID,
+          isSearchMemberNickname: true,
+          isSearchUserID: true,
+          keywordList: [key],
+          offset: 0,
+          count: 100,
+        ),
+      );
+      searchResults.assignAll(list);
+      isSearching.value = true;
+    }
+  }
+
+  void clearSearch() {
+    searchCtrl.clear();
+    searchResults.clear();
+    isSearching.value = false;
+  }
+
+  bool get isSearchNotResult =>
+      searchCtrl.text.trim().isNotEmpty && searchResults.isEmpty;
+
+  List<GroupMembersInfo> get displayList =>
+      isSearching.value ? searchResults : memberList;
+
+  void _oldSearch() async {
     final memberInfo = await AppNavigator.startSearchGroupMember(
         groupInfo: groupInfo, opType: opType, isOwnerOrAdmin: isOwnerOrAdmin);
     if (opType == GroupMemberOpType.transferRight) {

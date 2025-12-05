@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/widgets/friend_item_view.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
@@ -30,8 +31,8 @@ enum GroupFilterType { all, myGroup, joinedGroup }
 
 class _ContactsPageState extends State<ContactsPage>
     with TickerProviderStateMixin {
-  final logic = Get.find<ContactsLogic>();
-  final groupListLogic = Get.find<GroupListLogic>();
+  late final ContactsLogic logic;
+  late final GroupListLogic groupListLogic;
   late TabController _tabController;
   final GlobalKey _newButtonKey = GlobalKey();
   GroupFilterType _selectedGroupFilter = GroupFilterType.all;
@@ -39,6 +40,8 @@ class _ContactsPageState extends State<ContactsPage>
   @override
   void initState() {
     super.initState();
+    logic = Get.find<ContactsLogic>();
+    groupListLogic = Get.find<GroupListLogic>();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -58,73 +61,15 @@ class _ContactsPageState extends State<ContactsPage>
         alignment: Alignment.topCenter,
         children: [
           // 1. Header Background
-          Container(
-            height: 210.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  primaryColor.withOpacity(0.7),
-                  primaryColor,
-                  primaryColor.withOpacity(0.9),
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          StrRes.contacts,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 24.sp,
-                            color: Colors.white,
-                          ),
-                        ),
-                        GestureDetector(
-                          key: _newButtonKey,
-                          onTap: () => _showActionPopup(),
-                          child: Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Icon(
-                              Icons.grid_view,
-                              color: Colors.white,
-                              size: 20.w,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    4.verticalSpace,
-                    Obx(
-                      () => Text(
-                        '${StrRes.friends}: ${logic.friendListLogic.friendList.length}, ${StrRes.groups}: ${groupListLogic.createdList.length + groupListLogic.joinedList.length}',
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.sp,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                      ),
-                    ),
-                  ],
+          Obx(() => GradientHeader.main(
+                title: StrRes.contacts,
+                subtitle:
+                    '${StrRes.friends}: ${logic.friendListLogic.friendList.length}, ${StrRes.groups}: ${groupListLogic.createdList.length + groupListLogic.joinedList.length}',
+                trailing: HeaderActionButton(
+                  buttonKey: _newButtonKey,
+                  onTap: _showActionPopup,
                 ),
-              ),
-            ),
-          ),
+              )),
 
           // 2. Main Content Card
           Container(

@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,13 +10,13 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/constants/app_color.dart';
+import 'package:openim/widgets/gradient_header.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:search_keyword_text/search_keyword_text.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'search_chat_history_logic.dart';
-import '../../../../widgets/base_page.dart';
 
 class SearchChatHistoryPage extends StatelessWidget {
   final logic = Get.find<SearchChatHistoryLogic>();
@@ -26,64 +27,175 @@ class SearchChatHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TouchCloseSoftKeyboard(
-      child: BasePage(
-        showAppBar: true,
-        centerTitle: false,
-        showLeading: true,
-        customAppBar: Container(
-          height: 140.h,
-          //padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              8.verticalSpace,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            // 1. Header Background
+            const GradientHeader(
+              height: 210,
+              showSafeArea: false,
+            ),
+            // 2. Main Content Card
+            Container(
+              margin: EdgeInsets.only(top: 130.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 40.h), // Space for Search Box overlap
+                  Expanded(child: _buildContentContainer()),
+                ],
+              ),
+            ),
+            // 3. Search Box (Overlapping)
+            Positioned(
+              top: 90.h,
+              left: 20.w,
+              right: 20.w,
+              child: Row(
                 children: [
                   Expanded(
-                    child: WechatStyleSearchBox(
-                      controller: logic.searchCtrl,
-                      focusNode: logic.focusNode,
-                      hintText: StrRes.search,
-                      enabled: true,
-                      autofocus: true,
-                      onChanged: logic.onChanged,
-                      onSubmitted: (_) => logic.search(),
-                      onCleared: () {
-                        logic.clearInput();
-                        logic.focusNode.requestFocus();
-                      },
-                      margin: EdgeInsets.zero,
-                      backgroundColor: const Color(0xFFFFFFFF),
-                      searchIconColor: AppColor.iconColor,
+                    child: Container(
+                      height: 56.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          16.horizontalSpace,
+                          HugeIcon(
+                            icon: HugeIcons.strokeRoundedSearch01,
+                            size: 24.w,
+                            color: const Color(0xFF9CA3AF),
+                          ),
+                          12.horizontalSpace,
+                          Expanded(
+                            child: TextField(
+                              controller: logic.searchCtrl,
+                              focusNode: logic.focusNode,
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF374151),
+                              ),
+                              decoration: InputDecoration(
+                                hintText: StrRes.search,
+                                hintStyle: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xFF9CA3AF),
+                                ),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              textInputAction: TextInputAction.search,
+                              onSubmitted: (_) => logic.search(),
+                              onChanged: (v) {
+                                logic.onChanged(v);
+                              },
+                            ),
+                          ),
+                          Obx(() => logic.searchKey.value.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    logic.clearInput();
+                                    logic.focusNode.requestFocus();
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12.w),
+                                    child: Icon(
+                                      CupertinoIcons.clear_circled_solid,
+                                      size: 20.w,
+                                      color: const Color(0xFF9CA3AF),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(width: 16.w)),
+                        ],
+                      ),
                     ),
                   ),
-                  8.horizontalSpace,
+                  12.horizontalSpace,
                   // Calendar button
                   GestureDetector(
                     onTap: () => datePicker(context),
                     child: Container(
-                      width: 30.w,
-                      height: 30.h,
+                      width: 56.h,
+                      height: 56.h,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4F42FF).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12.r),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      child: HugeIcon(
-                        icon: HugeIcons.strokeRoundedCalendar03,
-                        size: 18.w,
-                        color: AppColor.iconColor,
+                      child: Center(
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedCalendar03,
+                          size: 24.w,
+                          color: AppColor.iconColor,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              8.verticalSpace,
-            ],
-          ),
+            ),
+           // 4. Custom AppBar
+            Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    automaticallyImplyLeading: false,
+                    title: Row(children: [
+                      IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () => Get.back(),
+                    ),
+                     Text(
+                      StrRes.globalSearchChatHistory,
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20.sp,
+                        color: Colors.white,
+                      ),
+                    ) 
+                    ],),
+                  ),
+                ),
+          
+          ],
         ),
-        body: _buildContentContainer(),
       ),
     );
   }
@@ -92,21 +204,7 @@ class SearchChatHistoryPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.08),
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
+      // decoration removed as it is handled by the parent container
       child: Builder(
         builder: (context) => Obx(() => logic.isNotKey && logic.isNotDate
             ? SingleChildScrollView(
@@ -279,10 +377,8 @@ class SearchChatHistoryPage extends StatelessWidget {
               child: FadeInAnimation(child: widget),
             ),
             children: [
-              20.verticalSpace,
               _buildSectionTitle(StrRes.quicklyFindChatHistory),
               _buildQuickActionsSection(),
-              24.verticalSpace,
             ],
           ),
         ),

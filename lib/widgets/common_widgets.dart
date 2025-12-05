@@ -7,7 +7,7 @@ library common_widgets;
 
 // Layout & Scaffolds
 export 'gradient_header.dart';
-export 'gradient_scaffold.dart';
+// export 'gradient_scaffold.dart'; // Deprecated: GradientScaffold is now in gradient_header.dart
 export 'profile_page_scaffold.dart';
 export 'main_content_card.dart';
 

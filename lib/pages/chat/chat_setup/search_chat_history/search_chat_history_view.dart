@@ -27,176 +27,118 @@ class SearchChatHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TouchCloseSoftKeyboard(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // 1. Header Background
-            const GradientHeader(
-              height: 210,
-              showSafeArea: false,
+      child: GradientScaffold(
+        title: StrRes.globalSearchChatHistory,
+        showBackButton: true,
+        searchBox: _buildSearchBox(context),
+        body: _buildContentContainer(),
+      ),
+    );
+  }
+
+  Widget _buildSearchBox(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 56.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
-            // 2. Main Content Card
-            Container(
-              margin: EdgeInsets.only(top: 130.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 40.h), // Space for Search Box overlap
-                  Expanded(child: _buildContentContainer()),
-                ],
-              ),
-            ),
-            // 3. Search Box (Overlapping)
-            Positioned(
-              top: 90.h,
-              left: 20.w,
-              right: 20.w,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 56.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          16.horizontalSpace,
-                          HugeIcon(
-                            icon: HugeIcons.strokeRoundedSearch01,
-                            size: 24.w,
-                            color: const Color(0xFF9CA3AF),
-                          ),
-                          12.horizontalSpace,
-                          Expanded(
-                            child: TextField(
-                              controller: logic.searchCtrl,
-                              focusNode: logic.focusNode,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xFF374151),
-                              ),
-                              decoration: InputDecoration(
-                                hintText: StrRes.search,
-                                hintStyle: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFF9CA3AF),
-                                ),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                              textInputAction: TextInputAction.search,
-                              onSubmitted: (_) => logic.search(),
-                              onChanged: (v) {
-                                logic.onChanged(v);
-                              },
-                            ),
-                          ),
-                          Obx(() => logic.searchKey.value.isNotEmpty
-                              ? GestureDetector(
-                                  onTap: () {
-                                    logic.clearInput();
-                                    logic.focusNode.requestFocus();
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.all(12.w),
-                                    child: Icon(
-                                      CupertinoIcons.clear_circled_solid,
-                                      size: 20.w,
-                                      color: const Color(0xFF9CA3AF),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(width: 16.w)),
-                        ],
-                      ),
+            child: Row(
+              children: [
+                16.horizontalSpace,
+                HugeIcon(
+                  icon: HugeIcons.strokeRoundedSearch01,
+                  size: 24.w,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                12.horizontalSpace,
+                Expanded(
+                  child: TextField(
+                    controller: logic.searchCtrl,
+                    focusNode: logic.focusNode,
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF374151),
                     ),
-                  ),
-                  12.horizontalSpace,
-                  // Calendar button
-                  GestureDetector(
-                    onTap: () => datePicker(context),
-                    child: Container(
-                      width: 56.h,
-                      height: 56.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: HugeIcon(
-                          icon: HugeIcons.strokeRoundedCalendar03,
-                          size: 24.w,
-                          color: AppColor.iconColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-           // 4. Custom AppBar
-            Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    automaticallyImplyLeading: false,
-                    title: Row(children: [
-                      IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () => Get.back(),
-                    ),
-                     Text(
-                      StrRes.globalSearchChatHistory,
-                      style: TextStyle(
+                    decoration: InputDecoration(
+                      hintText: StrRes.search,
+                      hintStyle: TextStyle(
                         fontFamily: 'FilsonPro',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20.sp,
-                        color: Colors.white,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF9CA3AF),
                       ),
-                    ) 
-                    ],),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => logic.search(),
+                    onChanged: (v) {
+                      logic.onChanged(v);
+                    },
                   ),
                 ),
-          
-          ],
+                Obx(() => logic.searchKey.value.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          logic.clearInput();
+                          logic.focusNode.requestFocus();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(12.w),
+                          child: Icon(
+                            CupertinoIcons.clear_circled_solid,
+                            size: 20.w,
+                            color: const Color(0xFF9CA3AF),
+                          ),
+                        ),
+                      )
+                    : SizedBox(width: 16.w)),
+              ],
+            ),
+          ),
         ),
-      ),
+        12.horizontalSpace,
+        // Calendar button
+        GestureDetector(
+          onTap: () => datePicker(context),
+          child: Container(
+            width: 56.h,
+            height: 56.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Center(
+              child: HugeIcon(
+                icon: HugeIcons.strokeRoundedCalendar03,
+                size: 24.w,
+                color: AppColor.iconColor,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

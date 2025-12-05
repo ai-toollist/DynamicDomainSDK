@@ -20,295 +20,225 @@ class GroupSetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
-              children: [
-                // Main Content (determines size)
-                Column(
+    return GradientScaffold(
+      title: StrRes.groupChatSetup,
+      showBackButton: true,
+      scrollable: true,
+      avatar: _buildAvatar(),
+      body: Obx(() => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Group Name
+              GestureDetector(
+                onTap: logic.isOwnerOrAdmin
+                    ? () => logic.modifyGroupName(
+                        logic.conversationInfo.value.faceURL)
+                    : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 1. Header Background
-                    const GradientHeader(
-                      height: 190,
-                      showSafeArea: false,
+                    Flexible(
+                      child: Text(
+                        logic.groupInfo.value.groupName ?? '',
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-
-                    // 2. Main Content Card
-                    Container(
-                      width: double.infinity,
-                      transform: Matrix4.translationValues(0, -60.h, 0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, -5),
-                          ),
-                        ],
+                    if (logic.isOwnerOrAdmin) ...[
+                      8.horizontalSpace,
+                      Icon(
+                        Icons.edit,
+                        size: 16.sp,
+                        color: const Color(0xFF6B7280),
                       ),
-                      child: Obx(() => Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(height: 60.h), // Space for avatar
-
-                      // Group Name
-                      GestureDetector(
-                        onTap: logic.isOwnerOrAdmin
-                            ? () => logic.modifyGroupName(
-                                logic.conversationInfo.value.faceURL)
-                            : null,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                logic.groupInfo.value.groupName ?? '',
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 22.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (logic.isOwnerOrAdmin) ...[
-                              8.horizontalSpace,
-                              Icon(
-                                Icons.edit,
-                                size: 16.sp,
-                                color: const Color(0xFF6B7280),
-                              ),
-                            ],
-                          ],
-                        ),
+                    ],
+                  ],
+                ),
+              ),
+              8.verticalSpace,
+              // Group ID
+              GestureDetector(
+                onTap: logic.copyGroupID,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      logic.groupInfo.value.groupID,
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF6B7280),
                       ),
-                      8.verticalSpace,
-                      // Group ID
-                      GestureDetector(
-                        onTap: logic.copyGroupID,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              logic.groupInfo.value.groupID,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
-                                color: const Color(0xFF6B7280),
-                              ),
-                            ),
-                            6.horizontalSpace,
-                            Icon(
-                              CupertinoIcons.doc_on_doc,
-                              size: 14.sp,
-                              color: const Color(0xFF6B7280),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      24.verticalSpace,
-
-                              // Action Buttons Row (Search Content)
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    CustomButton(
-                                      icon: CupertinoIcons.search,
-                                      label: StrRes.search,
-                                      onTap: logic.searchChatHistory,
-                                      colorButton: primaryColor.withOpacity(.15),
-                                      colorIcon: primaryColor,
-                                    ),
-                                    CustomButton(
-                                      icon: CupertinoIcons.photo,
-                                      label: StrRes.picture,
-                                      onTap: logic.searchChatHistoryPicture,
-                                      colorButton: primaryColor.withOpacity(.15),
-                                      colorIcon: primaryColor,
-                                    ),
-                                    CustomButton(
-                                      icon: CupertinoIcons.video_camera,
-                                      label: StrRes.video,
-                                      onTap: logic.searchChatHistoryVideo,
-                                      colorButton: primaryColor.withOpacity(.15),
-                                      colorIcon: primaryColor,
-                                    ),
-                                    CustomButton(
-                                      icon: CupertinoIcons.doc,
-                                      label: StrRes.file,
-                                      onTap: logic.searchChatHistoryFile,
-                                      colorButton: primaryColor.withOpacity(.15),
-                                      colorIcon: primaryColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                      24.verticalSpace,
-                      const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-                      // Group Members Section
-                      if (logic.isJoinedGroup.value) ...[
-                        _buildSectionTitle(StrRes.groupMembers),
-                        _buildGroupMembersGrid(),
-                        24.verticalSpace,
-                        const Divider(height: 1, color: Color(0xFFF3F4F6)),
-                      ],
-
-                      // Menu Sections
-                      _buildSectionTitle(StrRes.groupInformation),
-                      MenuItemWidget(
-                        icon: CupertinoIcons.qrcode,
-                        label: StrRes.qrcode,
-                        onTap: logic.viewGroupQrcode,
-                      ),
-                      MenuItemWidget(
-                        icon: CupertinoIcons.bell,
-                        label: StrRes.groupAc,
-                        onTap: logic.editGroupAnnouncement,
-                      ),
-                      if (logic.showGroupManagement)
-                        MenuItemWidget(
-                          icon: CupertinoIcons.settings,
-                          label: StrRes.groupManage,
-                          onTap: logic.groupManage,
-                        ),
-
-                      _buildSectionTitle(StrRes.nicknameInGroup),
-                      MenuItemWidget(
-                        icon: CupertinoIcons.person,
-                        label: StrRes.myGroupMemberNickname,
-                        value: logic.myGroupMembersInfo.value.nickname,
-                        onTap: logic.modifyMyGroupNickname,
-                      ),
-
-                      _buildSectionTitle(StrRes.chatSettings),
-                      ToggleMenuItemWidget(
-                        label: StrRes.topChat,
-                        isOn: logic.isPinned,
-                        onChanged: (_) => logic.toggleTopChat(),
-                      ),
-                      ToggleMenuItemWidget(
-                        label: StrRes.messageNotDisturb,
-                        isOn: logic.isNotDisturb,
-                        onChanged: (_) => logic.toggleNotDisturb(),
-                      ),
-
-                      _buildSectionTitle(StrRes.actions),
-                      MenuItemWidget(
-                        icon: CupertinoIcons.flag,
-                        label: StrRes.report,
-                        onTap: logic.startReport,
-                        textColor: Colors.amber,
-                      ),
-                      MenuItemWidget(
-                        icon: CupertinoIcons.delete,
-                        label: StrRes.clearChatHistory,
-                        onTap: logic.clearChatHistory,
-                        textColor: const Color(0xFFF87171),
-                      ),
-                      if (!logic.isOwner)
-                        MenuItemWidget(
-                          icon: CupertinoIcons.square_arrow_left,
-                          label: logic.isJoinedGroup.value
-                              ? StrRes.exitGroup
-                              : StrRes.delete,
-                          onTap: logic.quitGroup,
-                          textColor: const Color(0xFFF87171),
-                        ),
-                      if (logic.isOwner)
-                        MenuItemWidget(
-                          icon: CupertinoIcons.xmark_circle,
-                          label: StrRes.dismissGroup,
-                          onTap: logic.quitGroup,
-                          textColor: const Color(0xFFF87171),
-                        ),
-
-                              40.verticalSpace,
-                            ],
-                          )),
+                    ),
+                    6.horizontalSpace,
+                    Icon(
+                      CupertinoIcons.doc_on_doc,
+                      size: 14.sp,
+                      color: const Color(0xFF6B7280),
                     ),
                   ],
                 ),
+              ),
 
-                // 3. Avatar (Overlapping)
-                Positioned(
-                  top: 80.h,
-                  child: Obx(() => GestureDetector(
-                        onTap:
-                            logic.isOwnerOrAdmin ? logic.modifyGroupAvatar : null,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 4.w),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: AvatarView(
-                            url: logic.groupInfo.value.faceURL,
-                            text: logic.groupInfo.value.groupName,
-                            width: 100.w,
-                            height: 100.w,
-                            textStyle:
-                                TextStyle(fontSize: 32.sp, color: Colors.white),
-                            isCircle: true,
-                            isGroup: true,
-                          ),
-                        ),
-                      )),
+              24.verticalSpace,
+
+              // Action Buttons Row (Search Content)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CustomButton(
+                      icon: CupertinoIcons.search,
+                      label: StrRes.search,
+                      onTap: logic.searchChatHistory,
+                      colorButton: primaryColor.withOpacity(.15),
+                      colorIcon: primaryColor,
+                    ),
+                    CustomButton(
+                      icon: CupertinoIcons.photo,
+                      label: StrRes.picture,
+                      onTap: logic.searchChatHistoryPicture,
+                      colorButton: primaryColor.withOpacity(.15),
+                      colorIcon: primaryColor,
+                    ),
+                    CustomButton(
+                      icon: CupertinoIcons.video_camera,
+                      label: StrRes.video,
+                      onTap: logic.searchChatHistoryVideo,
+                      colorButton: primaryColor.withOpacity(.15),
+                      colorIcon: primaryColor,
+                    ),
+                    CustomButton(
+                      icon: CupertinoIcons.doc,
+                      label: StrRes.file,
+                      onTap: logic.searchChatHistoryFile,
+                      colorButton: primaryColor.withOpacity(.15),
+                      colorIcon: primaryColor,
+                    ),
+                  ],
+                ),
+              ),
+
+              24.verticalSpace,
+              const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+              // Group Members Section
+              if (logic.isJoinedGroup.value) ...[
+                _buildSectionTitle(StrRes.groupMembers),
+                _buildGroupMembersGrid(),
+                24.verticalSpace,
+                const Divider(height: 1, color: Color(0xFFF3F4F6)),
+              ],
+
+              // Menu Sections
+              _buildSectionTitle(StrRes.groupInformation),
+              MenuItemWidget(
+                icon: CupertinoIcons.qrcode,
+                label: StrRes.qrcode,
+                onTap: logic.viewGroupQrcode,
+              ),
+              MenuItemWidget(
+                icon: CupertinoIcons.bell,
+                label: StrRes.groupAc,
+                onTap: logic.editGroupAnnouncement,
+              ),
+              if (logic.showGroupManagement)
+                MenuItemWidget(
+                  icon: CupertinoIcons.settings,
+                  label: StrRes.groupManage,
+                  onTap: logic.groupManage,
                 ),
 
-                // 4. Custom AppBar
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    automaticallyImplyLeading: false,
-                    title: Row(children: [
-                      IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () => Get.back(),
-                    ),
-                     Text(
-                      StrRes.groupChatSetup,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20.sp,
-                        color: Colors.white,
-                      ),
-                    ) 
-                    ],),
-                  ),
+              _buildSectionTitle(StrRes.nicknameInGroup),
+              MenuItemWidget(
+                icon: CupertinoIcons.person,
+                label: StrRes.myGroupMemberNickname,
+                value: logic.myGroupMembersInfo.value.nickname,
+                onTap: logic.modifyMyGroupNickname,
+              ),
+
+              _buildSectionTitle(StrRes.chatSettings),
+              ToggleMenuItemWidget(
+                label: StrRes.topChat,
+                isOn: logic.isPinned,
+                onChanged: (_) => logic.toggleTopChat(),
+              ),
+              ToggleMenuItemWidget(
+                label: StrRes.messageNotDisturb,
+                isOn: logic.isNotDisturb,
+                onChanged: (_) => logic.toggleNotDisturb(),
+              ),
+
+              _buildSectionTitle(StrRes.actions),
+              MenuItemWidget(
+                icon: CupertinoIcons.flag,
+                label: StrRes.report,
+                onTap: logic.startReport,
+                textColor: Colors.amber,
+              ),
+              MenuItemWidget(
+                icon: CupertinoIcons.delete,
+                label: StrRes.clearChatHistory,
+                onTap: logic.clearChatHistory,
+                textColor: const Color(0xFFF87171),
+              ),
+              if (!logic.isOwner)
+                MenuItemWidget(
+                  icon: CupertinoIcons.square_arrow_left,
+                  label: logic.isJoinedGroup.value
+                      ? StrRes.exitGroup
+                      : StrRes.delete,
+                  onTap: logic.quitGroup,
+                  textColor: const Color(0xFFF87171),
+                ),
+              if (logic.isOwner)
+                MenuItemWidget(
+                  icon: CupertinoIcons.xmark_circle,
+                  label: StrRes.dismissGroup,
+                  onTap: logic.quitGroup,
+                  textColor: const Color(0xFFF87171),
+                ),
+
+              40.verticalSpace,
+            ],
+          )),
+    );
+  }
+
+  Widget _buildAvatar() {
+    return Obx(() => GestureDetector(
+          onTap: logic.isOwnerOrAdmin ? logic.modifyGroupAvatar : null,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 4.w),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
+            child: AvatarView(
+              url: logic.groupInfo.value.faceURL,
+              text: logic.groupInfo.value.groupName,
+              width: 100.w,
+              height: 100.w,
+              textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
+              isCircle: true,
+              isGroup: true,
+            ),
+          ),
+        ));
   }
 
   Widget _buildSectionTitle(String title) {

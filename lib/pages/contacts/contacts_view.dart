@@ -55,41 +55,18 @@ class _ContactsPageState extends State<ContactsPage>
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          // 1. Header Background
-          Obx(() => GradientHeader.main(
-                title: StrRes.contacts,
-                subtitle:
-                    '${StrRes.friends}: ${logic.friendListLogic.friendList.length}, ${StrRes.groups}: ${groupListLogic.createdList.length + groupListLogic.joinedList.length}',
-                trailing: HeaderActionButton(
-                  buttonKey: _newButtonKey,
-                  onTap: _showActionPopup,
-                ),
-              )),
-
-          // 2. Main Content Card
-          Container(
-            margin: EdgeInsets.only(top: 120.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                20.verticalSpace,
-                // Tab Bar
-                TabBar(
+    return Obx(() => GradientScaffold(
+          title: StrRes.contacts,
+          subtitle:
+              '${StrRes.friends}: ${logic.friendListLogic.friendList.length}, ${StrRes.groups}: ${groupListLogic.createdList.length + groupListLogic.joinedList.length}',
+          trailing: HeaderActionButton(
+            buttonKey: _newButtonKey,
+            onTap: _showActionPopup,
+          ),
+          body: Column(
+            children: [
+              // Tab Bar
+              TabBar(
                   controller: _tabController,
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(
@@ -202,10 +179,7 @@ class _ContactsPageState extends State<ContactsPage>
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildFriendsTab() {

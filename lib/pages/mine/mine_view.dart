@@ -20,194 +20,144 @@ class MinePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // 1. Header Background
-            GradientHeader(
-              title: StrRes.mine,
-              height: 180,
-            ),
-            // 2. Main Content Card
-            Container(
-              margin: EdgeInsets.only(top: 120.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
+    return GradientScaffold(
+      title: StrRes.mine,
+      scrollable: true,
+      avatar: Obx(() => AvatarView(
+            url: logic.imLogic.userInfo.value.faceURL,
+            text: logic.imLogic.userInfo.value.nickname,
+            width: 100.w,
+            height: 100.w,
+            textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
+            isCircle: true,
+            onTap: logic.viewMyInfo,
+          )),
+      body: Column(
+        children: [
+          // User Info
+          Obx(() {
+            final user = logic.imLogic.userInfo.value;
+            return Column(
+              children: [
+                Text(
+                  user.nickname ?? '',
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 60.h), // Space for avatar
-
-                  // User Info
-                  Obx(() {
-                    final user = logic.imLogic.userInfo.value;
-                    return Column(
-                      children: [
-                        Text(
-                          user.nickname ?? '',
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 22.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
+                ),
+                8.verticalSpace,
+                GestureDetector(
+                  onTap: logic.copyID,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        user.userID ?? '',
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF6B7280),
                         ),
-                        8.verticalSpace,
-                        GestureDetector(
-                          onTap: logic.copyID,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                user.userID ?? '',
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                              6.horizontalSpace,
-                              Icon(
-                                CupertinoIcons.doc_on_doc,
-                                size: 14.sp,
-                                color: primaryColor,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-
-                  24.verticalSpace,
-
-                  // Action Buttons Row
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomButton(
-                          icon: CupertinoIcons.qrcode,
-                          label: StrRes.qrcode,
-                          onTap: logic.viewMyQrcode,
-                          colorButton: primaryColor.withOpacity(.15),
-                          colorIcon: primaryColor,
-                        ),
-                        CustomButton(
-                          icon: CupertinoIcons.person,
-                          label: StrRes.information,
-                          onTap: logic.viewMyInfo,
-                          colorButton: primaryColor.withOpacity(.15),
-                          colorIcon: primaryColor,
-                        ),
-                        CustomButton(
-                          icon: CupertinoIcons.settings,
-                          label: StrRes.settings,
-                          onTap: logic.accountSetup,
-                          colorButton: primaryColor.withOpacity(.15),
-                          colorIcon: primaryColor,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  24.verticalSpace,
-                  const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-                  // Menu List
-                  _buildSectionTitle(StrRes.aboutSection),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.person_crop_circle_badge_checkmark,
-                    label: StrRes.realNameAuth,
-                    onTap: logic.startRealNameAuth,
-                  ),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.shield,
-                    label: StrRes.privacyPolicy,
-                    onTap: logic.privacyPolicy,
-                  ),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.doc_text,
-                    label: StrRes.serviceAgreement,
-                    onTap: logic.serviceAgreement,
-                  ),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.info,
-                    label: StrRes.aboutUs,
-                    onTap: logic.aboutUs,
-                  ),
-
-                  _buildSectionTitle(StrRes.systemSection),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.chart_bar,
-                    label: StrRes.chatAnalytics,
-                    onTap: logic.startChatAnalytics,
-                  ),
-                  MenuItemWidget(
-                    icon: CupertinoIcons.delete,
-                    label: StrRes.clearCache,
-                    onTap: logic.clearCache,
-                    textColor: const Color(0xFFEF4444),
-                  ),
-
-                  24.verticalSpace,
-
-                
-                  MenuItemWidget(
-                    icon: Icons.logout,
-                    label: StrRes.logout,
-                    onTap: logic.logout,
-                    textColor: const Color(0xFFEF4444),
-                  ),
-                  40.verticalSpace,
-                ],
-              ),
-            ),
-
-            // 3. Avatar (Overlapping)
-            Positioned(
-              top: 70.h, // 120 (margin) - 50 (half size)
-              child: Obx(() {
-                final user = logic.imLogic.userInfo.value;
-                return Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4.w),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
+                      ),
+                      6.horizontalSpace,
+                      Icon(
+                        CupertinoIcons.doc_on_doc,
+                        size: 14.sp,
+                        color: primaryColor,
                       ),
                     ],
                   ),
-                  child: AvatarView(
-                    url: user.faceURL,
-                    text: user.nickname,
-                    width: 100.w,
-                    height: 100.w,
-                    textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
-                    isCircle: true,
-                  ),
-                );
-              }),
+                ),
+              ],
+            );
+          }),
+
+          24.verticalSpace,
+
+          // Action Buttons Row
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CustomButton(
+                  icon: CupertinoIcons.qrcode,
+                  label: StrRes.qrcode,
+                  onTap: logic.viewMyQrcode,
+                  colorButton: primaryColor.withOpacity(.15),
+                  colorIcon: primaryColor,
+                ),
+                CustomButton(
+                  icon: CupertinoIcons.person,
+                  label: StrRes.information,
+                  onTap: logic.viewMyInfo,
+                  colorButton: primaryColor.withOpacity(.15),
+                  colorIcon: primaryColor,
+                ),
+                CustomButton(
+                  icon: CupertinoIcons.settings,
+                  label: StrRes.settings,
+                  onTap: logic.accountSetup,
+                  colorButton: primaryColor.withOpacity(.15),
+                  colorIcon: primaryColor,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          24.verticalSpace,
+          const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+          // Menu List
+          _buildSectionTitle(StrRes.aboutSection),
+          MenuItemWidget(
+            icon: CupertinoIcons.person_crop_circle_badge_checkmark,
+            label: StrRes.realNameAuth,
+            onTap: logic.startRealNameAuth,
+          ),
+          MenuItemWidget(
+            icon: CupertinoIcons.shield,
+            label: StrRes.privacyPolicy,
+            onTap: logic.privacyPolicy,
+          ),
+          MenuItemWidget(
+            icon: CupertinoIcons.doc_text,
+            label: StrRes.serviceAgreement,
+            onTap: logic.serviceAgreement,
+          ),
+          MenuItemWidget(
+            icon: CupertinoIcons.info,
+            label: StrRes.aboutUs,
+            onTap: logic.aboutUs,
+          ),
+
+          _buildSectionTitle(StrRes.systemSection),
+          MenuItemWidget(
+            icon: CupertinoIcons.chart_bar,
+            label: StrRes.chatAnalytics,
+            onTap: logic.startChatAnalytics,
+          ),
+          MenuItemWidget(
+            icon: CupertinoIcons.delete,
+            label: StrRes.clearCache,
+            onTap: logic.clearCache,
+            textColor: const Color(0xFFEF4444),
+          ),
+
+          24.verticalSpace,
+
+          MenuItemWidget(
+            icon: Icons.logout,
+            label: StrRes.logout,
+            onTap: logic.logout,
+            textColor: const Color(0xFFEF4444),
+          ),
+          40.verticalSpace,
+        ],
       ),
     );
   }

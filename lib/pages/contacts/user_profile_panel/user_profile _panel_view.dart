@@ -18,186 +18,139 @@ class UserProfilePanelPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // 1. Header Background
-            const GradientHeader(
-              height: 180,
-              showSafeArea: false,
-            ),
-
-            // 2. Main Content Card
-            Container(
-              margin: EdgeInsets.only(top: 120.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
+    return GradientScaffold(
+      title: '',
+      showBackButton: true,
+      scrollable: true,
+      avatar: _buildAvatar(),
+      body: Obx(() => Column(
+            children: [
+              // User Info
+              Text(
+                logic.getShowName(),
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
               ),
-              child: Obx(() => Column(
+              8.verticalSpace,
+              if (!logic.isGroupMemberPage ||
+                  logic.isGroupMemberPage &&
+                      !logic.notAllowAddGroupMemberFriend.value)
+                GestureDetector(
+                  onTap: logic.copyID,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: 60.h), // Space for avatar
-
-                      // User Info
                       Text(
-                        logic.getShowName(),
+                        logic.userInfo.value.userID ?? '',
                         style: TextStyle(
                           fontFamily: 'FilsonPro',
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF6B7280),
                         ),
                       ),
-                      8.verticalSpace,
-                      if (!logic.isGroupMemberPage ||
-                          logic.isGroupMemberPage &&
-                              !logic.notAllowAddGroupMemberFriend.value)
-                        GestureDetector(
-                          onTap: logic.copyID,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                logic.userInfo.value.userID ?? '',
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                              6.horizontalSpace,
-                              Icon(
-                                CupertinoIcons.doc_on_doc,
-                                size: 14.sp,
-                                color: const Color(0xFF6B7280),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      24.verticalSpace,
-
-                      // Action Buttons Row
-                      if (!logic.isMyself)
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              if (logic.showAudioAndVideoCall) ...[
-                                _buildActionButtonWithCustomButtom(
-                                  context: context,
-                                  icon: CupertinoIcons.phone,
-                                  label: StrRes.audioCall,
-                                  onTap: () => logic.trtcLogic
-                                      .callAudio(logic.userInfo.value.userID!),
-                                ),
-                                _buildActionButtonWithCustomButtom(
-                                  context: context,
-                                  icon: CupertinoIcons.videocam,
-                                  label: StrRes.videoCall,
-                                  onTap: () => logic.trtcLogic
-                                      .callVideo(logic.userInfo.value.userID!),
-                                ),
-                              ],
-                              _buildActionButtonWithCustomButtom(
-                                context: context,
-                                icon: CupertinoIcons.chat_bubble,
-                                label: StrRes.sendMessage,
-                                onTap: logic.toChat,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      if (!logic.isMyself &&
-                          logic.isAllowAddFriend &&
-                          !logic.isFriendship &&
-                          (!logic.isGroupMemberPage ||
-                              logic.isGroupMemberPage &&
-                                  !logic.notAllowAddGroupMemberFriend.value) &&
-                          !logic.isBlacklist) ...[
-                        24.verticalSpace,
-                        _buildAddFriendButton(context),
-                      ],
-
-                      24.verticalSpace,
-                      const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-                      // Menu List
-                      if (logic.isGroupMemberPage) ...[
-                        _buildSectionTitle(StrRes.groupInformation),
-                        _buildGroupInfoSection(),
-                      ],
-                      if (!logic.isMyself) ...[
-                        _buildSectionTitle(StrRes.actions),
-                        _buildActionsSection(),
-                      ],
-
-                      40.verticalSpace,
+                      6.horizontalSpace,
+                      Icon(
+                        CupertinoIcons.doc_on_doc,
+                        size: 14.sp,
+                        color: const Color(0xFF6B7280),
+                      ),
                     ],
-                  )),
-            ),
+                  ),
+                ),
 
-            // 3. Avatar (Overlapping)
-            Positioned(
-              top: 70.h,
-              child: Obx(() => Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4.w),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+              24.verticalSpace,
+
+              // Action Buttons Row
+              if (!logic.isMyself)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (logic.showAudioAndVideoCall) ...[
+                        _buildActionButtonWithCustomButtom(
+                          context: context,
+                          icon: CupertinoIcons.phone,
+                          label: StrRes.audioCall,
+                          onTap: () => logic.trtcLogic
+                              .callAudio(logic.userInfo.value.userID!),
+                        ),
+                        _buildActionButtonWithCustomButtom(
+                          context: context,
+                          icon: CupertinoIcons.videocam,
+                          label: StrRes.videoCall,
+                          onTap: () => logic.trtcLogic
+                              .callVideo(logic.userInfo.value.userID!),
                         ),
                       ],
-                    ),
-                    child: AvatarView(
-                      url: logic.userInfo.value.faceURL,
-                      text: logic.getShowName(),
-                      width: 100.w,
-                      height: 100.w,
-                      textStyle:
-                          TextStyle(fontSize: 32.sp, color: Colors.white),
-                      isCircle: true,
-                      enabledPreview: true,
-                    ),
-                  )),
-            ),
-
-            // 4. Custom AppBar (Back Button & Actions)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () => Get.back(),
+                      _buildActionButtonWithCustomButtom(
+                        context: context,
+                        icon: CupertinoIcons.chat_bubble,
+                        label: StrRes.sendMessage,
+                        onTap: logic.toChat,
+                      ),
+                    ],
+                  ),
                 ),
-                actions: []
-              ),
-            ),
-          ],
-        ),
-      ),
+
+              if (!logic.isMyself &&
+                  logic.isAllowAddFriend &&
+                  !logic.isFriendship &&
+                  (!logic.isGroupMemberPage ||
+                      logic.isGroupMemberPage &&
+                          !logic.notAllowAddGroupMemberFriend.value) &&
+                  !logic.isBlacklist) ...[
+                24.verticalSpace,
+                _buildAddFriendButton(context),
+              ],
+
+              24.verticalSpace,
+              const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+              // Menu List
+              if (logic.isGroupMemberPage) ...[
+                _buildSectionTitle(StrRes.groupInformation),
+                _buildGroupInfoSection(),
+              ],
+              if (!logic.isMyself) ...[
+                _buildSectionTitle(StrRes.actions),
+                _buildActionsSection(),
+              ],
+
+              40.verticalSpace,
+            ],
+          )),
     );
+  }
+
+  Widget _buildAvatar() {
+    return Obx(() => Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 4.w),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: AvatarView(
+            url: logic.userInfo.value.faceURL,
+            text: logic.getShowName(),
+            width: 100.w,
+            height: 100.w,
+            textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
+            isCircle: true,
+            enabledPreview: true,
+          ),
+        ));
   }
 
   Widget _buildActionButtonWithCustomButtom({

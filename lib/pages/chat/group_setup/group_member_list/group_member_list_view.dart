@@ -22,153 +22,112 @@ class GroupMemberListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          backgroundColor: Colors.white,
-          body: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              // 1. Header Background
-              GradientHeader(
-                leading: Row(children: [
-                      IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () => Get.back(),
-                    ),
-                     Text(
-                     logic.opType == GroupMemberOpType.del
-                    ? StrRes.removeGroupMember
-                    : StrRes.groupMember,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20.sp,
-                        color: Colors.white,
-                      ),
-                    ) 
-                    ],),
-                trailing: logic.opType == GroupMemberOpType.view
-                    ? PopButton(
-                        popCtrl: logic.poController,
-                        horizontalMargin: 1.w,
-                        menus: [
-                          PopMenuInfo(
-                              text: StrRes.addMember, onTap: logic.addMember),
-                          if (logic.isOwnerOrAdmin)
-                            PopMenuInfo(
-                                text: StrRes.delMember, onTap: logic.delMember),
-                        ],
-                        child: CustomButton(
-                          onTap: () => logic.poController.showMenu(),
-                          icon: Ionicons.ellipsis_horizontal,
-                          colorButton: Colors.white.withOpacity(0.3),
-                          colorIcon: Colors.white,
-                        ),
-                      )
-                    : null,
-                height: 210,
-              ),
-
-              // 2. Main Content Card
-              Container(
-                margin: EdgeInsets.only(top: 140.h),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
+    return Obx(() => GradientScaffold(
+          title: logic.opType == GroupMemberOpType.del
+              ? StrRes.removeGroupMember
+              : StrRes.groupMember,
+          showBackButton: true,
+          trailing: logic.opType == GroupMemberOpType.view
+              ? PopButton(
+                  popCtrl: logic.poController,
+                  horizontalMargin: 1.w,
+                  menus: [
+                    PopMenuInfo(
+                        text: StrRes.addMember, onTap: logic.addMember),
+                    if (logic.isOwnerOrAdmin)
+                      PopMenuInfo(
+                          text: StrRes.delMember, onTap: logic.delMember),
                   ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                  child: _buildContentContainer(),
-                ),
-              ),
-
-              // 3. Search Box (Overlapping)
-              Positioned(
-                top: 100.h,
-                left: 20.w,
-                right: 20.w,
-                child: Container(
-                  height: 56.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
+                  child: CustomButton(
+                    onTap: () => logic.poController.showMenu(),
+                    icon: Ionicons.ellipsis_horizontal,
+                    colorButton: Colors.white.withOpacity(0.3),
+                    colorIcon: Colors.white,
                   ),
-                  child: Row(
-                    children: [
-                      16.horizontalSpace,
-                      Icon(
-                        Ionicons.search,
-                        size: 24.w,
+                )
+              : null,
+          searchBox: _buildSearchBox(),
+          body: _buildContentContainer(),
+        ));
+  }
+
+  Widget _buildSearchBox() {
+    return Container(
+      height: 56.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          16.horizontalSpace,
+          Icon(
+            Ionicons.search,
+            size: 24.w,
+            color: const Color(0xFF9CA3AF),
+          ),
+          12.horizontalSpace,
+          Expanded(
+            child: TextField(
+              controller: logic.searchCtrl,
+              focusNode: logic.focusNode,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF374151),
+              ),
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: StrRes.search,
+                hintStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                contentPadding: EdgeInsets.zero,
+              ),
+              onSubmitted: (_) => logic.search(),
+              onChanged: (_) {
+                if (logic.searchCtrl.text.trim().isNotEmpty) {
+                  logic.search();
+                } else {
+                  logic.clearSearch();
+                }
+              },
+            ),
+          ),
+          Obx(() {
+            final _ = logic.memberList.length;
+            return logic.searchCtrl.text.isNotEmpty
+                ? GestureDetector(
+                    onTap: () {
+                      logic.searchCtrl.clear();
+                      logic.clearSearch();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 16.w),
+                      child: Icon(
+                        Icons.close,
+                        size: 20.w,
                         color: const Color(0xFF9CA3AF),
                       ),
-                      12.horizontalSpace,
-                      Expanded(
-                        child: TextField(
-                          controller: logic.searchCtrl,
-                          focusNode: logic.focusNode,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF374151),
-                          ),
-                          decoration: InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                            hintText: StrRes.search,
-                            hintStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          onSubmitted: (_) => logic.search(),
-                          onChanged: (_) {
-                            if (logic.searchCtrl.text.trim().isNotEmpty) {
-                              logic.search();
-                            } else {
-                              logic.clearSearch();
-                            }
-                          },
-                        ),
-                      ),
-                      if (logic.searchCtrl.text.isNotEmpty)
-                        GestureDetector(
-                          onTap: () {
-                            logic.searchCtrl.clear();
-                            logic.clearSearch();
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 16.w),
-                            child: Icon(
-                              Icons.close,
-                              size: 20.w,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ));
+                    ),
+                  )
+                : const SizedBox.shrink();
+          }),
+        ],
+      ),
+    );
   }
 
   Widget _buildContentContainer() {

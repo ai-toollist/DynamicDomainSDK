@@ -1,95 +1,134 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-/// A reusable gradient header widget used across multiple pages
-/// Supports multiple layouts: main pages (with title/subtitle), detail pages (with back button), etc.
-class GradientHeader extends StatelessWidget {
-  final String? title;
+/// A complete scaffold widget with gradient header and body
+/// Unified component - no types, simple API
+class GradientScaffold extends StatelessWidget {
+  /// Main title text (required)
+  final String title;
+  
+  /// Optional subtitle text
   final String? subtitle;
-  final Widget? trailing;
-  final Widget? leading;
-  final Widget? customContent;
-  final double height;
-  final bool showSafeArea;
+  
+  /// Show back button (optional)
   final bool showBackButton;
-  final bool centerTitle;
+  
+  /// Back button callback (default: Get.back())
   final VoidCallback? onBack;
-  final EdgeInsetsGeometry? padding;
-  final CrossAxisAlignment crossAxisAlignment;
+  
+  /// Custom trailing widget on the right (optional)
+  final Widget? trailing;
+  
+  /// Body content widget
+  final Widget body;
+  
+  /// Whether body scrolls (wrap in SingleChildScrollView)
+  final bool scrollable;
+  
+  /// Background color of body
+  final Color bodyColor;
+  
+  /// Avatar widget to display overlapping header and body
+  final Widget? avatar;
+  
+  /// Search box widget (overlapping between header and body)
+  final Widget? searchBox;
 
-  const GradientHeader({
+  /// Fixed values for consistency
+  static const double headerHeight = 150;
+  static const double titleFontSize = 20;
+  static const double subtitleFontSize = 14;
+  static const double bodyTopMargin = 120;
+  static const double bodyTopPadding = 20;
+
+  const GradientScaffold({
     super.key,
-    this.title,
+    required this.title,
     this.subtitle,
-    this.trailing,
-    this.leading,
-    this.customContent,
-    this.height = 180,
-    this.showSafeArea = true,
     this.showBackButton = false,
-    this.centerTitle = false,
     this.onBack,
-    this.padding,
-    this.crossAxisAlignment = CrossAxisAlignment.start,
+    this.trailing,
+    required this.body,
+    this.scrollable = false,
+    this.bodyColor = Colors.white,
+    this.avatar,
+    this.searchBox,
   });
-
-  /// Factory constructor for main pages (Conversation, Contacts, Mine)
-  factory GradientHeader.main({
-    required String title,
-    String? subtitle,
-    Widget? trailing,
-    double height = 210,
-  }) {
-    return GradientHeader(
-      title: title,
-      subtitle: subtitle,
-      trailing: trailing,
-      height: height,
-    );
-  }
-
-  /// Factory constructor for detail pages with back button (ChatSetup, GroupSetup, AccountSetup)
-  factory GradientHeader.detail({
-    required String title,
-    VoidCallback? onBack,
-    Widget? trailing,
-    double height = 180,
-    bool centerTitle = true,
-  }) {
-    return GradientHeader(
-      title: title,
-      showBackButton: true,
-      centerTitle: centerTitle,
-      onBack: onBack,
-      trailing: trailing,
-      height: height,
-    );
-  }
-
-  /// Factory constructor for pages with custom content
-  factory GradientHeader.custom({
-    required Widget content,
-    double height = 180,
-    bool showSafeArea = true,
-    EdgeInsetsGeometry? padding,
-  }) {
-    return GradientHeader(
-      customContent: content,
-      height: height,
-      showSafeArea: showSafeArea,
-      padding: padding,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
+    Widget content = Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        // 1. Header Background
+        _buildHeader(primaryColor),
+        
+        // 2. Main Content Card
+        Container(
+          margin: EdgeInsets.only(top: bodyTopMargin.h),          
+          decoration: BoxDecoration(
+            color: bodyColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+            child: Column(
+              mainAxisSize: scrollable ? MainAxisSize.min : MainAxisSize.max,
+              children: [
+                SizedBox(height: avatar != null ? 80.h : bodyTopPadding.h),
+                scrollable 
+                    ? body 
+                    : Expanded(child: body),
+              ],
+            ),
+          ),
+        ),
+        
+        // 3. Avatar (Overlapping) - optional
+        if (avatar != null)
+          Positioned(
+            top: 80.h,
+            child: avatar!,
+          ),
+          
+        // 4. Search Box (Overlapping) - optional
+        if (searchBox != null)
+          Positioned(
+            top: (headerHeight - 60).h,
+            left: 20.w,
+            right: 20.w,
+            child: searchBox!,
+          ),
+      ],
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: scrollable
+          ? SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: content,
+            )
+          : content,
+    );
+  }
+
+  Widget _buildHeader(Color primaryColor) {
     return Container(
-      height: height.h,
+      height: headerHeight.h,
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -102,124 +141,77 @@ class GradientHeader extends StatelessWidget {
           ],
         ),
       ),
-      child: showSafeArea
-          ? SafeArea(child: _buildContent(context))
-          : _buildContent(context),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: (headerHeight-95).h),
+          child: _buildHeaderContent(),
+        ),
+      ),
     );
   }
 
-  Widget _buildContent(BuildContext context) {
-    if (customContent != null) {
-      return Padding(
-        padding: padding ??
-            EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-        child: customContent!,
-      );
-    }
-
-    return Padding(
-      padding:
-          padding ?? EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-      child: showBackButton
-          ? _buildDetailHeader(context)
-          : _buildMainHeader(context),
-    );
-  }
-
-  Widget _buildMainHeader(BuildContext context) {
-    return Column(
-      crossAxisAlignment: crossAxisAlignment,
+  Widget _buildHeaderContent() {
+    return Row(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (leading != null) ...[
-              leading!,
-              12.horizontalSpace,
-            ],
-            Expanded(
-              child: Text(
-                title ?? '',
+        // Back button (optional)
+        if (showBackButton) ...[
+          GestureDetector(
+            onTap: onBack ?? () => Get.back(),
+            child: Container(
+              padding: EdgeInsets.all(8.w),
+              color: Colors.transparent,
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 20.w,
+              ),
+            ),
+          ),
+          12.horizontalSpace,
+        ],
+        
+        // Title + Subtitle
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
                 style: TextStyle(
                   fontFamily: 'FilsonPro',
                   fontWeight: FontWeight.w700,
-                  fontSize: 24.sp,
+                  fontSize: titleFontSize.sp,
                   color: Colors.white,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-            ),
-            if (trailing != null) trailing!,
-          ],
-        ),
-        if (subtitle != null) ...[
-          4.verticalSpace,
-          Text(
-            subtitle!,
-            style: TextStyle(
-              fontFamily: 'FilsonPro',
-              fontWeight: FontWeight.w500,
-              fontSize: 14.sp,
-              color: Colors.white.withOpacity(0.8),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildDetailHeader(BuildContext context) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: onBack ?? () => Get.back(),
-          child: Container(
-            padding: EdgeInsets.all(8.w),
-            color: Colors.transparent,
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.white,
-              size: 20.w,
-            ),
+              if (subtitle != null && subtitle!.isNotEmpty) ...[
+                2.verticalSpace,
+                Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontWeight: FontWeight.w500,
+                    fontSize: subtitleFontSize.sp,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
-        if (centerTitle) ...[
-          Expanded(
-            child: Text(
-              title ?? '',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontWeight: FontWeight.w700,
-                fontSize: 20.sp,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          // Balance spacer for centered title
-          trailing ?? SizedBox(width: 36.w),
-        ] else ...[
-          12.horizontalSpace,
-          Expanded(
-            child: Text(
-              title ?? '',
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontWeight: FontWeight.w700,
-                fontSize: 24.sp,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          if (trailing != null) trailing!,
-        ],
+        
+        // Trailing (optional)
+        if (trailing != null) trailing!,
       ],
     );
   }
 }
 
-/// Header action button with white opacity background
+/// Standard action button for header trailing
 class HeaderActionButton extends StatelessWidget {
   final GlobalKey? buttonKey;
   final VoidCallback onTap;
@@ -238,16 +230,106 @@ class HeaderActionButton extends StatelessWidget {
       key: buttonKey,
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(8.w),
+        padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: Icon(
           icon,
           color: Colors.white,
           size: 20.w,
         ),
+      ),
+    );
+  }
+}
+
+/// Standard search box widget for GradientScaffold
+class GradientSearchBox extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode? focusNode;
+  final String? hintText;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+
+  const GradientSearchBox({
+    super.key,
+    required this.controller,
+    this.focusNode,
+    this.hintText,
+    this.onChanged,
+    this.onSubmitted,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          16.horizontalSpace,
+          Icon(
+            CupertinoIcons.search,
+            size: 24.w,
+            color: const Color(0xFF9CA3AF),
+          ),
+          12.horizontalSpace,
+          Expanded(
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF374151),
+              ),
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: hintText,
+                hintStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                contentPadding: EdgeInsets.zero,
+              ),
+              onChanged: onChanged,
+              onSubmitted: onSubmitted,
+            ),
+          ),
+          if (controller.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                controller.clear();
+                onClear?.call();
+              },
+              child: Padding(
+                padding: EdgeInsets.only(right: 16.w),
+                child: Icon(
+                  Icons.close,
+                  size: 20.w,
+                  color: const Color(0xFF9CA3AF),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

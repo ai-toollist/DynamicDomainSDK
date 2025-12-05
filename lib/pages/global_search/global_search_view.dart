@@ -59,178 +59,147 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     final primaryColor = Theme.of(context).primaryColor;
 
     return TouchCloseSoftKeyboard(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          alignment: Alignment.topCenter,
+      child: GradientScaffold(
+        title: StrRes.globalSearch,
+        showBackButton: true,
+        searchBox: _buildSearchBox(),
+        body: Column(
           children: [
-            // 1. Header Background
-            GradientHeader.main(
-              title: StrRes.globalSearch,
-              subtitle: "",
-              height: 150,
-            ),
-
-            // 2. Main Content Card
-            Container(
-              margin: EdgeInsets.only(top: 120.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 50.h), // Space for Search Box overlap
-
-                  // Tab Bar
-                  TabBar(
-                    controller: _tabController,
-                    indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(
-                        color: primaryColor,
-                        width: 3.0,
-                      ),
-                      insets: EdgeInsets.symmetric(horizontal: 16.0),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    indicatorPadding: EdgeInsets.zero,
-                    dividerColor: Colors.transparent,
-                    splashFactory: NoSplash.splashFactory,
-                    overlayColor: WidgetStateProperty.all(Colors.transparent),
-                    labelColor: primaryColor,
-                    unselectedLabelColor: const Color(0xFF9CA3AF),
-                    labelStyle: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    unselectedLabelStyle: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    tabs: [
-                      Tab(text: StrRes.globalSearchAll),
-                      Tab(text: StrRes.globalSearchContacts),
-                      Tab(text: StrRes.globalSearchGroup),
-                      Tab(text: StrRes.messages),
-                      Tab(text: StrRes.globalSearchChatFile),
-                    ],
-                  ),
-                  
-                  const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-                  // Tab Bar View
-                  Expanded(
-                    child: Obx(() {
-                      if (!logic.hasSearched.value) {
-                        return _initialEmptyState;
-                      }
-                      if (logic.isSearchNotResult) {
-                        return _emptyListView;
-                      }
-                      return TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildAllListView(),
-                          _buildContactsListView(),
-                          _buildGroupListView(),
-                          _buildChatHistoryListView(),
-                          _buildFileListView(),
-                        ],
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-
-            // 3. Search Box (Overlapping)
-            Positioned(
-              top: 90.h,
-              left: 20.w,
-              right: 20.w,
-              child: Container(
-                height: 56.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+            // Tab Bar
+            TabBar(
+              controller: _tabController,
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  color: primaryColor,
+                  width: 3.0,
                 ),
-                child: Row(
+                insets: EdgeInsets.symmetric(horizontal: 16.0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              indicatorPadding: EdgeInsets.zero,
+              dividerColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              labelColor: primaryColor,
+              unselectedLabelColor: const Color(0xFF9CA3AF),
+              labelStyle: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+              ),
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              tabs: [
+                Tab(text: StrRes.globalSearchAll),
+                Tab(text: StrRes.globalSearchContacts),
+                Tab(text: StrRes.globalSearchGroup),
+                Tab(text: StrRes.messages),
+                Tab(text: StrRes.globalSearchChatFile),
+              ],
+            ),
+            
+            const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+            // Tab Bar View
+            Expanded(
+              child: Obx(() {
+                if (!logic.hasSearched.value) {
+                  return _initialEmptyState;
+                }
+                if (logic.isSearchNotResult) {
+                  return _emptyListView;
+                }
+                return TabBarView(
+                  controller: _tabController,
                   children: [
-                    16.horizontalSpace,
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedSearch01,
-                      size: 24.w,
-                      color: const Color(0xFF9CA3AF),
-                    ),
-                    12.horizontalSpace,
-                    Expanded(
-                      child: TextField(
-                        controller: logic.searchCtrl,
-                        focusNode: logic.focusNode,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF374151),
-                        ),
-                        decoration: InputDecoration(
-                          hintText: StrRes.search,
-                          hintStyle: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF9CA3AF),
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        textInputAction: TextInputAction.search,
-                        onSubmitted: (_) => logic.search(),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                    ),
-                    logic.searchCtrl.text.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              logic.clearSearch();
-                              setState(() {});
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(12.w),
-                              child: Icon(
-                                CupertinoIcons.clear_circled_solid,
-                                size: 20.w,
-                                color: const Color(0xFF9CA3AF),
-                              ),
-                            ),
-                          )
-                        : SizedBox(width: 16.w),
+                    _buildAllListView(),
+                    _buildContactsListView(),
+                    _buildGroupListView(),
+                    _buildChatHistoryListView(),
+                    _buildFileListView(),
                   ],
-                ),
-              ),
-            ),      
+                );
+              }),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBox() {
+    return Container(
+      height: 56.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          16.horizontalSpace,
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedSearch01,
+            size: 24.w,
+            color: const Color(0xFF9CA3AF),
+          ),
+          12.horizontalSpace,
+          Expanded(
+            child: TextField(
+              controller: logic.searchCtrl,
+              focusNode: logic.focusNode,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF374151),
+              ),
+              decoration: InputDecoration(
+                hintText: StrRes.search,
+                hintStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => logic.search(),
+              onChanged: (_) => setState(() {}),
+            ),
+          ),
+          logic.searchCtrl.text.isNotEmpty
+              ? GestureDetector(
+                  onTap: () {
+                    logic.clearSearch();
+                    setState(() {});
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Icon(
+                      CupertinoIcons.clear_circled_solid,
+                      size: 20.w,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                  ),
+                )
+              : SizedBox(width: 16.w),
+        ],
       ),
     );
   }

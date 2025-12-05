@@ -20,168 +20,93 @@ class AddContactsBySearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        alignment: Alignment.topCenter,
+    return GradientScaffold(
+      title: logic.isSearchUser ? StrRes.addFriend : StrRes.addGroup,
+      subtitle: logic.isSearchUser
+          ? StrRes.searchAddFriends
+          : StrRes.searchJoinGroups,
+      showBackButton: true,
+      trailing: HeaderActionButton(
+        icon: CupertinoIcons.qrcode_viewfinder,
+        onTap: AppNavigator.startScan,
+      ),
+      searchBox: _buildSearchBox(),
+      body: _buildContent(context),
+    );
+  }
+
+  Widget _buildSearchBox() {
+    return Container(
+      height: 56.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          // 1. Header Background
-          GradientHeader.custom(
-            height: 170,
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            content: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomButton(
-                  onTap: () => Get.back(),
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  colorIcon: Colors.white,
-                  colorButton: Colors.white.withOpacity(0.2),
-                  padding: EdgeInsets.all(10.w),
-                ),
-                16.horizontalSpace,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        logic.isSearchUser ? StrRes.addFriend : StrRes.addGroup,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      4.verticalSpace,
-                      Text(
-                        logic.isSearchUser
-                            ? StrRes.searchAddFriends
-                            : StrRes.searchJoinGroups,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                CustomButton(
-                  onTap: AppNavigator.startScan,
-                  icon: CupertinoIcons.qrcode_viewfinder,
-                  colorButton: Colors.white.withOpacity(0.2),
-                  colorIcon: Colors.white,
-                  padding: EdgeInsets.all(10.w),
-                ),
-              ],
-            ),
+          16.horizontalSpace,
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedSearch01,
+            size: 24.w,
+            color: const Color(0xFF9CA3AF),
           ),
-
-          // 2. Main Content Card
-          Container(
-            margin: EdgeInsets.only(top: 140.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 80.h), // Space for Search Box overlap
-                Expanded(child: _buildContent(context)),
-              ],
-            ),
-          ),
-
-          // 3. Search Box (Overlapping)
-          Positioned(
-            top: 100.h,
-            left: 20.w,
-            right: 20.w,
-            child: Container(
-              height: 56.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+          12.horizontalSpace,
+          Expanded(
+            child: TextField(
+              controller: logic.searchCtrl,
+              focusNode: logic.focusNode,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF374151),
               ),
-              child: Row(
-                children: [
-                  16.horizontalSpace,
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedSearch01,
-                    size: 24.w,
-                    color: const Color(0xFF9CA3AF),
-                  ),
-                  12.horizontalSpace,
-                  Expanded(
-                    child: TextField(
-                      controller: logic.searchCtrl,
-                      focusNode: logic.focusNode,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF374151),
+              decoration: InputDecoration(
+                hintText: logic.isSearchUser
+                    ? StrRes.searchByPhoneAndUid
+                    : StrRes.searchIDAddGroup,
+                hintStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => logic.search(),
+            ),
+          ),
+          Obx(() {
+            // Access observable to trigger rebuild
+            final _ = logic.userInfoList.length;
+            final __ = logic.groupInfoList.length;
+            return logic.searchKey.isNotEmpty
+                ? GestureDetector(
+                    onTap: () {
+                      logic.searchCtrl.clear();
+                      logic.focusNode.requestFocus();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(12.w),
+                      child: Icon(
+                        CupertinoIcons.clear_circled_solid,
+                        size: 20.w,
+                        color: const Color(0xFF9CA3AF),
                       ),
-                      decoration: InputDecoration(
-                        hintText: logic.isSearchUser
-                            ? StrRes.searchByPhoneAndUid
-                            : StrRes.searchIDAddGroup,
-                        hintStyle: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF9CA3AF),
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (_) => logic.search(),
                     ),
-                  ),
-                  Obx(() {
-                    // Access observable to trigger rebuild
-                    final _ = logic.userInfoList.length;
-                    final __ = logic.groupInfoList.length;
-                    return logic.searchKey.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              logic.searchCtrl.clear();
-                              logic.focusNode.requestFocus();
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(12.w),
-                              child: Icon(
-                                CupertinoIcons.clear_circled_solid,
-                                size: 20.w,
-                                color: const Color(0xFF9CA3AF),
-                              ),
-                            ),
-                          )
-                        : SizedBox(width: 16.w);
-                  }),
-                ],
-              ),
-            ),
-          ),
+                  )
+                : SizedBox(width: 16.w);
+          }),
         ],
       ),
     );

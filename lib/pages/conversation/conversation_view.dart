@@ -42,57 +42,26 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Obx(() => Stack(
-            alignment: Alignment.topCenter,
+    return Obx(() => GradientScaffold(
+          title: '${logic.titleText} (${logic.conversationCount.value})',
+          subtitle: logic.getUnreadText,
+          trailing: HeaderActionButton(
+            buttonKey: _newButtonKey,
+            onTap: _showActionPopup,
+          ),
+          body: Column(
             children: [
-              // 1. Header Background
-              GradientHeader.main(
-                title:
-                    '${logic.titleText} (${logic.conversationCount.value})',
-                subtitle: logic.getUnreadText,
-                trailing: HeaderActionButton(
-                  buttonKey: _newButtonKey,
-                  onTap: _showActionPopup,
-                ),
-              ),
-
-              // 2. Main Content Card
-              Container(
-                margin: EdgeInsets.only(top: 120.h),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(30.r)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    20.verticalSpace,
-                    // Network unavailable banner
-                    if (!logic.isConnected.value)
-                      _buildNetworkUnavailableBanner(),
-                    // Announcement list
-                    _buildAnnouncementList(),
-                    // Content
-                    Expanded(
-                      child: _buildContentContainer(),
-                    ),
-                  ],
-                ),
+              // Network unavailable banner
+              if (!logic.isConnected.value) _buildNetworkUnavailableBanner(),
+              // Announcement list
+              _buildAnnouncementList(),
+              // Content
+              Expanded(
+                child: _buildContentContainer(),
               ),
             ],
-          )),
-    );
+          ),
+        ));
   }
 
   Widget _buildAnnouncementList() {

@@ -21,153 +21,72 @@ class RealNameAuthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          // 1. Header Background
-          GradientHeader.custom(
-            height: 200,
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      behavior: HitTestBehavior.translucent,
-                      child: Padding(
-                        padding: EdgeInsets.all(8.w),
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                          size: 20.sp,
+    return GradientScaffold(
+      title: StrRes.realNameAuth,
+      subtitle: StrRes.identityVerification,
+      showBackButton: true,
+      trailing: HeaderActionButton(
+        icon: CupertinoIcons.refresh,
+        onTap: logic.loadAuthInfo,
+      ),
+      scrollable: true,
+      body: Obx(
+        () => logic.isLoading.value
+            ? Center(
+                child: SpinKitFadingCircle(color: Color(0xFF8E9AB0)),
+              )
+            : AnimationLimiter(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 420),
+                      childAnimationBuilder: (widget) =>
+                          SlideAnimation(
+                        verticalOffset: 40.0,
+                        curve: Curves.easeOutQuart,
+                        child: FadeInAnimation(child: widget),
+                      ),
+                      children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16.w),
+                          child: _buildStatusCard(),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            StrRes.realNameAuth,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24.sp,
-                              color: Colors.white,
-                              height: 1.2,
-                            ),
-                          ),
-                          6.verticalSpace,
-                          Text(
-                            StrRes.identityVerification,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13.sp,
-                              color: Colors.white.withOpacity(0.85),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    10.horizontalSpace,
-                    CustomButton(
-                      icon: CupertinoIcons.refresh,
-                      onTap: logic.loadAuthInfo,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // 2. Main Content Card
-          Container(
-            margin: EdgeInsets.only(top: 150.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-              child: Obx(
-                () => logic.isLoading.value
-                    ? const Center(
-                        child: SpinKitFadingCircle(color: Color(0xFF8E9AB0)),
-                      )
-                    : AnimationLimiter(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.only(bottom: 40.h, top: 20.h),
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-                              FocusScope.of(context).unfocus();
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: AnimationConfiguration.toStaggeredList(
-                                duration: const Duration(milliseconds: 420),
-                                childAnimationBuilder: (widget) =>
-                                    SlideAnimation(
-                                  verticalOffset: 40.0,
-                                  curve: Curves.easeOutQuart,
-                                  child: FadeInAnimation(child: widget),
-                                ),
-                                children: [
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16.w),
-                                    child: _buildStatusCard(),
-                                  ),
-                                  12.verticalSpace,
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16.w),
-                                    child: logic.canEdit
-                                        ? Column(
-                                            children: [
-                                              _buildFormCard(),
-                                              12.verticalSpace,
-                                              _buildImageUploadCard(),
-                                              20.verticalSpace,
-                                              _buildSubmitButton(),
-                                            ],
-                                          )
-                                        : logic.authStatus.value == 3
-                                            ? Column(
-                                                children: [
-                                                  _buildRejectReasonCard(),
-                                                  12.verticalSpace,
-                                                  _buildResubmitButton(),
-                                                ],
-                                              )
-                                            : _buildApprovedInfoCard(),
-                                  ),
-                                  30.verticalSpace,
-                                ],
-                              ),
-                            ),
-                          ),
+                        12.verticalSpace,
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16.w),
+                          child: logic.canEdit
+                              ? Column(
+                                  children: [
+                                    _buildFormCard(),
+                                    12.verticalSpace,
+                                    _buildImageUploadCard(),
+                                    20.verticalSpace,
+                                    _buildSubmitButton(),
+                                  ],
+                                )
+                              : logic.authStatus.value == 3
+                                  ? Column(
+                                      children: [
+                                        _buildRejectReasonCard(),
+                                        12.verticalSpace,
+                                        _buildResubmitButton(),
+                                      ],
+                                    )
+                                  : _buildApprovedInfoCard(),
                         ),
-                      ),
+                        30.verticalSpace,
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
       ),
     );
   }

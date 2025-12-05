@@ -19,162 +19,126 @@ class AccountSetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          // 1. Header Background
-          GradientHeader(
-            leading: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () => Get.back(),
+    return GradientScaffold(
+      title: StrRes.accountSetup,
+      showBackButton: true,
+      scrollable: true,
+      bodyColor: const Color(0xFFF8F9FA),
+      body: Obx(
+        () => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Notification Settings Section
+            SectionTitle(title: StrRes.notificationSettings),
+            SettingsMenuSection(
+              items: [
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedNotificationOff02,
+                  label: StrRes.notDisturbMode,
+                  hasSwitch: true,
+                  switchValue: logic.isGlobalNotDisturb,
+                  onSwitchChanged: (_) => logic.toggleNotDisturbMode(),
                 ),
-                Text(
-                  StrRes.accountSetup,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                  ),
-                )
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedMusicNote01,
+                  label: StrRes.allowRing,
+                  hasSwitch: true,
+                  switchValue: logic.isAllowBeep,
+                  onSwitchChanged: (_) => logic.toggleBeep(),
+                ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedSmartPhone01,
+                  label: StrRes.allowVibrate,
+                  hasSwitch: true,
+                  switchValue: logic.isAllowVibration,
+                  onSwitchChanged: (_) => logic.toggleVibration(),
+                  showDivider: false,
+                ),
               ],
             ),
-            height: 150,
-          ),
 
-          // 2. Main Content
-          Container(
-            margin: EdgeInsets.only(top: 100.h),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-            ),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(top: 24.h, bottom: 40.h),
-              child: Obx(
-                () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Notification Settings Section
-                    SectionTitle(title: StrRes.notificationSettings),
-                    SettingsMenuSection(
-                      items: [
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedNotificationOff02,
-                          label: StrRes.notDisturbMode,
-                          hasSwitch: true,
-                          switchValue: logic.isGlobalNotDisturb,
-                          onSwitchChanged: (_) => logic.toggleNotDisturbMode(),
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedMusicNote01,
-                          label: StrRes.allowRing,
-                          hasSwitch: true,
-                          switchValue: logic.isAllowBeep,
-                          onSwitchChanged: (_) => logic.toggleBeep(),
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedSmartPhone01,
-                          label: StrRes.allowVibrate,
-                          hasSwitch: true,
-                          switchValue: logic.isAllowVibration,
-                          onSwitchChanged: (_) => logic.toggleVibration(),
-                          showDivider: false,
-                        ),
-                      ],
-                    ),
+            20.verticalSpace,
 
-                    20.verticalSpace,
-
-                    // Privacy Settings Section
-                    SectionTitle(title: StrRes.privacySettings),
-                    SettingsMenuSection(
-                      items: [
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedUserAdd01,
-                          label: StrRes.allowAddMeFried,
-                          hasSwitch: true,
-                          switchValue: logic.isAllowAddFriend,
-                          onSwitchChanged: (_) =>
-                              logic.toggleForbidAddMeToFriend(),
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedUserBlock01,
-                          label: StrRes.blacklist,
-                          onTap: logic.blacklist,
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedGlobe02,
-                          label: StrRes.languageSetup,
-                          value: logic.curLanguage.value,
-                          onTap: logic.languageSetting,
-                          showDivider: false,
-                        ),
-                      ],
-                    ),
-
-                    20.verticalSpace,
-
-                    // Security Settings Section
-                    SectionTitle(title: StrRes.securitySettings),
-                    SettingsMenuSection(
-                      items: [
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedLockPassword,
-                          label: StrRes.unlockSettings,
-                          onTap: logic.unlockSetup,
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedKeyframeAlignHorizontal,
-                          label: StrRes.changePassword,
-                          onTap: logic.changePwd,
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedKid,
-                          label: StrRes.teenMode,
-                          hasSwitch: true,
-                          switchValue: logic.teenModeEnabled.value,
-                          onSwitchChanged: (_) => logic.toggleTeenMode(),
-                          showDivider: false,
-                        ),
-                      ],
-                    ),
-
-                    20.verticalSpace,
-
-                    // Danger Zone Section
-                    SectionTitle(
-                      title: StrRes.dangerZone,
-                      color: const Color(0xFFEF4444),
-                    ),
-                    SettingsMenuSection(
-                      items: [
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedDelete02,
-                          label: StrRes.clearChatHistory,
-                          onTap: logic.clearChatHistory,
-                          isWarning: true,
-                        ),
-                        _buildMenuItem(
-                          icon: HugeIcons.strokeRoundedUserRemove01,
-                          label: StrRes.deleteAccount,
-                          onTap: logic.deleteAccount,
-                          isWarning: true,
-                          showDivider: false,
-                        ),
-                      ],
-                    ),
-                  ],
+            // Privacy Settings Section
+            SectionTitle(title: StrRes.privacySettings),
+            SettingsMenuSection(
+              items: [
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedUserAdd01,
+                  label: StrRes.allowAddMeFried,
+                  hasSwitch: true,
+                  switchValue: logic.isAllowAddFriend,
+                  onSwitchChanged: (_) =>
+                      logic.toggleForbidAddMeToFriend(),
                 ),
-              ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedUserBlock01,
+                  label: StrRes.blacklist,
+                  onTap: logic.blacklist,
+                ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedGlobe02,
+                  label: StrRes.languageSetup,
+                  value: logic.curLanguage.value,
+                  onTap: logic.languageSetting,
+                  showDivider: false,
+                ),
+              ],
             ),
-          ),
-        ],
+
+            20.verticalSpace,
+
+            // Security Settings Section
+            SectionTitle(title: StrRes.securitySettings),
+            SettingsMenuSection(
+              items: [
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedLockPassword,
+                  label: StrRes.unlockSettings,
+                  onTap: logic.unlockSetup,
+                ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedKeyframeAlignHorizontal,
+                  label: StrRes.changePassword,
+                  onTap: logic.changePwd,
+                ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedKid,
+                  label: StrRes.teenMode,
+                  hasSwitch: true,
+                  switchValue: logic.teenModeEnabled.value,
+                  onSwitchChanged: (_) => logic.toggleTeenMode(),
+                  showDivider: false,
+                ),
+              ],
+            ),
+
+            20.verticalSpace,
+
+            // Danger Zone Section
+            SectionTitle(
+              title: StrRes.dangerZone,
+              color: const Color(0xFFEF4444),
+            ),
+            SettingsMenuSection(
+              items: [
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedDelete02,
+                  label: StrRes.clearChatHistory,
+                  onTap: logic.clearChatHistory,
+                  isWarning: true,
+                ),
+                _buildMenuItem(
+                  icon: HugeIcons.strokeRoundedUserRemove01,
+                  label: StrRes.deleteAccount,
+                  onTap: logic.deleteAccount,
+                  isWarning: true,
+                  showDivider: false,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

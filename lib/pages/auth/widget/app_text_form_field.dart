@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:openim/pages/auth/theming/colors.dart';
 
 class AppTextFormField extends StatelessWidget {
-  final String hint;
+  final String? hint;
   final String? label;
   final String? helperText;
   final Widget? suffixIcon;
@@ -19,7 +19,7 @@ class AppTextFormField extends StatelessWidget {
 
   const AppTextFormField({
     super.key,
-    required this.hint,
+    this.hint,
     this.label,
     this.helperText,
     this.suffixIcon,
@@ -66,7 +66,7 @@ class AppTextFormField extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'FilsonPro',
                     fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: const Color(0xFF374151),
                   ),
                 )

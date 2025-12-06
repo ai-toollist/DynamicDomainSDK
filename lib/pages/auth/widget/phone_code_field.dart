@@ -72,7 +72,6 @@ class _PhoneCodeFieldState extends State<PhoneCodeField> {
         Expanded(
           child: AppTextFormField(
             label: StrRes.verificationCode,
-            hint: StrRes.smsVerificationCodeHint,
             keyboardType: TextInputType.number,
             controller: widget.controller,
             validator: (value) {
@@ -82,14 +81,13 @@ class _PhoneCodeFieldState extends State<PhoneCodeField> {
               }
               return null;
             },
+            suffixIcon: _CodeSendButton(
+              canSend: _canSend,
+              secondsLeft: _left,
+              isSending: _isSending,
+              onTap: _handleSend,
+            ),
           ),
-        ),
-        Gap(12.w),
-        _CodeSendButton(
-          canSend: _canSend,
-          secondsLeft: _left,
-          isSending: _isSending,
-          onTap: _handleSend,
         ),
       ],
     );
@@ -122,19 +120,20 @@ class _CodeSendButton extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       transitionBuilder: (child, anim) =>
           FadeTransition(opacity: anim, child: child),
-      child: SizedBox(
+      child: Container(
         key: ValueKey(label),
-        height: 44.h,
+        height: 40.h,
+        margin: EdgeInsets.only(right: 8.w),
         child: TextButton(
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             backgroundColor: canSend
                 ? Theme.of(context).primaryColor
                 : const Color(0xFF9CA3AF).withOpacity(0.3),
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r)),
-            minimumSize: Size(100.w, 44.h),
+            minimumSize: Size(100.w, 40.h),
           ),
           onPressed: canSend ? onTap : null,
           child: isSending

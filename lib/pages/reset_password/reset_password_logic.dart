@@ -5,6 +5,8 @@ import 'package:openim_common/openim_common.dart';
 class ResetPasswordLogic extends GetxController {
   // Form key for validation
   final formKey = GlobalKey<FormState>();
+    bool fromLogin = false;
+
 
   // Controllers
   final phoneNumberCtrl = TextEditingController();
@@ -23,6 +25,8 @@ class ResetPasswordLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
+        fromLogin = Get.arguments?['fromLogin'] ?? false;
+
     // Add listeners for real-time validation
     phoneNumberCtrl.addListener(_validateForm);
     passwordCtrl.addListener(_validateForm);

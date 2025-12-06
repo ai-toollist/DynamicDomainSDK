@@ -148,13 +148,13 @@ class ChatApp extends StatelessWidget {
             ),
           ),
         ),
-        primaryColor: const Color(0xFF1510FF),
+        primaryColor: const Color(0xFF2962FF),
         colorScheme: const ColorScheme(
           brightness:
               Brightness.light, // 这里应该是 Brightness.light 或 Brightness.dark
-          primary: Color(0xFF1510FF), // 主要颜色
+          primary: Color(0xFF2962FF), // 主要颜色
           onPrimary: Colors.white, // 主要颜色上的文字和图标颜色
-          secondary: Color(0xFF1510FF), // 辅助颜色
+          secondary: Color(0xFF2962FF), // 辅助颜色
           onSecondary: Colors.white, // 辅助颜色上的文字和图标颜色
           error: Colors.red, // 错误颜色
           onError: Colors.white, // 错误颜色上的文字和图标颜色

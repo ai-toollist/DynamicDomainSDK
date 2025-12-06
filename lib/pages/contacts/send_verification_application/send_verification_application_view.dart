@@ -16,7 +16,7 @@ class SendVerificationApplicationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logic.inputCtrl.text =
-        logic.isEnterGroup ? StrRes.addMeAsFriend : StrRes.acceptMeJoin;
+        logic.isEnterGroup ? StrRes.acceptMeJoin : StrRes.addMeAsFriend;
     return TouchCloseSoftKeyboard(
       child: GradientScaffold(
         title: logic.isEnterGroup

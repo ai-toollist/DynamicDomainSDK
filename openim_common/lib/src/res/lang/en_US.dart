@@ -14,6 +14,8 @@ const Map<String, String> en_US = {
   "registerSuccessfully": "Registration Successful",
   "registerError": "Registration Failed",
   "forgetPassword": "Forgot Password?",
+  "forgotPassword": "Forgot Password",
+  "resetPassword": "Reset Password",
   "verificationCodeLogin": "Verification Code Login",
   "login": "Login",
   "register": "Register",

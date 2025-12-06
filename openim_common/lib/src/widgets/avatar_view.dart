@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,7 +61,7 @@ class AvatarView extends StatelessWidget {
       );
 
   Color get _textAvatarBgColor =>
-      isGroup ? const Color(0xFFA78BFA) : const Color(0xFF4F42FF);
+      isGroup ? const Color(0xFF732DD9) : Theme.of(Get.context!).primaryColor;
 
   String? get _showName {
     if (isGroup) return null;

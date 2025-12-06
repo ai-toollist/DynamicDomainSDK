@@ -50,7 +50,6 @@ class _NicknameFieldState extends State<NicknameField> {
   Widget build(BuildContext context) {
     return AppTextFormField(
       label: StrRes.nickname,
-      hint: StrRes.nicknameHint,
       focusNode: effectiveFocusNode,
       validator: (value) {
         // Don't modify controller.text inside validator - it causes setState during build

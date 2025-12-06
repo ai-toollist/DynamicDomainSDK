@@ -32,9 +32,6 @@ class _PasswordFieldState extends State<PasswordField> {
         label: isConfirmPassword ? StrRes.confirmPassword : StrRes.password,
         focusNode: widget.focusNode,
         controller: widget.controller,
-        hint: isConfirmPassword
-            ? StrRes.confirmPasswordHint
-            : StrRes.passwordHint,
         // helperText: widget.validateFormat ? StrRes.wrongPasswordFormat : null,
         isObscureText: isObscureText,
         onChanged: (value) {

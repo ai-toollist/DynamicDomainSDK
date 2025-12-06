@@ -44,7 +44,9 @@ class StrRes {
 
   static String get forgetPassword => 'forgetPassword'.tr;
 
-  static String get verificationCodeLogin => 'verificationCodeLogin'.tr;
+  static String get forgotPassword => 'forgotPassword'.tr;
+
+  static String get resetPassword => 'resetPassword'.tr;
 
   static String get login => 'login'.tr;
   static String get register => 'register'.tr;

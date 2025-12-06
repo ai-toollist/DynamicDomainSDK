@@ -16,7 +16,6 @@ class PhoneField extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppTextFormField(
       label: StrRes.phoneNumber,
-      hint: StrRes.phoneNumberHint,
       keyboardType: TextInputType.phone,
       focusNode: focusNode,
       onChanged: (value) {

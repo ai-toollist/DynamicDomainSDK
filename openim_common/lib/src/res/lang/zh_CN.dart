@@ -14,6 +14,8 @@ const Map<String, String> zh_CN = {
   "registerSuccessfully": "注册成功",
   "registerError": "注册失败",
   "forgetPassword": "忘记密码",
+  "forgotPassword": "忘记密码",
+  "resetPassword": "重置密码",
   "verificationCodeLogin": "验证码登录",
   "login": "登录",
   "register": "注册",

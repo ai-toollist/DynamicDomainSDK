@@ -239,7 +239,7 @@ class AppNavigator {
 
   static startChangePassword() => Get.toNamed(AppRoutes.changePassword);
 
-  static startResetPassword() => Get.toNamed(AppRoutes.resetPassword);
+  static startResetPassword({bool fromLogin = true}) => Get.toNamed(AppRoutes.resetPassword, arguments: {'fromLogin': fromLogin});
 
   static startAboutUs() => Get.toNamed(AppRoutes.aboutUs);
 

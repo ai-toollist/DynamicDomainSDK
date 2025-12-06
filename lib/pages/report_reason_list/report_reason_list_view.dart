@@ -83,7 +83,7 @@ class ReportReasonListPage extends StatelessWidget {
     return GradientScaffold(
       title: StrRes.report,
       showBackButton: true,
-      headerTrailing: Container(
+      trailing: Container(
         width: 44.w,
         height: 44.w,
         decoration: BoxDecoration(
@@ -96,7 +96,7 @@ class ReportReasonListPage extends StatelessWidget {
           size: 22.w,
         ),
       ),
-      content: ClipRRect(
+      body: ClipRRect(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(30.r),
         ),

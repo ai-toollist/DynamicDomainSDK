@@ -31,6 +31,7 @@ class GroupMemberListLogic extends GetxController {
   final poController = CustomPopupMenuController();
   final searchCtrl = TextEditingController();
   final focusNode = FocusNode();
+  final scrollController = ScrollController();
   int count = 500;
   final myGroupMemberLevel = 1.obs;
   final isSearching = false.obs;
@@ -38,7 +39,7 @@ class GroupMemberListLogic extends GetxController {
   late GroupMemberOpType opType;
   late StreamSubscription mISub;
   late bool isShowEveryone;
-  List<String>? defaultCheckedUserIDs;
+  List<String> defaultCheckedUserIDs = [];
   int? maxSelectCount;
 
   int _actualLoadedCount = 0;
@@ -70,6 +71,7 @@ class GroupMemberListLogic extends GetxController {
     mISub.cancel();
     searchCtrl.dispose();
     focusNode.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
@@ -78,7 +80,7 @@ class GroupMemberListLogic extends GetxController {
     groupInfo = Get.arguments['groupInfo'];
     isShowEveryone = Get.arguments['isShowEveryone'];
     opType = Get.arguments['opType'];
-    defaultCheckedUserIDs = Get.arguments['defaultCheckedUserIDs'];
+    defaultCheckedUserIDs = Get.arguments['defaultCheckedUserIDs'] ?? [];
     maxSelectCount = Get.arguments['maxSelectCount'];
     mISub = imLogic.memberInfoChangedSubject.listen(_updateMemberLevel);
     super.onInit();
@@ -140,9 +142,9 @@ class GroupMemberListLogic extends GetxController {
 
     _actualLoadedCount += list.length;
 
-    if (defaultCheckedUserIDs != null && defaultCheckedUserIDs!.isNotEmpty) {
+    if (defaultCheckedUserIDs.isNotEmpty) {
       final filteredList = list.where((member) {
-        return !defaultCheckedUserIDs!.contains(member.userID);
+        return !defaultCheckedUserIDs.contains(member.userID);
       }).toList();
       memberList.addAll(filteredList);
     } else {
@@ -165,11 +167,21 @@ class GroupMemberListLogic extends GetxController {
       return;
     }
     if (isMultiSelMode) {
+      // Lưu vị trí scroll trước khi thay đổi checkedList
+      final scrollOffset = scrollController.hasClients ? scrollController.offset : 0.0;
+      
       if (isChecked(membersInfo)) {
         checkedList.remove(membersInfo);
       } else if (checkedList.length < maxLength) {
         checkedList.add(membersInfo);
       }
+      
+      // Khôi phục vị trí scroll sau khi rebuild
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.jumpTo(scrollOffset);
+        }
+      });
     } else {
       viewMemberInfo(membersInfo);
     }
@@ -280,7 +292,7 @@ class GroupMemberListLogic extends GetxController {
         return;
       }
 
-      final alreadySelectedCount = defaultCheckedUserIDs?.length ?? 0;
+      final alreadySelectedCount = defaultCheckedUserIDs.length;
       if (alreadySelectedCount >= 10) {
         IMViews.showToast(StrRes.maxAtUserHint);
         return;

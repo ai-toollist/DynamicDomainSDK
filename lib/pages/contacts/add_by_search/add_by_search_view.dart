@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/constants/app_color.dart';
 import 'package:openim/routes/app_navigator.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 import '../../../widgets/custom_buttom.dart';
 import 'add_by_search_logic.dart';
@@ -36,79 +36,17 @@ class AddContactsBySearchPage extends StatelessWidget {
   }
 
   Widget _buildSearchBox() {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          16.horizontalSpace,
-          HugeIcon(
-            icon: HugeIcons.strokeRoundedSearch01,
-            size: 24.w,
-            color: const Color(0xFF9CA3AF),
-          ),
-          12.horizontalSpace,
-          Expanded(
-            child: TextField(
-              controller: logic.searchCtrl,
-              focusNode: logic.focusNode,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF374151),
-              ),
-              decoration: InputDecoration(
-                hintText: logic.isSearchUser
-                    ? StrRes.searchByPhoneAndUid
-                    : StrRes.searchIDAddGroup,
-                hintStyle: TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF9CA3AF),
-                ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-              textInputAction: TextInputAction.search,
-              onSubmitted: (_) => logic.search(),
-            ),
-          ),
-          Obx(() {
-            // Access observable to trigger rebuild
-            final _ = logic.userInfoList.length;
-            final __ = logic.groupInfoList.length;
-            return logic.searchKey.isNotEmpty
-                ? GestureDetector(
-                    onTap: () {
-                      logic.searchCtrl.clear();
-                      logic.focusNode.requestFocus();
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.all(12.w),
-                      child: Icon(
-                        CupertinoIcons.clear_circled_solid,
-                        size: 20.w,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                    ),
-                  )
-                : SizedBox(width: 16.w);
-          }),
-        ],
-      ),
+    return WechatStyleSearchBox(
+      controller: logic.searchCtrl,
+      focusNode: logic.focusNode,
+      hintText: logic.isSearchUser
+          ? StrRes.searchByPhoneAndUid
+          : StrRes.searchIDAddGroup,
+      onSubmitted: (_) => logic.search(),
+      onCleared: () {
+        logic.searchCtrl.clear();
+        logic.focusNode.requestFocus();
+      },
     );
   }
 

@@ -10,7 +10,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../core/controller/im_controller.dart';
-import '../../../widgets/gradient_header.dart';
+import '../../../widgets/gradient_scaffold.dart';
 import 'my_info_logic.dart';
 
 class MyInfoPage extends StatelessWidget {

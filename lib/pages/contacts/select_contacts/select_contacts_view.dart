@@ -12,7 +12,7 @@ import 'package:sprintf/sprintf.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../widgets/friend_item_view.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'select_contacts_logic.dart';
 
 class SelectContactsPage extends StatelessWidget {

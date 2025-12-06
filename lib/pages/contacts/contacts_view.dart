@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/widgets/friend_item_view.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:azlistview/azlistview.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';

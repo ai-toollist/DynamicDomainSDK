@@ -22,7 +22,7 @@ class GroupManagePage extends StatelessWidget {
       title: StrRes.groupManage,
       subtitle: StrRes.groupSettingsPrivacy,
       showBackButton: true,
-      headerTrailing: Container(
+      trailing: Container(
         width: 44.w,
         height: 44.w,
         decoration: BoxDecoration(
@@ -35,7 +35,8 @@ class GroupManagePage extends StatelessWidget {
           size: 22.w,
         ),
       ),
-      content: ClipRRect(
+      scrollable: true,
+      body: ClipRRect(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(30.r),
         ),

@@ -26,6 +26,7 @@ class WechatStyleSearchBox extends StatefulWidget {
     this.onCleared,
     this.onChanged,
     this.onTap,
+    this.suffix,
   });
 
   final TextEditingController? controller;
@@ -47,6 +48,7 @@ class WechatStyleSearchBox extends StatefulWidget {
   final Function()? onCleared;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
+  final Widget? suffix;
 
   @override
   State<WechatStyleSearchBox> createState() => _WechatStyleSearchBoxState();
@@ -72,11 +74,11 @@ class _WechatStyleSearchBoxState extends State<WechatStyleSearchBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.height ?? 48,
+      height: widget.height ?? 56.h,
       margin: widget.margin ?? EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: widget.backgroundColor ?? const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF9CA3AF).withOpacity(0.06),
@@ -152,6 +154,7 @@ class _WechatStyleSearchBoxState extends State<WechatStyleSearchBox> {
                         ),
                       ),
                 if (_showClearBtn) _clearBtn,
+                if (widget.suffix != null) widget.suffix!,
               ],
             ),
           ),

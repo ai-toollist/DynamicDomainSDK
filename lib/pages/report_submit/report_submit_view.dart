@@ -25,13 +25,14 @@ class ReportDetailPage extends StatelessWidget {
         title: StrRes.reportSubmit,
         subtitle: logic.reportReason.value,
         showBackButton: true,
-        headerTrailing: CustomButton(
+        trailing: CustomButton(
           icon: CupertinoIcons.paperplane,
           onTap: logic.submitReport,
           colorButton: Colors.white.withOpacity(0.3),
           colorIcon: Colors.white,
         ),
-         content: ClipRRect(
+        scrollable: true,
+        body: ClipRRect(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(30.r),
           ),

@@ -546,7 +546,7 @@ class ChatSetupLogic extends GetxController {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(32.r),
                 topRight: Radius.circular(32.r),
@@ -576,87 +576,74 @@ class ChatSetupLogic extends GetxController {
 
                 // Title Section
                 Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
                   child: Row(
                     children: [
-                      HugeIcon(
-                        icon: HugeIcons.strokeRoundedImage02,
-                        size: 24.w,
-                        color: const Color(0xFF374151),
+                      Container(
+                        padding: EdgeInsets.all(10.w),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3F4F6),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedImage02,
+                          size: 24.w,
+                          color: const Color(0xFF374151),
+                        ),
                       ),
-                      12.horizontalSpace,
+                      16.horizontalSpace,
                       Text(
                         StrRes.setChatBackground,
                         style: TextStyle(
                           fontFamily: 'FilsonPro',
                           fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF374151),
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF111827),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Background Options Container
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                        offset: const Offset(0, 2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                    border: Border.all(
-                      color: const Color(0xFFF3F4F6),
-                      width: 1,
-                    ),
-                  ),
+                // Options
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Column(
                     children: [
-                      _buildBackgroundActionItem(
+                      _buildOptionItem(
                         icon: HugeIcons.strokeRoundedImage01,
                         title: StrRes.selectAssetsFromAlbum,
-                        iconColor: const Color(0xFF34D399),
+                        color: const Color(0xFF34D399),
                         onTap: () {
                           Get.back();
                           _onTapAlbum();
                         },
-                        index: 0,
                       ),
-                      _buildBackgroundDivider(),
-                      _buildBackgroundActionItem(
+                      16.verticalSpace,
+                      _buildOptionItem(
                         icon: HugeIcons.strokeRoundedCamera01,
                         title: StrRes.selectAssetsFromCamera,
-                        iconColor: const Color(0xFF4F42FF),
+                        color: const Color(0xFF4F42FF),
                         onTap: () {
                           Get.back();
                           _onTapCamera();
                         },
-                        index: 1,
                       ),
-                      _buildBackgroundDivider(),
-                      _buildBackgroundActionItem(
+                      16.verticalSpace,
+                      _buildOptionItem(
                         icon: HugeIcons.strokeRoundedRefresh,
                         title: StrRes.setDefaultBackground,
-                        iconColor: const Color(0xFFFBBF24),
+                        color: const Color(0xFFFBBF24),
                         onTap: () {
                           Get.back();
                           _recoverBackground();
                         },
-                        index: 2,
-                        isLast: true,
                       ),
                     ],
                   ),
                 ),
 
-                SizedBox(height: 30.h),
+                SizedBox(height: 40.h),
               ],
             ),
           ),
@@ -667,60 +654,60 @@ class ChatSetupLogic extends GetxController {
     );
   }
 
-  Widget _buildBackgroundDivider() {
-    return Padding(
-      padding: EdgeInsets.only(left: 52.w),
-      child: const Divider(
-        height: 1,
-        thickness: 1,
-        color: Color(0xFFF3F4F6),
-      ),
-    );
-  }
-
-  Widget _buildBackgroundActionItem({
+  Widget _buildOptionItem({
     required List<List<dynamic>> icon,
     required String title,
-    required Color iconColor,
+    required Color color,
     required VoidCallback onTap,
-    required int index,
-    bool isLast = false,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-          decoration: isLast
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(16.r),
-                    bottomRight: Radius.circular(16.r),
-                  ),
-                )
-              : null,
-          child: Row(
-            children: [
-              HugeIcon(
-                  icon: icon,
-                  size: 20.w,
-                  color: AppColor.iconColor // iconColor,
-                  ),
-              16.horizontalSpace,
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF374151),
-                  ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: const Color(0xFFF3F4F6)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.05),
+              offset: const Offset(0, 4),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16.r),
+              ),
+              child: HugeIcon(
+                icon: icon,
+                size: 24.w,
+                color: color,
+              ),
+            ),
+            16.horizontalSpace,
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2937),
                 ),
               ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16.w,
+              color: const Color(0xFFD1D5DB),
+            ),
+          ],
         ),
       ),
     );

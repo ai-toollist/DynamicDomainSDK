@@ -10,7 +10,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/constants/app_color.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:search_keyword_text/search_keyword_text.dart';
@@ -37,108 +37,37 @@ class SearchChatHistoryPage extends StatelessWidget {
   }
 
   Widget _buildSearchBox(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 56.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                16.horizontalSpace,
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
-                  size: 24.w,
-                  color: const Color(0xFF9CA3AF),
-                ),
-                12.horizontalSpace,
-                Expanded(
-                  child: TextField(
-                    controller: logic.searchCtrl,
-                    focusNode: logic.focusNode,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF374151),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: StrRes.search,
-                      hintStyle: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => logic.search(),
-                    onChanged: (v) {
-                      logic.onChanged(v);
-                    },
-                  ),
-                ),
-                Obx(() => logic.searchKey.value.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () {
-                          logic.clearInput();
-                          logic.focusNode.requestFocus();
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(12.w),
-                          child: Icon(
-                            CupertinoIcons.clear_circled_solid,
-                            size: 20.w,
-                            color: const Color(0xFF9CA3AF),
-                          ),
-                        ),
-                      )
-                    : SizedBox(width: 16.w)),
-              ],
+    return WechatStyleSearchBox(
+      controller: logic.searchCtrl,
+      focusNode: logic.focusNode,
+      onSubmitted: (_) => logic.search(),
+      onChanged: (v) {
+        logic.onChanged(v);
+      },
+      onCleared: () {
+        logic.clearInput();
+        logic.focusNode.requestFocus();
+      },
+      suffix: GestureDetector(
+        onTap: () => datePicker(context),
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+          width: 28.w,
+          height: 28.h,
+          margin: EdgeInsets.only(left: 8.w),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF7F8FA),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Center(
+            child: HugeIcon(
+              icon: HugeIcons.strokeRoundedCalendar03,
+              size: 18.w,
+              color: const Color(0xFF6B7280),
             ),
           ),
         ),
-        12.horizontalSpace,
-        // Calendar button
-        GestureDetector(
-          onTap: () => datePicker(context),
-          child: Container(
-            width: 56.h,
-            height: 56.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Center(
-              child: HugeIcon(
-                icon: HugeIcons.strokeRoundedCalendar03,
-                size: 24.w,
-                color: AppColor.iconColor,
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 

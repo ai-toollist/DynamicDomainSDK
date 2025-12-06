@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:search_keyword_text/search_keyword_text.dart';
@@ -133,73 +133,15 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
   }
 
   Widget _buildSearchBox() {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          16.horizontalSpace,
-          HugeIcon(
-            icon: HugeIcons.strokeRoundedSearch01,
-            size: 24.w,
-            color: const Color(0xFF9CA3AF),
-          ),
-          12.horizontalSpace,
-          Expanded(
-            child: TextField(
-              controller: logic.searchCtrl,
-              focusNode: logic.focusNode,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF374151),
-              ),
-              decoration: InputDecoration(
-                hintText: StrRes.search,
-                hintStyle: TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF9CA3AF),
-                ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-              textInputAction: TextInputAction.search,
-              onSubmitted: (_) => logic.search(),
-              onChanged: (_) => setState(() {}),
-            ),
-          ),
-          logic.searchCtrl.text.isNotEmpty
-              ? GestureDetector(
-                  onTap: () {
-                    logic.clearSearch();
-                    setState(() {});
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(12.w),
-                    child: Icon(
-                      CupertinoIcons.clear_circled_solid,
-                      size: 20.w,
-                      color: const Color(0xFF9CA3AF),
-                    ),
-                  ),
-                )
-              : SizedBox(width: 16.w),
-        ],
-      ),
+    return WechatStyleSearchBox(
+      controller: logic.searchCtrl,
+      focusNode: logic.focusNode,
+      onSubmitted: (_) => logic.search(),
+      onChanged: (_) => setState(() {}),
+      onCleared: () {
+        logic.clearSearch();
+        setState(() {});
+      },
     );
   }
 

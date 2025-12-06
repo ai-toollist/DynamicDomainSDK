@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import 'package:openim/core/controller/im_controller.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:flutter/cupertino.dart';
 

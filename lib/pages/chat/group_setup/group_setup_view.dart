@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 import '../../../widgets/custom_buttom.dart';
-import '../../../widgets/gradient_header.dart';
+import '../../../widgets/gradient_scaffold.dart';
 import '../../../widgets/menu_item_widgets.dart';
 import 'group_setup_logic.dart';
 

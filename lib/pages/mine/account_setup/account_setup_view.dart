@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-import '../../../widgets/gradient_header.dart';
+import '../../../widgets/gradient_scaffold.dart';
 import '../../../widgets/settings_menu.dart';
 import '../../../widgets/section_title.dart';
 import 'account_setup_logic.dart';

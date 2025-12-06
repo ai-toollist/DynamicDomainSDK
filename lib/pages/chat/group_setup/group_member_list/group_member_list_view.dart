@@ -10,7 +10,7 @@ import 'package:openim_common/openim_common.dart';
 import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:openim/widgets/custom_buttom.dart';
-import 'package:openim/widgets/gradient_header.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 
 import 'group_member_list_logic.dart';
 
@@ -52,81 +52,21 @@ class GroupMemberListPage extends StatelessWidget {
   }
 
   Widget _buildSearchBox() {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          16.horizontalSpace,
-          Icon(
-            Ionicons.search,
-            size: 24.w,
-            color: const Color(0xFF9CA3AF),
-          ),
-          12.horizontalSpace,
-          Expanded(
-            child: TextField(
-              controller: logic.searchCtrl,
-              focusNode: logic.focusNode,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF374151),
-              ),
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                hintText: StrRes.search,
-                hintStyle: TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF9CA3AF),
-                ),
-                contentPadding: EdgeInsets.zero,
-              ),
-              onSubmitted: (_) => logic.search(),
-              onChanged: (_) {
-                if (logic.searchCtrl.text.trim().isNotEmpty) {
-                  logic.search();
-                } else {
-                  logic.clearSearch();
-                }
-              },
-            ),
-          ),
-          Obx(() {
-            final _ = logic.memberList.length;
-            return logic.searchCtrl.text.isNotEmpty
-                ? GestureDetector(
-                    onTap: () {
-                      logic.searchCtrl.clear();
-                      logic.clearSearch();
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 16.w),
-                      child: Icon(
-                        Icons.close,
-                        size: 20.w,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink();
-          }),
-        ],
-      ),
+    return WechatStyleSearchBox(
+      controller: logic.searchCtrl,
+      focusNode: logic.focusNode,
+      onSubmitted: (_) => logic.search(),
+      onChanged: (_) {
+        if (logic.searchCtrl.text.trim().isNotEmpty) {
+          logic.search();
+        } else {
+          logic.clearSearch();
+        }
+      },
+      onCleared: () {
+        logic.searchCtrl.clear();
+        logic.clearSearch();
+      },
     );
   }
 
@@ -218,227 +158,291 @@ class GroupMemberListPage extends StatelessWidget {
         ),
 
         // Bottom confirm section for multi-select mode
-        if (logic.isMultiSelMode) _buildCheckedConfirmView(),
+        if (logic.isMultiSelMode) _CheckedConfirmView(logic: logic),
       ],
     );
   }
 
-  Widget _buildItemView(
-    GroupMembersInfo membersInfo, {
-    bool showDivider = false,
-    bool isFirst = false,
-    bool isLast = false,
-  }) {
-    if (logic.hiddenMember(membersInfo)) return const SizedBox();
+  Widget _buildMemberListWithEmptyState() {
+    return Obx(
+      () {
+        // Chỉ observe isSearching và searchResults/memberList cho empty state và list data
+        final isSearching = logic.isSearching.value;
+        final isSearchNotResult = logic.isSearchNotResult;
+        
+        // Lấy reference của list (không tạo bản copy)
+        final searchResultsRef = logic.searchResults;
+        final memberListRef = logic.memberList;
+        
+        if (isSearching && isSearchNotResult) {
+          return Center(
+            child: Text(
+              StrRes.searchNotFound,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF9CA3AF),
+              ),
+            ),
+          );
+        }
+        
+        final list = isSearching ? searchResultsRef : memberListRef;
+        final listLength = list.length;
+        
+        return _MemberListViewWidget(
+          logic: logic,
+          isSearching: isSearching,
+          listLength: listLength,
+        );
+      },
+    );
+  }
+}
 
-    final bool hasIcon = logic.isMultiSelMode;
+class _MemberListViewWidget extends StatefulWidget {
+  final GroupMemberListLogic logic;
+  final bool isSearching;
+  final int listLength;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => logic.clickMember(membersInfo),
+  const _MemberListViewWidget({
+    required this.logic,
+    required this.isSearching,
+    required this.listLength,
+  });
+
+  @override
+  State<_MemberListViewWidget> createState() => _MemberListViewWidgetState();
+}
+
+class _MemberListViewWidgetState extends State<_MemberListViewWidget> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return SmartRefresher(
+      controller: widget.logic.controller,
+      onLoading: widget.logic.onLoad,
+      enablePullDown: false,
+      enablePullUp: !widget.isSearching,
+      header: IMViews.buildHeader(),
+      footer: IMViews.buildFooter(),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Row(
-            children: [
-              if (hasIcon)
-                Padding(
-                  padding: EdgeInsets.only(right: 16.w),
-                  child: Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: logic.isChecked(membersInfo)
-                          ? const Color(0xFF3B82F6)
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: logic.isChecked(membersInfo)
-                            ? const Color(0xFF3B82F6)
-                            : const Color(0xFFD1D5DB),
-                        width: 2.w,
-                      ),
-                    ),
-                    child: logic.isChecked(membersInfo)
-                        ? Icon(
-                            Ionicons.checkmark,
-                            size: 14.w,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                ),
-              AvatarView(
-                url: membersInfo.faceURL,
-                text: membersInfo.nickname,
-                width: 42.w,
-                height: 42.w,
-                isCircle: true,
-              ),
-              16.horizontalSpace,
-              Expanded(
-                child: Text(
-                  membersInfo.nickname ?? '',
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1E293B),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (membersInfo.roleLevel == GroupRoleLevel.owner)
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: const Color(0xFFF59E0B).withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    StrRes.groupOwner,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFFF59E0B),
-                    ),
-                  ),
-                ),
-              if (membersInfo.roleLevel == GroupRoleLevel.admin)
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    StrRes.groupAdmin,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF8B5CF6),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+        child: ListView.builder(
+          key: PageStorageKey('member_list_${widget.isSearching}'),
+          controller: widget.logic.scrollController,
+          padding: EdgeInsets.zero,
+          itemCount: widget.listLength,
+          itemBuilder: (_, index) {
+            final list = widget.isSearching ? widget.logic.searchResults : widget.logic.memberList;
+            if (index >= list.length) return const SizedBox();
+            final member = list[index];
+            return _MemberItemView(
+              key: ValueKey(member.userID),
+              logic: widget.logic,
+              member: member,
+              showDivider: index != widget.listLength - 1,
+              isFirst: index == 0,
+              isLast: index == widget.listLength - 1,
+            );
+          },
         ),
       ),
     );
   }
+}
 
-  Widget _buildMemberListWithEmptyState() => Obx(
-        () => logic.isSearching.value && logic.isSearchNotResult
-            ? Center(
-                child: Text(
-                  StrRes.searchNotFound,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF9CA3AF),
-                  ),
-                ),
-              )
-            : _buildMemberListView(),
-      );
+class _MemberItemView extends StatelessWidget {
+  final GroupMemberListLogic logic;
+  final GroupMembersInfo member;
+  final bool showDivider;
+  final bool isFirst;
+  final bool isLast;
 
-  Widget _buildMemberListView() => SmartRefresher(
-        controller: logic.controller,
-        onLoading: logic.onLoad,
-        enablePullDown: false,
-        enablePullUp: !logic.isSearching.value,
-        header: IMViews.buildHeader(),
-        footer: IMViews.buildFooter(),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16.r),
-          child: AnimationLimiter(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: logic.displayList.length,
-              itemBuilder: (_, index) => AnimationConfiguration.staggeredList(
-                position: index + 2,
-                duration: const Duration(milliseconds: 400),
-                child: SlideAnimation(
-                  curve: Curves.easeOutCubic,
-                  verticalOffset: 40.0,
-                  child: FadeInAnimation(
-                    child: Obx(
-                      () => Column(
-                        children: [
-                          _buildItemView(
-                            logic.displayList[index],
-                            showDivider: index != logic.displayList.length - 1,
-                            isFirst: index == 0,
-                            isLast: index == logic.displayList.length - 1,
-                          ),
-                          if (index != logic.displayList.length - 1)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: logic.isMultiSelMode ? 90.w : 74.w),
-                              child: Container(
-                                height: 1,
-                                color: const Color(0xFFF3F4F6),
-                              ),
+  const _MemberItemView({
+    super.key,
+    required this.logic,
+    required this.member,
+    this.showDivider = false,
+    this.isFirst = false,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (logic.hiddenMember(member)) return const SizedBox();
+
+    final bool hasIcon = logic.isMultiSelMode;
+
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => logic.clickMember(member),
+            borderRadius: BorderRadius.circular(16.r),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              child: Row(
+                children: [
+                  if (hasIcon)
+                    Padding(
+                      padding: EdgeInsets.only(right: 16.w),
+                      child: Obx(
+                        () => Container(
+                          width: 24.w,
+                          height: 24.w,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: logic.isChecked(member)
+                                ? const Color(0xFF3B82F6)
+                                : Colors.transparent,
+                            border: Border.all(
+                              color: logic.isChecked(member)
+                                  ? const Color(0xFF3B82F6)
+                                  : const Color(0xFFD1D5DB),
+                              width: 2.w,
                             ),
-                        ],
+                          ),
+                          child: logic.isChecked(member)
+                              ? Icon(
+                                  Ionicons.checkmark,
+                                  size: 14.w,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
                       ),
                     ),
+                  AvatarView(
+                    url: member.faceURL,
+                    text: member.nickname,
+                    width: 42.w,
+                    height: 42.w,
+                    isCircle: true,
                   ),
-                ),
+                  16.horizontalSpace,
+                  Expanded(
+                    child: Text(
+                      member.nickname ?? '',
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1E293B),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (member.roleLevel == GroupRoleLevel.owner)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: const Color(0xFFF59E0B).withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        StrRes.groupOwner,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFF59E0B),
+                        ),
+                      ),
+                    ),
+                  if (member.roleLevel == GroupRoleLevel.admin)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF8B5CF6).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        StrRes.groupAdmin,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF8B5CF6),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
         ),
-      );
+        if (showDivider)
+          Padding(
+            padding: EdgeInsets.only(
+                left: logic.isMultiSelMode ? 90.w : 74.w),
+            child: Container(
+              height: 1,
+              color: const Color(0xFFF3F4F6),
+            ),
+          ),
+      ],
+    );
+  }
+}
 
-  Widget _buildCheckedConfirmView() => Container(
-        constraints: BoxConstraints(
-          minHeight: 80.h,
+class _CheckedConfirmView extends StatelessWidget {
+  final GroupMemberListLogic logic;
+
+  const _CheckedConfirmView({required this.logic});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        minHeight: 80.h,
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.6, 1.0],
         ),
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0.0, 0.6, 1.0],
+        borderRadius: BorderRadius.circular(18.r),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF64748B).withOpacity(0.08),
+            offset: const Offset(0, 4),
+            blurRadius: 12,
+            spreadRadius: 0,
           ),
-          borderRadius: BorderRadius.circular(18.r),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF64748B).withOpacity(0.08),
-              offset: const Offset(0, 4),
-              blurRadius: 12,
-              spreadRadius: 0,
-            ),
-            BoxShadow(
-              color: const Color(0xFF64748B).withOpacity(0.04),
-              offset: const Offset(0, 2),
-              blurRadius: 6,
-              spreadRadius: 0,
-            ),
-          ],
-          border: Border.all(
-            color: const Color(0xFFE2E8F0),
-            width: 1.5,
+          BoxShadow(
+            color: const Color(0xFF64748B).withOpacity(0.04),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+            spreadRadius: 0,
           ),
+        ],
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 1.5,
         ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          child: Row(
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: Obx(
+          () => Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
@@ -542,7 +546,9 @@ class GroupMemberListPage extends StatelessWidget {
             ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class SelectedMemberListView extends StatelessWidget {

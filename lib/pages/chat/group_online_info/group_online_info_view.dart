@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:openim_common/openim_common.dart';
-import 'package:openim/widgets/base_page.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'group_online_info_logic.dart';
 
 class GroupOnlineInfoPage extends StatelessWidget {
@@ -17,142 +17,88 @@ class GroupOnlineInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
-      centerTitle: false,
-      showLeading: true,
-      leadingAction: () =>
-          logic.showInfos.value ? Get.back() : logic.changeShowInfos(),
-      customAppBar: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            StrRes.onlineInfo,
-            style: const TextStyle(
-              fontFamily: 'FilsonPro',
-              fontWeight: FontWeight.w500,
-              fontSize: 23,
-              color: Colors.black,
-            ).copyWith(fontSize: 23.sp),
-          ),
-          Text(
-            StrRes.groupMemberStatus,
-            style: const TextStyle(
-              fontFamily: 'FilsonPro',
-              fontWeight: FontWeight.w400,
-              color: Color(0xFFBDBDBD),
-            ).copyWith(fontSize: 12.sp),
-          ),
-        ],
-      ),
-      body: _buildContentContainer(),
-    );
-  }
-
-  Widget _buildContentContainer() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.08),
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Obx(
-              () => AnimationLimiter(
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    if (logic.showInfos.value)
-                      SliverPadding(
-                        padding: EdgeInsets.only(top: 8.h, bottom: 4.h),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate(
-                            AnimationConfiguration.toStaggeredList(
-                              duration: const Duration(milliseconds: 450),
-                              childAnimationBuilder: (widget) => SlideAnimation(
-                                verticalOffset: 50.0,
-                                curve: Curves.easeOutQuart,
-                                child: FadeInAnimation(child: widget),
+    return Obx(() => GradientScaffold(
+          title: StrRes.onlineInfo,
+          subtitle: StrRes.groupMemberStatus,
+          showBackButton: true,
+          onBack: () =>
+              logic.showInfos.value ? Get.back() : logic.changeShowInfos(),
+          body: AnimationLimiter(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                if (logic.showInfos.value)
+                  SliverPadding(
+                    padding: EdgeInsets.only(top: 8.h, bottom: 4.h),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate(
+                        AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 450),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            verticalOffset: 50.0,
+                            curve: Curves.easeOutQuart,
+                            child: FadeInAnimation(child: widget),
+                          ),
+                          children: [
+                            _buildOnlineInfoCard(
+                              title: StrRes.currentlyOnline,
+                              ids: logic.currentlyOnline,
+                              keyType: 'currentlyOnline',
+                            ),
+                            _buildOnlineInfoCard(
+                              title: StrRes.onlineLast24Hours,
+                              ids: logic.onlineLast24Hours,
+                              keyType: 'onlineLast24Hours',
+                            ),
+                            _buildOnlineInfoCard(
+                              title: StrRes.onlineLast3Days,
+                              ids: logic.onlineLast3Days,
+                              keyType: 'onlineLast3Days',
+                            ),
+                            _buildOnlineInfoCard(
+                              title: StrRes.onlineLast7Days,
+                              ids: logic.onlineLast7Days,
+                              keyType: 'onlineLast7Days',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (!logic.showInfos.value) ...[
+                  SliverToBoxAdapter(
+                    child: (logic.memberList.isNotEmpty)
+                        ? _buildSectionTitle(StrRes.groupMember)
+                        : SizedBox(height: 8.h),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, int index) {
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 450),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            curve: Curves.easeOutQuart,
+                            child: FadeInAnimation(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                child:
+                                    _buildMemberTile(logic.memberList[index]),
                               ),
-                              children: [
-                                _buildOnlineInfoCard(
-                                  title: StrRes.currentlyOnline,
-                                  ids: logic.currentlyOnline,
-                                  keyType: 'currentlyOnline',
-                                ),
-                                _buildOnlineInfoCard(
-                                  title: StrRes.onlineLast24Hours,
-                                  ids: logic.onlineLast24Hours,
-                                  keyType: 'onlineLast24Hours',
-                                ),
-                                _buildOnlineInfoCard(
-                                  title: StrRes.onlineLast3Days,
-                                  ids: logic.onlineLast3Days,
-                                  keyType: 'onlineLast3Days',
-                                ),
-                                _buildOnlineInfoCard(
-                                  title: StrRes.onlineLast7Days,
-                                  ids: logic.onlineLast7Days,
-                                  keyType: 'onlineLast7Days',
-                                ),
-                              ],
                             ),
                           ),
-                        ),
-                      ),
-                    if (!logic.showInfos.value) ...[
-                      SliverToBoxAdapter(
-                        child: (logic.memberList.isNotEmpty)
-                            ? _buildSectionTitle(StrRes.groupMember)
-                            : SizedBox(height: 8.h),
-                      ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: const Duration(milliseconds: 450),
-                              child: SlideAnimation(
-                                verticalOffset: 50.0,
-                                curve: Curves.easeOutQuart,
-                                child: FadeInAnimation(
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8.w),
-                                    child: _buildMemberTile(
-                                        logic.memberList[index]),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          childCount: logic.memberList.length,
-                        ),
-                      ),
-                      SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-                    ]
-                  ],
-                ),
-              ),
+                        );
+                      },
+                      childCount: logic.memberList.length,
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+                ]
+              ],
             ),
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildSectionTitle(String title) {
@@ -173,36 +119,6 @@ class GroupOnlineInfoPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderSwitcher() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 12.h),
-      child: Row(
-        children: [
-          _buildChip(
-            label: StrRes.onlineInfo,
-            selected: logic.showInfos.value,
-            onTap: () {
-              logic.showInfos.value = true;
-              logic.memberList.clear();
-            },
-          ),
-          12.horizontalSpace,
-          if (!logic.showInfos.value)
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: _buildChip(
-                  label: logic.expandedGroup.value,
-                  selected: !logic.showInfos.value,
-                  onTap: () {},
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -431,73 +347,6 @@ class GroupOnlineInfoPage extends StatelessWidget {
                   color: const Color(0xFF9CA3AF),
                 ),
               ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            offset: const Offset(2, 2),
-            blurRadius: 4,
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.8),
-            offset: const Offset(-1, -1),
-            blurRadius: 4,
-          ),
-        ],
-        border: Border.all(
-          color: selected ? const Color(0xFF4F42FF) : Colors.white,
-          width: 1.5,
-        ),
-        gradient: selected
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF4F42FF),
-                  Color(0xFF3B82F6),
-                ],
-              )
-            : LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.9),
-                  const Color(0xFFF8FAFC),
-                ],
-                stops: const [0.05, 0.3],
-              ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16.r),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : const Color(0xFF374151),
-              ),
             ),
           ),
         ),

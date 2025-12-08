@@ -284,11 +284,11 @@ class _ContactsPageState extends State<ContactsPage>
           onTap: logic.newGroup,
         ),
         // Search box
-        _buildSearchBox(
-          controller: _groupSearchController,
-          hintText: 'Search groups...',
-          onChanged: (value) => setState(() {}),
-        ),
+        // _buildSearchBox(
+        //   controller: _groupSearchController,
+        //   hintText: 'Search groups...',
+        //   onChanged: (value) => setState(() {}),
+        // ),
         Container(
           width: double.infinity,
           height: 5.h,

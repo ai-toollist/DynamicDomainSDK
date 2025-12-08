@@ -41,14 +41,6 @@ class FriendItemView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               child: Row(
                 children: [
-                  if (checked != null && (showRadioButton ?? true))
-                    Padding(
-                      padding: EdgeInsets.only(right: 16.w),
-                      child: ChatRadio(
-                        checked: checked ?? false,
-                        enabled: enabled ?? false,
-                      ),
-                    ),
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -95,6 +87,14 @@ class FriendItemView extends StatelessWidget {
                             color: const Color(0xFF374151),
                           )),
                   ),
+                  if (checked != null && (showRadioButton ?? true))
+                    Padding(
+                      padding: EdgeInsets.only(right: 16.w),
+                      child: ChatRadio(
+                        checked: checked ?? false,
+                        enabled: enabled ?? false,
+                      ),
+                    ),
                 ],
               ),
             ),

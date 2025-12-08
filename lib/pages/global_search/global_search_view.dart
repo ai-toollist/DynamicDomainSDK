@@ -142,6 +142,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
         logic.clearSearch();
         setState(() {});
       },
+      hintText: StrRes.search,
     );
   }
 

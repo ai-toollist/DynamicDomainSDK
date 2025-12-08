@@ -938,6 +938,8 @@ class StrRes {
 
   static String get approved => 'approved'.tr;
 
+  static String get waiting => 'waiting'.tr;
+
   static String get accept => 'accept'.tr;
 
   static String get reject => 'reject'.tr;

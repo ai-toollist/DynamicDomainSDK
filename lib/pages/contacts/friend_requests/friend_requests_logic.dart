@@ -12,6 +12,7 @@ class FriendRequestsLogic extends GetxController {
   final imLogic = Get.find<IMController>();
   final homeLogic = Get.find<HomeLogic>();
   final applicationList = <FriendApplicationInfo>[].obs;
+  final selectedTab = 'waiting'.obs;
   late StreamSubscription faSub;
 
   @override

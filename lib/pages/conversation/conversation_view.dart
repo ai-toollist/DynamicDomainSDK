@@ -129,7 +129,9 @@ class _ConversationPageState extends State<ConversationPage> {
                       12.horizontalSpace,
                       Expanded(
                         child: Text(
-                          announcement.content.replaceAll('\n', ''),
+                          announcement.content
+                              .replaceAll('\n', '')
+                              .replaceAll('·', '|'),
                           style: TextStyle(
                             fontFamily: 'FilsonPro',
                             fontSize: 14.sp,
@@ -932,16 +934,38 @@ class _ConversationPageState extends State<ConversationPage> {
     return AnimatedDot(index: index);
   }
 
-
   String _sanitizeText(String text) {
     if (text.isEmpty) return text;
     try {
-      // Remove invalid UTF-16 surrogate pairs
-      return text
-          .replaceAll(RegExp(r'[\uD800-\uDBFF](?![\uDC00-\uDFFF])'), '')
-          .replaceAll(RegExp(r'(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]'), '');
+      // Remove invalid UTF-16 surrogate pairs and problematic characters
+      final buffer = StringBuffer();
+      for (int i = 0; i < text.length; i++) {
+        final codeUnit = text.codeUnitAt(i);
+        // Check for valid characters
+        if (codeUnit >= 0xD800 && codeUnit <= 0xDBFF) {
+          // High surrogate - check if followed by low surrogate
+          if (i + 1 < text.length) {
+            final nextCodeUnit = text.codeUnitAt(i + 1);
+            if (nextCodeUnit >= 0xDC00 && nextCodeUnit <= 0xDFFF) {
+              // Valid surrogate pair
+              buffer.writeCharCode(codeUnit);
+              buffer.writeCharCode(nextCodeUnit);
+              i++; // Skip the low surrogate
+              continue;
+            }
+          }
+          // Invalid high surrogate, skip it
+          continue;
+        } else if (codeUnit >= 0xDC00 && codeUnit <= 0xDFFF) {
+          // Orphan low surrogate, skip it
+          continue;
+        }
+        buffer.writeCharCode(codeUnit);
+      }
+      return buffer.toString();
     } catch (e) {
-      return text;
+      // If all else fails, return empty string
+      return '';
     }
   }
 
@@ -950,10 +974,12 @@ class _ConversationPageState extends State<ConversationPage> {
           motion: const BehindMotion(),
           extentRatio: logic.existUnreadMsg(info) ? 0.65 : 0.45,
           children: [
-            8.horizontalSpace,
+            Spacer(),
             CustomButton(
               onTap: () => logic.pinConversation(info),
-              icon: info.isPinned! ? CupertinoIcons.pin_slash : CupertinoIcons.pin,
+              icon: info.isPinned!
+                  ? CupertinoIcons.pin_slash
+                  : CupertinoIcons.pin,
               colorButton: Colors.teal.withOpacity(.15),
               colorIcon: Colors.teal,
               iconSize: 25.w,
@@ -962,10 +988,10 @@ class _ConversationPageState extends State<ConversationPage> {
             if (logic.existUnreadMsg(info)) ...[
               CustomButton(
                 onTap: () => logic.markMessageHasRead(info),
-                icon:Ionicons.checkmark_done_circle_outline,
-                colorButton:Colors.green.withOpacity(.15),
+                icon: Ionicons.checkmark_done_circle_outline,
+                colorButton: Colors.green.withOpacity(.15),
                 colorIcon: Colors.green,
-              iconSize: 25.w,
+                iconSize: 25.w,
               ),
               8.horizontalSpace,
             ],
@@ -982,22 +1008,21 @@ class _ConversationPageState extends State<ConversationPage> {
         child: _buildItemView(info),
       );
 
- Widget _buildItemView(ConversationInfo info) {
+  Widget _buildItemView(ConversationInfo info) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        /// viền cạnh dưới 
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(Get.context!).primaryColor.withOpacity(0.1),
-            width: 0.5.w,
-          ),
-        )
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
 
-      ),
+          /// viền cạnh dưới
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(Get.context!).primaryColor.withOpacity(0.1),
+              width: 0.5.w,
+            ),
+          )),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -1015,7 +1040,7 @@ class _ConversationPageState extends State<ConversationPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            logic.getShowName(info),
+                            _sanitizeText(logic.getShowName(info)),
                             style: TextStyle(
                               fontFamily: 'FilsonPro',
                               fontSize: 16.sp,
@@ -1100,7 +1125,7 @@ class _ConversationPageState extends State<ConversationPage> {
                         ),
                         8.horizontalSpace,
                         Text(
-                          logic.getTime(info),
+                          _sanitizeText(logic.getTime(info)),
                           style: TextStyle(
                             fontFamily: 'FilsonPro',
                             fontSize: 12.sp,
@@ -1126,7 +1151,7 @@ class _ConversationPageState extends State<ConversationPage> {
         AvatarView(
           width: 50.w,
           height: 50.h,
-          text: logic.getShowName(info),
+          text: _sanitizeText(logic.getShowName(info)),
           url: info.faceURL,
           isGroup: logic.isGroupChat(info),
           textStyle: TextStyle(

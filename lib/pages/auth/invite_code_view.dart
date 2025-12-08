@@ -109,6 +109,7 @@ class InviteCodeView extends StatelessWidget {
                         controller: logic.inviteCodeController,
                         focusNode: logic.inviteCodeFocusNode,
                         required: logic.enableInviteCodeRequired,
+              isRequired: true,
                       ),
                     ),
                     SizedBox(height: 18.h),

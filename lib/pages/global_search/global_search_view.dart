@@ -11,7 +11,6 @@ import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:search_keyword_text/search_keyword_text.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../widgets/file_download_progress.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import, deprecated_member_use
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,12 +31,13 @@ class SendVerificationApplicationPage extends StatelessWidget {
         bodyColor: const Color(0xFFF9FAFB),
         trailing: CustomButton(
           onTap: logic.send,
-          icon: CupertinoIcons.paperplane,
+          title: StrRes.send,
+          // icon: CupertinoIcons.paperplane,
           colorButton: Colors.white.withOpacity(.15),
           colorIcon: Colors.white,
         ),
         body: Padding(
-          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

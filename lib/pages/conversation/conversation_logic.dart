@@ -113,8 +113,8 @@ class ConversationLogic extends SuperController {
   }
 
   String get getUnreadText =>
-      '${StrRes.unreadConversations}: ${unreadConversationCount.value} '
-      '· ${StrRes.unreadMessages}: ${homeLogic.unreadMsgCount.value}';
+      '${StrRes.unreadConversations}: ${unreadConversationCount.value} | '
+      '${StrRes.unreadMessages}: ${homeLogic.unreadMsgCount.value}';
 
   // Switch tab method
   void switchTab(int index) {

@@ -85,7 +85,7 @@ class CustomButton extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
-                        color: Colors.white,
+                        color: effectiveIconColor,
                         fontSize: fontSize,
                         fontWeight: FontWeight.w600,
                       ),

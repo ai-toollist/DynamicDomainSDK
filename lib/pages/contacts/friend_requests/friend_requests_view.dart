@@ -40,9 +40,21 @@ class FriendRequestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+    
+    // Count by status
+    final waitingCount = logic.applicationList
+        .where((item) => item.isWaitingHandle)
+        .length;
+    final approvedCount = logic.applicationList
+        .where((item) => item.isAgreed)
+        .length;
+    final rejectedCount = logic.applicationList
+        .where((item) => item.isRejected)
+        .length;
 
     return GradientScaffold(
       title: StrRes.newFriend,
+      subtitle: "${StrRes.waiting}: $waitingCount | ${StrRes.approved}: $approvedCount | ${StrRes.rejected}: $rejectedCount",
       showBackButton: true,
       body: Column(
         children: [

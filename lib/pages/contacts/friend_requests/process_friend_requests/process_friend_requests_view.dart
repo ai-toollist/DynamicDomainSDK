@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -21,7 +23,7 @@ class ProcessFriendRequestsPage extends StatelessWidget {
       showBackButton: true,
       scrollable: false,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

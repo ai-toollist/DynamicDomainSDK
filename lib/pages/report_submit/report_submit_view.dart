@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:openim/pages/report_submit/report_submit_logic.dart';
 import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim/widgets/gradient_scaffold.dart';

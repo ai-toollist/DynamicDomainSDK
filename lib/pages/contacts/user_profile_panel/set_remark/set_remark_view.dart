@@ -3,13 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:openim/constants/app_color.dart';
 import 'package:openim/widgets/custom_buttom.dart';
+import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'set_remark_logic.dart';
-import '../../../../widgets/base_page.dart';
 import '../../../../utils/character_length_limiting_formatter.dart';
 
 class SetFriendRemarkPage extends StatefulWidget {
@@ -44,127 +42,100 @@ class _SetFriendRemarkPageState extends State<SetFriendRemarkPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return GradientScaffold(
       title: StrRes.remark,
-      centerTitle: false,
-      showLeading: true,
-      actions: [
-        CustomButton(
-          margin: EdgeInsets.symmetric(horizontal: 5.w),
-          onTap: logic.save,
-          title: StrRes.save,
-          colorButton: AppColor.appBarEnd.withOpacity(0.9),
-        ),
-      ],
-      body: Column(
-        children: [
-          // Content
-          Expanded(
-            child: AnimationLimiter(
-              child: SingleChildScrollView(
-                child: AnimationConfiguration.staggeredList(
-                  position: 0,
-                  duration: const Duration(milliseconds: 400),
-                  child: SlideAnimation(
-                    verticalOffset: 40.0,
-                    curve: Curves.easeOutCubic,
-                    child: FadeInAnimation(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Section title
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4.w, vertical: 12.h),
-                              child: Text(
-                                StrRes.setRemarkName,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF6B7280),
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                            ),
-                            12.verticalSpace,
+      showBackButton: true,
+      scrollable: false,
+      trailing: CustomButton(
+        onTap: logic.save,
+        title: StrRes.save,
+        colorButton: Colors.white.withOpacity(.3),
+        colorIcon: Colors.white,   
+          ),
+        body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section title
+            Text(
+              StrRes.setRemarkName,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF6B7280),
+                letterSpacing: 0.3,
+              ),
+            ),
+            16.verticalSpace,
 
-                            // Input field
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF9CA3AF)
-                                        .withOpacity(0.06),
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 6,
-                                  ),
-                                ],
-                                border: Border.all(
-                                  color: const Color(0xFFF3F4F6),
-                                  width: 1,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: logic.inputCtrl,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF374151),
-                                ),
-                                autofocus: true,
-                                inputFormatters: [
-                                  CharacterLengthLimitingFormatter(16)
-                                ],
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  hintText: StrRes.enterRemarkName,
-                                  hintStyle: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(0xFF9CA3AF),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 16.h,
-                                    horizontal: 20.w,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            16.verticalSpace,
-
-                            // Character count display
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 4.w),
-                              child: Text(
-                                "$characterCount/16",
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF9CA3AF),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+            // Input field
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withOpacity(0.08),
+                    offset: const Offset(0, 2),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: logic.inputCtrl,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF1F2937),
+                ),
+                autofocus: true,
+                inputFormatters: [
+                  CharacterLengthLimitingFormatter(16)
+                ],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintText: StrRes.enterRemarkName,
+                  hintStyle: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.h,
+                    horizontal: 20.w,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+
+            12.verticalSpace,
+
+            // Character count display
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "$characterCount/16",
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF9CA3AF),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

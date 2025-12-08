@@ -7,20 +7,20 @@ class InviteCodeField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool? required;
 
+  final bool isRequired;
   const InviteCodeField({
     super.key,
     required this.controller,
     this.focusNode,
     this.required = false,
+    this.isRequired=false
   });
 
   @override
   Widget build(BuildContext context) {
     return AppTextFormField(
       label: StrRes.invitationCode,
-      hint: required == true
-          ? StrRes.plsEnterInvitationCode
-          : StrRes.plsEnterInvitationCodeOptional,
+      isRequired: isRequired,
       validator: (value) {
         final isEmpty = value == null || value.isEmpty;
         final isInvalid = !isEmpty && !IMUtils.isValidInviteCode(value);

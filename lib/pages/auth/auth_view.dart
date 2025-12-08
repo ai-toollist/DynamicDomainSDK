@@ -349,11 +349,13 @@ class AuthView extends StatelessWidget {
             PhoneField(
               focusNode: logic.loginPhoneFocusNode,
               controller: logic.loginPhoneController,
+              isRequired: true,
             ),
             Gap(14.h),
             PasswordField(
               focusNode: logic.loginPasswordFocusNode,
               controller: logic.loginPasswordController,
+              isRequired: true,
             ),
             Gap(12.h),
             // Remember Password - Left aligned

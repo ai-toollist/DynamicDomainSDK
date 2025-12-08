@@ -1,17 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:openim/core/im_callback.dart';
 import 'package:openim/widgets/qr_code_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../core/controller/gateway_config_controller.dart';
 import '../../core/controller/im_controller.dart';
@@ -43,7 +39,7 @@ class MineLogic extends GetxController {
       QRCodeBottomSheet(
         name: imLogic.userInfo.value.nickname ?? '',
         avatarUrl: imLogic.userInfo.value.faceURL,
-        qrData: '${Config.friendScheme}${imLogic.userInfo.value.userID}',
+        qrData: _buildQRContent(),
         isGroup: false,
         description: StrRes.scanToAddMe,
         hintText: StrRes.qrcodeHint,

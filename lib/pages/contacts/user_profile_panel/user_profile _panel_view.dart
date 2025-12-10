@@ -19,7 +19,7 @@ class UserProfilePanelPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GradientScaffold(
-      title: '',
+      title: StrRes.profile,
       showBackButton: true,
       scrollable: true,
       avatar: _buildAvatar(),
@@ -66,7 +66,7 @@ class UserProfilePanelPage extends StatelessWidget {
               24.verticalSpace,
 
               // Action Buttons Row
-              if (!logic.isMyself)
+              if (!logic.isMyself&& logic.isFriendship)
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Row(
@@ -289,6 +289,7 @@ class UserProfilePanelPage extends StatelessWidget {
             onTap: logic.viewPersonalInfo,
             isLast: false,
           ),
+          if((!logic.isMyself && logic.isFriendship)||logic.isBlacklist)
           _buildToggleMenuItem(
             icon: CupertinoIcons.nosign,
             iconColor: const Color(0xFFFBBF24),

@@ -280,7 +280,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       }
 
       final smsCode = result['smsValue']?.toString();
-      final smsMsg = result['smsCode']?.toString();
+      // final smsMsg = result['smsCode']?.toString();
 
       if (smsCode == null || smsCode.isEmpty) {
         IMViews.showToast(StrRes.verificationCodeSent);
@@ -297,10 +297,12 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       ///Custom dialog has some issues on Android, temporarily use toast
      await Get.dialog( CustomDialog(
         title: StrRes.yourVerificationCodeIs.trArgs([smsCode]),
-        showCancel: true,
+        showCancel: false,
+        rightText: StrRes.confirm,
         onTapRight: () {
           registerVerificationCodeController.text = smsCode;
           FocusScope.of(Get.context!).unfocus();
+          Get.back();
         },
       ));
       return true;

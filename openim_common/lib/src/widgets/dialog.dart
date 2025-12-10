@@ -25,7 +25,7 @@ class CustomDialog extends StatelessWidget {
     this.scrollable = false,
     this.onTapLeft,
     this.onTapRight,
-    this.primaryColor, // Thêm tùy chọn màu chủ đạo
+    this.primaryColor,
   });
 
   final String? title;

@@ -119,7 +119,7 @@ class IMUtils {
 
   static void copy({required String text}) {
     Clipboard.setData(ClipboardData(text: text));
-    IMViews.showToast(StrRes.copySuccessfully);
+    IMViews.showToast(StrRes.copySuccessfully,type: 1);
   }
 
   static List<ISuspensionBean> convertToAZList(List<ISuspensionBean> list) {

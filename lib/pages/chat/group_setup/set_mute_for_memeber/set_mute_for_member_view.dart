@@ -25,7 +25,7 @@ class SetMuteForGroupMemberPage extends StatelessWidget {
         CustomButton(
           title: StrRes.determine,
           onTap: logic.completed,
-          colorButton: Colors.white.withOpacity(0.3),
+          color: Colors.white,
         ),
       ],
       body: SingleChildScrollView(

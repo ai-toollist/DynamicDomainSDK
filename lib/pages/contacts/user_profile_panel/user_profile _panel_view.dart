@@ -165,8 +165,7 @@ class UserProfilePanelPage extends StatelessWidget {
         CustomButton(
           onTap: onTap,
           icon: icon,
-          colorButton: primaryColor.withOpacity(0.15),
-          colorIcon: primaryColor,
+          color: primaryColor,
           padding: EdgeInsets.all(16.w),
         ),
         8.verticalSpace,

@@ -26,8 +26,7 @@ class ReportDetailPage extends StatelessWidget {
         trailing: CustomButton(
           icon: CupertinoIcons.paperplane,
           onTap: logic.submitReport,
-          colorButton: Colors.white.withOpacity(0.3),
-          colorIcon: Colors.white,
+          color: Colors.white,
         ),
         scrollable: true,
         body: ClipRRect(

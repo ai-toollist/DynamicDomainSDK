@@ -203,8 +203,7 @@ class _QRCodeBottomSheetState extends State<QRCodeBottomSheet> {
                             CustomButton(
                               icon: Ionicons.download_outline,
                               onTap: _isSaving ? null : _saveQRCode,
-                              colorButton: Theme.of(context).primaryColor.withOpacity(.15),
-                              colorIcon: Theme.of(context).primaryColor,
+                              color: Theme.of(context).primaryColor,
                             )
                           ],
                         ),

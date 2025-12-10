@@ -33,8 +33,7 @@ class SendVerificationApplicationPage extends StatelessWidget {
           onTap: logic.send,
           title: StrRes.send,
           // icon: CupertinoIcons.paperplane,
-          colorButton: Colors.white.withOpacity(.15),
-          colorIcon: Colors.white,
+          color: Colors.white,
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),

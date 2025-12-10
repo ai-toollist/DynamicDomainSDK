@@ -51,8 +51,7 @@ class _SetFriendRemarkPageState extends State<SetFriendRemarkPage> {
       trailing: CustomButton(
         onTap: logic.save,
         title: StrRes.save,
-        colorButton: Colors.white.withOpacity(.3),
-        colorIcon: Colors.white,   
+        color: Colors.white,   
           ),
         body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),

@@ -30,7 +30,7 @@ class EditGroupAnnouncementPage extends StatelessWidget {
                           logic.onlyRead.value ? StrRes.edit : StrRes.publish,
                       onTap:
                           logic.onlyRead.value ? logic.editing : logic.publish,
-                      colorButton: Colors.white.withOpacity(0.3),
+          color: Colors.white,
                     )
                   ]
                 : null,

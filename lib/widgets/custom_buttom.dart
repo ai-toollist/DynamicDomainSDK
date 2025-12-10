@@ -15,8 +15,7 @@ class CustomButton extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final IconData? icon;
   final double iconSize;
-  final Color? colorButton;
-  final Color? colorIcon;
+  final Color color;
   final int? badgeCount;
   final double fontSize;
 
@@ -28,8 +27,6 @@ class CustomButton extends StatelessWidget {
   final Color? labelColor;
 
   /// Whether to use primary color from theme for button and icon colors.
-  /// Defaults to false.
-  final bool usePrimaryColor;
 
   const CustomButton({
     super.key,
@@ -39,24 +36,16 @@ class CustomButton extends StatelessWidget {
     this.padding,
     this.icon,
     this.iconSize = 16,
-    this.colorButton,
-    this.colorIcon,
+    required this.color,
     this.badgeCount,
     this.fontSize=14,
 
     this.label,
     this.labelColor,
-    this.usePrimaryColor = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-
-    final effectiveButtonColor = colorButton ??
-        (usePrimaryColor ? primaryColor.withOpacity(0.15) : const Color(0xFFF5F5F5));
-    final effectiveIconColor = colorIcon ??
-        (usePrimaryColor ? primaryColor : const Color(0xFF757575));
     final effectivePadding = padding ??
         (label != null
             ? EdgeInsets.all(16.w)
@@ -71,21 +60,21 @@ class CustomButton extends StatelessWidget {
             margin: margin,
             padding: effectivePadding,
             decoration: BoxDecoration(
-              color: effectiveButtonColor,
+              color: color.withOpacity(0.175),
               borderRadius: BorderRadius.circular(icon != null ? 50.r : 12.r),
             ),
             child: IntrinsicWidth(
               child: icon != null
                   ? Icon(
                       icon,
-                      color: effectiveIconColor,
+                      color: color,
                       size: iconSize.w,
                     )
                   : Text(
                       title,
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
-                        color: effectiveIconColor,
+                        color: color,
                         fontSize: fontSize,
                         fontWeight: FontWeight.w600,
                       ),

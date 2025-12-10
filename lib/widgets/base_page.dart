@@ -61,8 +61,7 @@ class _BasePageState extends State<BasePage> {
                             ? widget.leadingAction!()
                             : Get.back(),
                         icon: Icons.arrow_back_ios_new,
-                        colorButton: Colors.white,
-                        colorIcon: AppColor.iconColor,
+                        color: AppColor.iconColor,
                       )
                   : null,
               backgroundColor: Colors.white,

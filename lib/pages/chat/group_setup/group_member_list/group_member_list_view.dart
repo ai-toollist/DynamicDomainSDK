@@ -41,8 +41,7 @@ class GroupMemberListPage extends StatelessWidget {
                   child: CustomButton(
                     onTap: () => logic.poController.showMenu(),
                     icon: Ionicons.ellipsis_horizontal,
-                    colorButton: Colors.white.withOpacity(0.3),
-                    colorIcon: Colors.white,
+                    color: Colors.white,
                   ),
                 )
               : null,

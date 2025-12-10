@@ -57,8 +57,7 @@ class CreateGroupPage extends StatelessWidget {
                   CustomButton(
                     onTap: () => Get.back(),
                     icon: Icons.arrow_back_ios_new_rounded,
-                    colorIcon: Colors.white,
-                    colorButton: Colors.white.withOpacity(0.2),
+                    color: Colors.white,
                     padding: EdgeInsets.all(10.w),
                   ),
                   16.horizontalSpace,
@@ -92,8 +91,7 @@ class CreateGroupPage extends StatelessWidget {
                   CustomButton(
                     onTap: logic.completeCreation,
                     icon: CupertinoIcons.checkmark,
-                    colorButton: Colors.white.withOpacity(0.2),
-                    colorIcon: Colors.white,
+                    color: Colors.white,
                     padding: EdgeInsets.all(10.w),
                   ),
                 ],

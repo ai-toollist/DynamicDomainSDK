@@ -37,6 +37,7 @@ class AddContactsBySearchPage extends StatelessWidget {
 
   Widget _buildSearchBox() {
     return WechatStyleSearchBox(
+      enabled: true,
       controller: logic.searchCtrl,
       focusNode: logic.focusNode,
       hintText: logic.isSearchUser
@@ -73,8 +74,7 @@ class AddContactsBySearchPage extends StatelessWidget {
                   CustomButton(
                     onTap: () => Get.back(),
                     icon: Icons.arrow_back_ios_new_rounded,
-                    colorIcon: Colors.white,
-                    colorButton: Colors.white.withOpacity(0.2),
+                    color: Colors.white,
                     padding: EdgeInsets.all(10.w),
                   ),
                   16.horizontalSpace,
@@ -113,8 +113,7 @@ class AddContactsBySearchPage extends StatelessWidget {
                     CustomButton(
                       onTap: AppNavigator.startScan,
                       icon: CupertinoIcons.qrcode_viewfinder,
-                      colorButton: Colors.white.withOpacity(0.2),
-                      colorIcon: Colors.white,
+                      color: Colors.white,
                       padding: EdgeInsets.all(10.w),
                     ),
                 ],

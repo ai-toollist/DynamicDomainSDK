@@ -135,6 +135,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     return WechatStyleSearchBox(
       controller: logic.searchCtrl,
       focusNode: logic.focusNode,
+      enabled: true,
       onSubmitted: (_) => logic.search(),
       onChanged: (_) => setState(() {}),
       onCleared: () {

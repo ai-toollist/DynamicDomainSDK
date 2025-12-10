@@ -980,8 +980,7 @@ class _ConversationPageState extends State<ConversationPage> {
               icon: info.isPinned!
                   ? CupertinoIcons.pin_slash
                   : CupertinoIcons.pin,
-              colorButton: Colors.teal.withOpacity(.15),
-              colorIcon: Colors.teal,
+              color: Colors.teal,
               iconSize: 25.w,
             ),
             8.horizontalSpace,
@@ -989,8 +988,7 @@ class _ConversationPageState extends State<ConversationPage> {
               CustomButton(
                 onTap: () => logic.markMessageHasRead(info),
                 icon: Ionicons.checkmark_done_circle_outline,
-                colorButton: Colors.green.withOpacity(.15),
-                colorIcon: Colors.green,
+                color: Colors.green,
                 iconSize: 25.w,
               ),
               8.horizontalSpace,
@@ -998,8 +996,7 @@ class _ConversationPageState extends State<ConversationPage> {
             CustomButton(
               onTap: () => logic.deleteConversation(info),
               icon: CupertinoIcons.trash,
-              colorButton: Colors.red.withOpacity(.15),
-              colorIcon: Colors.red,
+              color: Colors.red,
               iconSize: 25.w,
             ),
             8.horizontalSpace,

@@ -39,9 +39,7 @@ class MyInfoPage extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   if (user.userID != null) {
-                    Clipboard.setData(ClipboardData(text: user.userID!));
-                    ScaffoldMessenger.of(Get.context!).showSnackBar(
-                        SnackBar(content: Text(StrRes.idCopied)));
+                    Clipboard.setData(ClipboardData(text: user.userID!));                    
                   }
                 },
                 child: Container(

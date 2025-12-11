@@ -8,7 +8,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
 import 'package:hugeicons/hugeicons.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:openim/widgets/friend_item_view.dart';
 import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim/pages/auth/widget/app_text_form_field.dart';
@@ -42,6 +41,7 @@ class _ContactsPageState extends State<ContactsPage>
   final TextEditingController _groupSearchController = TextEditingController();
   late final FocusNode _friendSearchFocusNode;
   late final FocusNode _groupSearchFocusNode;
+  bool _isFriendSearchActive = false;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _ContactsPageState extends State<ContactsPage>
     _tabController = TabController(length: 2, vsync: this);
     _friendSearchFocusNode = FocusNode();
     _groupSearchFocusNode = FocusNode();
-    
+
     // Close keyboard when tab changes
     _tabController.addListener(() {
       _friendSearchFocusNode.unfocus();
@@ -85,118 +85,116 @@ class _ContactsPageState extends State<ContactsPage>
             children: [
               // Tab Bar
               TabBar(
+                controller: _tabController,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    color: primaryColor,
+                    width: 3.0,
+                  ),
+                  insets: EdgeInsets.symmetric(horizontal: 16.0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                indicatorPadding: EdgeInsets.zero,
+                dividerColor: Colors.transparent,
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
+                labelColor: primaryColor,
+                unselectedLabelColor: const Color(0xFF9CA3AF),
+                labelStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  Tab(
+                    child: Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(StrRes.friends),
+                            if (logic.friendApplicationCount > 0) ...[
+                              5.horizontalSpace,
+                              Container(
+                                constraints: BoxConstraints(
+                                    minWidth: 20.w, minHeight: 20.h),
+                                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEF4444),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    logic.friendApplicationCount > 99
+                                        ? '99+'
+                                        : logic.friendApplicationCount
+                                            .toString(),
+                                    style: TextStyle(
+                                      fontFamily: 'FilsonPro',
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        )),
+                  ),
+                  Tab(
+                    child: Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(StrRes.groups),
+                            if (logic.groupApplicationCount > 0) ...[
+                              5.horizontalSpace,
+                              Container(
+                                constraints: BoxConstraints(
+                                    minWidth: 20.w, minHeight: 20.h),
+                                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEF4444),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    logic.groupApplicationCount > 99
+                                        ? '99+'
+                                        : logic.groupApplicationCount
+                                            .toString(),
+                                    style: TextStyle(
+                                      fontFamily: 'FilsonPro',
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        )),
+                  ),
+                ],
+              ),
+              const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+              // Tab Bar View
+              Expanded(
+                child: TabBarView(
                   controller: _tabController,
-                  indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                      width: 3.0,
-                    ),
-                    insets: EdgeInsets.symmetric(horizontal: 16.0),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  indicatorPadding: EdgeInsets.zero,
-                  dividerColor: Colors.transparent,
-                  splashFactory: NoSplash.splashFactory,
-                  overlayColor: WidgetStateProperty.all(Colors.transparent),
-                  labelColor: primaryColor,
-                  unselectedLabelColor: const Color(0xFF9CA3AF),
-                  labelStyle: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  unselectedLabelStyle: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  tabs: [
-                    Tab(
-                      child: Obx(() => Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(StrRes.friends),
-                              if (logic.friendApplicationCount > 0) ...[
-                                5.horizontalSpace,
-                                Container(
-                                  constraints: BoxConstraints(
-                                      minWidth: 20.w, minHeight: 20.h),
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 6.w),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFEF4444),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      logic.friendApplicationCount > 99
-                                          ? '99+'
-                                          : logic.friendApplicationCount
-                                              .toString(),
-                                      style: TextStyle(
-                                        fontFamily: 'FilsonPro',
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          )),
-                    ),
-                    Tab(
-                      child: Obx(() => Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(StrRes.groups),
-                              if (logic.groupApplicationCount > 0) ...[
-                                5.horizontalSpace,
-                                Container(
-                                  constraints: BoxConstraints(
-                                      minWidth: 20.w, minHeight: 20.h),
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 6.w),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFEF4444),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      logic.groupApplicationCount > 99
-                                          ? '99+'
-                                          : logic.groupApplicationCount
-                                              .toString(),
-                                      style: TextStyle(
-                                        fontFamily: 'FilsonPro',
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          )),
-                    ),
+                  children: [
+                    _buildFriendsTab(),
+                    _buildGroupsTab(),
                   ],
                 ),
-                const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-                // Tab Bar View
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildFriendsTab(),
-                      _buildGroupsTab(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
+          ),
         ));
   }
 
@@ -205,7 +203,7 @@ class _ContactsPageState extends State<ContactsPage>
       final friendList = logic.friendListLogic.friendList
           .map((u) => FriendListItem(type: FriendItemType.friend, user: u))
           .toList();
-      
+
       // Filter by search
       final searchQuery = _friendSearchController.text.toLowerCase().trim();
       final filteredList = searchQuery.isEmpty
@@ -218,25 +216,100 @@ class _ContactsPageState extends State<ContactsPage>
               return name.toLowerCase().contains(searchQuery) ||
                   remark.toLowerCase().contains(searchQuery);
             }).toList();
-      
+
       SuspensionUtil.setShowSuspensionStatus(filteredList);
 
       return Column(
         children: [
-          // Friends function button
-          _buildFunctionItem(
-            icon: HugeIcons.strokeRoundedUserAdd01,
-            label: StrRes.newFriend,
-            count: logic.friendApplicationCount,
-            onTap: logic.newFriend,
+          // Friends function button & search box
+          AnimatedCrossFade(
+            firstChild: IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildFunctionItem(
+                      icon: HugeIcons.strokeRoundedUserAdd01,
+                      label: StrRes.newFriend,
+                      count: logic.friendApplicationCount,
+                      onTap: logic.newFriend,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isFriendSearchActive = true;
+                        _friendSearchFocusNode.requestFocus();
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                     color: const Color(0xFFFFFFFF),
+                      child: Center(
+                        child: Icon(
+                          CupertinoIcons.search,
+                          color: const Color(0xFF424242),
+                          size: 20.w,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            secondChild: Container(
+              height: 64.h,
+              margin: EdgeInsets.only(top: 10.h),
+              padding: EdgeInsets.only(top: 10.h),
+              color: const Color(0xFFFFFFFF),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isFriendSearchActive = false;
+                        _friendSearchController.clear();
+                        _friendSearchFocusNode.unfocus();
+                      });
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: const Color(0xFF424242),
+                      size: 20.w,
+                    ),
+                  ),
+                  Expanded(
+                    child: AppTextFormField(
+                      focusNode: _friendSearchFocusNode,
+                      controller: _friendSearchController,
+                      label: StrRes.search,
+                      keyboardType: TextInputType.text,
+                      onChanged: (value) => setState(() {}),
+                      validator: (value) => null,
+                      prefixIcon: Icon(CupertinoIcons.search),
+                      suffixIcon: _friendSearchController.text.isNotEmpty
+                          ? GestureDetector(
+                              onTap: () {
+                                _friendSearchController.clear();
+                                setState(() {});
+                              },
+                              child: Icon(
+                                CupertinoIcons.xmark_circle_fill,
+                                size: 18.w,
+                                color: const Color(0xFF9CA3AF),
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                  16.horizontalSpace,
+                ],
+              ),
+            ),
+            crossFadeState: _isFriendSearchActive
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 300),
           ),
-          // Search box
-          // _buildSearchBox(
-          //   focusNode: _friendSearchFocusNode,
-          //   controller: _friendSearchController,
-          //   hintText: 'Search friends...',
-          //   onChanged: (value) => setState(() {}),
-          // ),
           Container(
             width: double.infinity,
             height: 5.h,
@@ -351,17 +424,23 @@ class _ContactsPageState extends State<ContactsPage>
                     _selectedGroupFilter == GroupFilterType.joinedGroup;
 
             // Search filter
-            final searchQuery = _groupSearchController.text.toLowerCase().trim();
-            final filteredMyGroups = (showMyGroups ? myGroups : <GroupInfo>[])
-                .where((group) {
+            final searchQuery =
+                _groupSearchController.text.toLowerCase().trim();
+            final filteredMyGroups =
+                (showMyGroups ? myGroups : <GroupInfo>[]).where((group) {
               if (searchQuery.isEmpty) return true;
-              return (group.groupName ?? '').toLowerCase().contains(searchQuery);
+              return (group.groupName ?? '')
+                  .toLowerCase()
+                  .contains(searchQuery);
             }).toList();
-            
-            final filteredJoinedGroups = (showJoinedGroups ? joinedGroups : <GroupInfo>[])
-                .where((group) {
+
+            final filteredJoinedGroups =
+                (showJoinedGroups ? joinedGroups : <GroupInfo>[])
+                    .where((group) {
               if (searchQuery.isEmpty) return true;
-              return (group.groupName ?? '').toLowerCase().contains(searchQuery);
+              return (group.groupName ?? '')
+                  .toLowerCase()
+                  .contains(searchQuery);
             }).toList();
 
             if (filteredMyGroups.isEmpty && filteredJoinedGroups.isEmpty) {

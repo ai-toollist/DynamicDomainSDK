@@ -438,17 +438,6 @@ class MyInfoLogic extends GetxController {
     );
   }
 
-  Widget _buildGenderDivider() {
-    return Padding(
-      padding: EdgeInsets.only(left: 70.w),
-      child: const Divider(
-        height: 1,
-        thickness: 1,
-        color: Color(0xFFF3F4F6),
-      ),
-    );
-  }
-
   Widget _buildGenderActionItem({
     required IconData icon,
     required String title,

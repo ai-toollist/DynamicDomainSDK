@@ -27,8 +27,9 @@ class FriendListLogic extends GetxController {
     addSub = imLogic.friendAddSubject.listen(_addFriend);
     infoChangedSub =
         imLogic.friendInfoChangedSubject.listen(_friendInfoChanged);
-    imLogic.onBlacklistAdd = _delFriend;
-    imLogic.onBlacklistDeleted = _addFriend;
+    // Don't auto-remove friends when added to blacklist
+    // imLogic.onBlacklistAdd = _delFriend;
+    // imLogic.onBlacklistDeleted = _addFriend;
 
     // Listen to SDK sync status to refresh friend list when sync completes
     syncStatusSub = imLogic.imSdkStatusPublishSubject.listen((status) {
@@ -64,7 +65,6 @@ class FriendListLogic extends GetxController {
             await OpenIM.iMManager.friendshipManager.getFriendListPage(
           offset: offset,
           count: batchSize,
-          filterBlack: true,
         );
 
         if (batch.isEmpty) break;

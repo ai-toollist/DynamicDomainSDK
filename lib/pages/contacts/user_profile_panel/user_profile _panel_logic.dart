@@ -464,19 +464,26 @@ class UserProfilePanelLogic extends GetxController {
         val?.isBlacklist = true;
         val?.isFriendship = false;
       });
+      IMViews.showToast(StrRes.addedBlacklistSuccessfully, type: 1);
       _getUsersInfo();
     }
   }
 
   /// Remove from blacklist
   void removeBlacklist() async {
-    await OpenIM.iMManager.friendshipManager.removeBlacklist(
-      userID: userInfo.value.userID!,
-    );
-    userInfo.update((val) {
-      val?.isBlacklist = false;
-    });
-    _getUsersInfo();
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(title: StrRes.areYouSureRemoveBlacklist));
+    if (confirm == true) {
+      await OpenIM.iMManager.friendshipManager.removeBlacklist(
+        userID: userInfo.value.userID!,
+      );
+      userInfo.update((val) {
+        val?.isBlacklist = false;
+      });
+      IMViews.showToast(StrRes.removedBlacklistSuccessfully, type: 1);
+      _getUsersInfo();
+    }
   }
 
   /// Delete friend

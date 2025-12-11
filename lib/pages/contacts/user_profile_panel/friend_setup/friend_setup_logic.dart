@@ -41,18 +41,25 @@ class FriendSetupLogic extends GetxController {
       userProfilesLogic.userInfo.update((val) {
         val?.isBlacklist = true;
       });
+      IMViews.showToast(StrRes.addedBlacklistSuccessfully,type:1);
       Get.back();
     }
   }
 
   /// 从黑名单移除
   void removeBlacklist() async {
-    await OpenIM.iMManager.friendshipManager.removeBlacklist(
-      userID: userProfilesLogic.userInfo.value.userID!,
-    );
-    userProfilesLogic.userInfo.update((val) {
-      val?.isBlacklist = false;
-    });
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(title: StrRes.areYouSureRemoveBlacklist));
+    if (confirm == true) {
+      await OpenIM.iMManager.friendshipManager.removeBlacklist(
+        userID: userProfilesLogic.userInfo.value.userID!,
+      );
+      userProfilesLogic.userInfo.update((val) {
+        val?.isBlacklist = false;
+      });
+      IMViews.showToast(StrRes.removedBlacklistSuccessfully,type:1);
+    }
   }
 
   /// 解除好友关系

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
-import 'package:openim/routes/app_navigator.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../core/controller/im_controller.dart';
@@ -72,12 +71,87 @@ class FriendRequestsLogic extends GetxController {
   bool isISendRequest(FriendApplicationInfo info) =>
       info.fromUserID == OpenIM.iMManager.userID;
 
-  /// 接受好友申请
-  void acceptFriendApplication(FriendApplicationInfo info) =>
-      AppNavigator.startProcessFriendRequests(
-        applicationInfo: info,
+  /// 接受好友申请 - 直接处理
+  void acceptFriendApplication(FriendApplicationInfo info) async {
+    try {
+      await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.friendshipManager
+            .acceptFriendApplication(
+          userID: info.fromUserID ?? '',
+          handleMsg: '',
+        ),
       );
+      
+      // 更新该条申请的状态
+      final index = applicationList.indexWhere((item) => 
+        item.fromUserID == info.fromUserID && 
+        item.toUserID == info.toUserID &&
+        item.createTime == info.createTime
+      );
+      
+      if (index != -1) {
+        final updatedInfo = FriendApplicationInfo(
+          fromUserID: info.fromUserID,
+          fromNickname: info.fromNickname,
+          fromFaceURL: info.fromFaceURL,
+          toUserID: info.toUserID,
+          toNickname: info.toNickname,
+          toFaceURL: info.toFaceURL,
+          reqMsg: info.reqMsg,
+          createTime: info.createTime,
+          handleTime: DateTime.now().millisecondsSinceEpoch,
+          handleMsg: '',
+          handleResult: 1, // Agreed status
+        );
+        applicationList[index] = updatedInfo;
+      }
+      
+      IMViews.showToast(StrRes.approved,type:1);
+      homeLogic.getUnhandledFriendApplicationCount();
+    } catch (e) {
+      IMViews.showToast(StrRes.addFailed);
+    }
+  }
 
-  /// 拒绝好友申请
-  void refuseFriendApplication(FriendApplicationInfo info) async {}
+  /// 拒绝好友申请 - 直接处理
+  void refuseFriendApplication(FriendApplicationInfo info) async {
+    try {
+      await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.friendshipManager
+            .refuseFriendApplication(
+          userID: info.fromUserID ?? '',
+          handleMsg: '',
+        ),
+      );
+      
+      // 更新该条申请的状态
+      final index = applicationList.indexWhere((item) => 
+        item.fromUserID == info.fromUserID && 
+        item.toUserID == info.toUserID &&
+        item.createTime == info.createTime
+      );
+      
+      if (index != -1) {
+        final updatedInfo = FriendApplicationInfo(
+          fromUserID: info.fromUserID,
+          fromNickname: info.fromNickname,
+          fromFaceURL: info.fromFaceURL,
+          toUserID: info.toUserID,
+          toNickname: info.toNickname,
+          toFaceURL: info.toFaceURL,
+          reqMsg: info.reqMsg,
+          createTime: info.createTime,
+          handleTime: DateTime.now().millisecondsSinceEpoch,
+          handleMsg: '',
+          handleResult: -1, // Rejected status
+        );
+        applicationList[index] = updatedInfo;
+      }
+      
+      IMViews.showToast(StrRes.rejectSuccessfully);
+      homeLogic.getUnhandledFriendApplicationCount();
+    } catch (e) {
+      IMViews.showToast(StrRes.rejectFailed);
+    }
+  }
 }

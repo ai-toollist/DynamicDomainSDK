@@ -231,8 +231,9 @@ class AuthView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start, // Căn giữa nội dung
       children: [
         // Mode Toggle (Login / Register) - Fixed
-        Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0),
+        Container(
+          padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+          margin: EdgeInsets.only(top: 20.h),
           child: _buildModeToggle(primaryColor),
         ),
         // Scrollable form fields
@@ -339,7 +340,7 @@ class AuthView extends StatelessWidget {
 
   Widget _buildLoginFields(Color primaryColor) {
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20.w, 40.h, 20.w, 20.h),
+      padding: EdgeInsets.fromLTRB(20.w, 30.h, 20.w, 20.h),
       child: Form(
         key: logic.loginFormKey,
         child: Column(
@@ -490,7 +491,7 @@ class AuthView extends StatelessWidget {
 
   Widget _buildRegisterFields(Color primaryColor) {
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20.w, 40.h, 20.w, 20.h),
+      padding: EdgeInsets.fromLTRB(20.w, 30.h, 20.w, 20.h),
       child: Form(
         key: logic.registerFormKey,
         child: Column(

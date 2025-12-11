@@ -672,6 +672,8 @@ class StrRes {
 
   static String get areYouSureAddBlacklist => 'areYouSureAddBlacklist'.tr;
 
+  static String get areYouSureRemoveBlacklist => 'areYouSureRemoveBlacklist'.tr;
+
   static String get copySuccess => 'copySuccess'.tr;
 
   static String get remark => 'remark'.tr;
@@ -1341,6 +1343,8 @@ class StrRes {
   static String get fillInvitationCode => 'fillInvitationCode'.tr;
   static String get yourVerificationCodeIs => 'yourVerificationCodeIs'.tr;
   static String get friendDeletedSuccessfully => 'friendDeletedSuccessfully'.tr;
+  static String get addedBlacklistSuccessfully => 'addedBlacklistSuccessfully'.tr;
+  static String get removedBlacklistSuccessfully => 'removedBlacklistSuccessfully'.tr;
   static String get avatarUpdatedSuccessfully => 'avatarUpdatedSuccessfully'.tr;
   static String get genderUpdatedSuccessfully => 'genderUpdatedSuccessfully'.tr;
   static String get birthdayUpdatedSuccessfully =>

@@ -48,7 +48,7 @@ class SelectContactsFromGroupLogic extends GetxController {
       }
       
       // Search by groupID
-      if (!match && (group.groupID?.toLowerCase().contains(lowerQuery) ?? false)) {
+      if (!match && (group.groupID.toLowerCase().contains(lowerQuery))) {
         match = true;
       }
       

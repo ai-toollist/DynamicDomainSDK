@@ -370,6 +370,10 @@ const Map<String, String> en_US = {
   "areYouSureDelFriend": "Are you sure you want to delete this friend?",
   "areYouSureAddBlacklist":
       "Are you sure you want to add this friend to the blacklist?",
+  "areYouSureRemoveBlacklist":
+      "Are you sure you want to remove this friend from the blacklist?",
+  "addedBlacklistSuccessfully": "Successfully added friend to blacklist",
+  "removedBlacklistSuccessfully": "Successfully removed friend from blacklist",
   "remark": "Remark",
   "setRemarkName": "Set Remark Name",
   "enterRemarkName": "Enter remark name...",

@@ -9,6 +9,7 @@ import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/gradient_scaffold.dart';
+import '../../../widgets/menu_item_widgets.dart';
 import 'user_profile _panel_logic.dart';
 
 class UserProfilePanelPage extends StatelessWidget {
@@ -66,7 +67,7 @@ class UserProfilePanelPage extends StatelessWidget {
               24.verticalSpace,
 
               // Action Buttons Row
-              if (!logic.isMyself&& logic.isFriendship)
+              if (!logic.isMyself && logic.isFriendship)
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Row(
@@ -118,7 +119,9 @@ class UserProfilePanelPage extends StatelessWidget {
                 _buildGroupInfoSection(),
               ],
               if (!logic.isMyself) ...[
-                _buildSectionTitle(StrRes.actions),
+                if (logic.isFriendship || logic.isBlacklist) ...[
+                  _buildSectionTitle(StrRes.actions),
+                ],
                 _buildActionsSection(),
               ],
 
@@ -260,13 +263,11 @@ class UserProfilePanelPage extends StatelessWidget {
 
   Widget _buildActionsSection() => _buildMenuSection([
         if (logic.iAmOwner.value && logic.groupMembersInfo != null)
-          _buildToggleMenuItem(
+          _buildMenuItem(
             icon: CupertinoIcons.shield,
             iconColor: const Color(0xFF3B82F6),
             label: StrRes.setAsAdmin,
-            isOn: logic.hasAdminPermission.value,
-            onChanged: (_) => logic.toggleAdmin(),
-            isLast: false,
+            onTap: logic.toggleAdmin,
           ),
         if (logic.iHasMutePermissions.value && logic.groupMembersInfo != null)
           _buildMenuItem(
@@ -275,7 +276,6 @@ class UserProfilePanelPage extends StatelessWidget {
             label: StrRes.setMute,
             value: IMUtils.emptyStrToNull(logic.mutedTime.value),
             onTap: logic.setMute,
-            isLast: false,
           ),
         if (logic.isFriendship ||
             logic.isMyself ||
@@ -286,16 +286,12 @@ class UserProfilePanelPage extends StatelessWidget {
             iconColor: const Color(0xFF10B981),
             label: StrRes.personalInfo,
             onTap: logic.viewPersonalInfo,
-            isLast: false,
           ),
-          if((!logic.isMyself && logic.isFriendship)||logic.isBlacklist)
-          _buildToggleMenuItem(
-            icon: CupertinoIcons.nosign,
-            iconColor: const Color(0xFFFBBF24),
+        if ((!logic.isMyself && logic.isFriendship) || logic.isBlacklist)
+          ToggleMenuItemWidget(
             label: StrRes.addToBlacklist,
-            isOn: logic.userInfo.value.isBlacklist == true,
             onChanged: (_) => logic.toggleBlacklist(),
-            isLast: false,
+            isOn: logic.isBlacklist,
           ),
         // Friend Setup features
         if (logic.isFriendship) ...[
@@ -393,37 +389,6 @@ class UserProfilePanelPage extends StatelessWidget {
         ),
       );
 
-  Widget _buildToggleMenuItem({
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required bool isOn,
-    required ValueChanged<bool> onChanged,
-    bool isLast = false,
-  }) =>
-      InkWell(
-        onTap: () => onChanged(!isOn),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF1F2937),
-                  ),
-                ),
-              ),
-              _buildToggleSwitch(isOn: isOn, onChanged: onChanged),
-            ],
-          ),
-        ),
-      );
-
   Widget _buildDeleteFriendMenuItem() => InkWell(
         onTap: logic.deleteFromFriendList,
         child: Padding(
@@ -448,52 +413,6 @@ class UserProfilePanelPage extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      );
-
-  Widget _buildToggleSwitch({
-    required bool isOn,
-    required ValueChanged<bool> onChanged,
-  }) =>
-      GestureDetector(
-        onTap: () => onChanged(!isOn),
-        child: Container(
-          width: 52.w,
-          height: 30.h,
-          decoration: BoxDecoration(
-            color: isOn ? const Color(0xFF10B981) : const Color(0xFFE2E8F0),
-            borderRadius: BorderRadius.circular(15.r),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF64748B).withOpacity(0.1),
-                offset: const Offset(0, 2),
-                blurRadius: 6,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          child: AnimatedAlign(
-            alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            child: Container(
-              width: 26.w,
-              height: 26.h,
-              margin: EdgeInsets.all(2.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF64748B).withOpacity(0.15),
-                    offset: const Offset(0, 2),
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       );

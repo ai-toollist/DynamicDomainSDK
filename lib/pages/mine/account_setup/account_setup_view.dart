@@ -143,6 +143,26 @@ class AccountSetupPage extends StatelessWidget {
     );
   }
 
+  Widget _buildIconContainer(dynamic icon, {bool isWarning = false}) {
+    return Container(
+      width: 36.w,
+      height: 36.w,
+      decoration: BoxDecoration(
+        color: isWarning
+            ? const Color(0xFFEF4444).withOpacity(0.1)
+            : const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Center(
+        child: HugeIcon(
+          icon: icon,
+          size: 20.w,
+          color: isWarning ? const Color(0xFFEF4444) : const Color(0xFF424242),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMenuItem({
     required dynamic icon,
     required String label,
@@ -165,26 +185,6 @@ class AccountSetupPage extends StatelessWidget {
       isWarning: isWarning,
       showDivider: showDivider,
       showArrow: !hasSwitch && onTap != null,
-    );
-  }
-
-  Widget _buildIconContainer(dynamic icon, {bool isWarning = false}) {
-    return Container(
-      width: 36.w,
-      height: 36.w,
-      decoration: BoxDecoration(
-        color: isWarning
-            ? const Color(0xFFEF4444).withOpacity(0.1)
-            : const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: Center(
-        child: HugeIcon(
-          icon: icon,
-          size: 20.w,
-          color: isWarning ? const Color(0xFFEF4444) : const Color(0xFF424242),
-        ),
-      ),
     );
   }
 }

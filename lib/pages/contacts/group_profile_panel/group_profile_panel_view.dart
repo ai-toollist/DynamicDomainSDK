@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 
-import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/gradient_scaffold.dart';
 import 'group_profile_panel_logic.dart';
 

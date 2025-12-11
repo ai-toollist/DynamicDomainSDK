@@ -85,28 +85,57 @@ class MenuItemWidget extends StatelessWidget {
 class ToggleMenuItemWidget extends StatelessWidget {
   final String label;
   final bool isOn;
+  final IconData? icon;
+  final dynamic iconWidget;
   final ValueChanged<bool> onChanged;
   final EdgeInsetsGeometry? padding;
   final Color? activeColor;
+  final bool isWarning;
 
   const ToggleMenuItemWidget({
     super.key,
     required this.label,
+    this.icon,
+    this.iconWidget,
     required this.isOn,
     required this.onChanged,
     this.padding,
     this.activeColor,
+    this.isWarning = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onChanged(!isOn),
-      child: Padding(
+    return Padding(
         padding:
             padding ?? EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
         child: Row(
           children: [
+            if (iconWidget != null) ...[
+              iconWidget,
+              12.horizontalSpace,
+            ] else if (icon != null) ...[
+              Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  color: isWarning
+                      ? const Color(0xFFEF4444).withOpacity(0.1)
+                      : const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    size: 20.w,
+                    color: isWarning
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFF424242),
+                  ),
+                ),
+              ),
+              12.horizontalSpace,
+            ],
             Expanded(
               child: Text(
                 label,
@@ -125,8 +154,7 @@ class ToggleMenuItemWidget extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
 

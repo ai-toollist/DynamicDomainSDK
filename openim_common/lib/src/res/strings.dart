@@ -1026,6 +1026,8 @@ class StrRes {
 
   static String get globalSearchChatFile => 'globalSearchChatFile'.tr;
 
+  static String get from => 'from'.tr;
+
   static String get relatedChatHistory => 'relatedChatHistory'.tr;
 
   static String get seeMoreRelatedContacts => 'seeMoreRelatedContacts'.tr;

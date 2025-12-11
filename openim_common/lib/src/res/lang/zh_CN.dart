@@ -529,6 +529,7 @@ const Map<String, String> zh_CN = {
   "globalSearchGroup": "群组",
   "globalSearchChatHistory": "聊天记录",
   "globalSearchChatFile": "文件",
+  "from": "来自",
   "relatedChatHistory": "%s条相关的聊天记录",
   "seeMoreRelatedContacts": "查看更多相关联系人",
   "seeMoreRelatedGroup": "查看更多相关群组",

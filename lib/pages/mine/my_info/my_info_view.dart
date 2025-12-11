@@ -39,7 +39,7 @@ class MyInfoPage extends StatelessWidget {
                 onTap: () {
                   if (user.userID != null) {
                     Clipboard.setData(ClipboardData(text: user.userID!));
-                    IMViews.showToast(StrRes.copySuccessfully);
+                    IMViews.showToast(StrRes.copySuccessfully,type:1);
                   }
                 },
                 child: Row(
@@ -77,6 +77,7 @@ class MyInfoPage extends StatelessWidget {
                       label: StrRes.nickname,
                       value: imLogic.userInfo.value.nickname ?? '',
                       onTap: logic.editMyName,
+                      isRow: false,
                     ),
                     SettingsMenuItem(
                       icon: CupertinoIcons.person_2_fill,
@@ -86,6 +87,7 @@ class MyInfoPage extends StatelessWidget {
                           ? StrRes.man
                           : StrRes.woman,
                       onTap: logic.selectGender,
+                      isRow: false,
                     ),
                     SettingsMenuItem(
                       icon: CupertinoIcons.gift,
@@ -96,6 +98,7 @@ class MyInfoPage extends StatelessWidget {
                         format: IMUtils.getTimeFormat1(),
                       ),
                       onTap: logic.openDatePicker,
+                      isRow: false,
                     ),
                     SettingsMenuItem(
                       icon: CupertinoIcons.phone,
@@ -103,18 +106,7 @@ class MyInfoPage extends StatelessWidget {
                       label: StrRes.mobile,
                       value: imLogic.userInfo.value.phoneNumber ?? '',
                       showArrow: false,
-                    ),
-                    SettingsMenuItem(
-                      icon: CupertinoIcons.qrcode,
-                      color: const Color(0xFFF59E0B),
-                      label: StrRes.qrcode,
-                      onTap: logic.viewMyQrcode,
-                      showDivider: false,
-                      valueWidget: Icon(
-                        CupertinoIcons.qrcode,
-                        size: 20.w,
-                        color: const Color(0xFF9CA3AF),
-                      ),
+                      isRow: false,
                     ),
                   ],
                 )),

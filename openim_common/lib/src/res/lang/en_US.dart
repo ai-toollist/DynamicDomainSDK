@@ -551,6 +551,7 @@ const Map<String, String> en_US = {
   "globalSearchGroup": "Groups",
   "globalSearchChatHistory": "Chat History",
   "globalSearchChatFile": "Files",
+  "from": "From",
   "relatedChatHistory": "%s related chat history",
   "seeMoreRelatedContacts": "See more related contacts",
   "seeMoreRelatedGroup": "See more related groups",

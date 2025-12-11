@@ -39,7 +39,7 @@ class GradientScaffold extends StatelessWidget {
   final Widget? searchBox;
 
   /// Fixed values for consistency
-  static const double headerHeight = 160;
+  static const double headerHeight = 175;
   static const double titleFontSize = 20;
   static const double subtitleFontSize = 14;
   static const double bodyTopMargin = 130;
@@ -107,7 +107,7 @@ class GradientScaffold extends StatelessWidget {
         // 4. Search Box (Overlapping) - optional
         if (searchBox != null)
           Positioned(
-            top: (headerHeight - 60).h,
+            top: (headerHeight - 75).h,
             left: 20.w,
             right: 20.w,
             child: searchBox!,

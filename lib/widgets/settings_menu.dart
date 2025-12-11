@@ -33,9 +33,7 @@ class SettingsMenuSection extends StatelessWidget {
             blurRadius: 6,
           ),
         ],
-        border: showBorder
-            ? Border.all(color: const Color(0xFFF3F4F6))
-            : null,
+        border: showBorder ? Border.all(color: const Color(0xFFF3F4F6)) : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius.r),
@@ -65,24 +63,25 @@ class SettingsMenuItem extends StatelessWidget {
   final bool showDivider;
   final Color? color;
   final EdgeInsetsGeometry? padding;
+  final bool isRow;
 
-  const SettingsMenuItem({
-    super.key,
-    this.icon,
-    this.iconWidget,
-    required this.label,
-    this.value,
-    this.valueWidget,
-    this.onTap,
-    this.showArrow = true,
-    this.hasSwitch = false,
-    this.switchValue,
-    this.onSwitchChanged,
-    this.isWarning = false,
-    this.showDivider = true,
-    this.color,
-    this.padding,
-  });
+  const SettingsMenuItem(
+      {super.key,
+      this.icon,
+      this.iconWidget,
+      required this.label,
+      this.value,
+      this.valueWidget,
+      this.onTap,
+      this.showArrow = true,
+      this.hasSwitch = false,
+      this.switchValue,
+      this.onSwitchChanged,
+      this.isWarning = false,
+      this.showDivider = true,
+      this.color,
+      this.padding,
+      this.isRow = true});
 
   @override
   Widget build(BuildContext context) {
@@ -93,72 +92,7 @@ class SettingsMenuItem extends StatelessWidget {
           child: Padding(
             padding: padding ??
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            child: Row(
-              children: [
-                // Icon
-                if (icon != null || iconWidget != null) ...[
-                  iconWidget ??
-                      Container(
-                        width: 36.w,
-                        height: 36.w,
-                        decoration: BoxDecoration(
-                          color: color!=null ? color!.withOpacity(0.1)
-                              : (isWarning
-                                  ? const Color(0xFFEF4444).withOpacity(0.1)
-                                  : const Color(0xFFF3F4F6)),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: Icon(
-                          icon,
-                          size: 20.w,
-                          color: color ??
-                              (isWarning
-                                  ? const Color(0xFFEF4444)
-                                  : const Color(0xFF424242)),
-                        ),
-                      ),
-                  12.horizontalSpace,
-                ],
-                // Label
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15.sp,
-                      color: isWarning
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFF374151),
-                    ),
-                  ),
-                ),
-                // Value / Switch / Arrow
-                if (hasSwitch && switchValue != null)
-                  _buildSwitch()
-                else ...[
-                  if (value != null)
-                    Text(
-                      value!,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14.sp,
-                        color: const Color(0xFF9CA3AF),
-                      ),
-                    ),
-                  if (valueWidget != null) valueWidget!,
-                  if (showArrow && !hasSwitch) ...[
-                    8.horizontalSpace,
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 14.w,
-                      color: const Color(0xFF9CA3AF),
-                    ),
-                  ],
-                ],
-              ],
-            ),
+            child: isRow ? _buildRowLayout() : _buildColumnLayout(),
           ),
         ),
         if (showDivider)
@@ -174,7 +108,155 @@ class SettingsMenuItem extends StatelessWidget {
     );
   }
 
-  Widget _buildSwitch() {
+  Widget _buildRowLayout() {
+    return Row(
+      children: [
+        // Icon
+        if (icon != null || iconWidget != null) ...[
+          iconWidget ??
+              Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  color: color != null
+                      ? color!.withOpacity(0.1)
+                      : (isWarning
+                          ? const Color(0xFFEF4444).withOpacity(0.1)
+                          : const Color(0xFFF3F4F6)),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(
+                  icon,
+                  size: 20.w,
+                  color: color ??
+                      (isWarning
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFF424242)),
+                ),
+              ),
+          12.horizontalSpace,
+        ],
+        // Label
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'FilsonPro',
+              fontWeight: FontWeight.w500,
+              fontSize: 15.sp,
+              color:
+                  isWarning ? const Color(0xFFEF4444) : const Color(0xFF374151),
+            ),
+          ),
+        ),
+        // Value / Switch / Arrow
+        if (hasSwitch && switchValue != null)
+          _buildSwitch()
+        else ...[
+          if (value != null)
+            Text(
+              value!,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontWeight: FontWeight.w400,
+                fontSize: 14.sp,
+                color: const Color(0xFF9CA3AF),
+              ),
+            ),
+          if (valueWidget != null) valueWidget!,
+          if (showArrow && !hasSwitch) ...[
+            8.horizontalSpace,
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14.w,
+              color: const Color(0xFF9CA3AF),
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _buildColumnLayout() {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      // Icon
+      if (icon != null || iconWidget != null) ...[
+        iconWidget ??
+            Container(
+              width: 36.w,
+              height: 36.w,
+              decoration: BoxDecoration(
+                color: color != null
+                    ? color!.withOpacity(0.1)
+                    : (isWarning
+                        ? const Color(0xFFEF4444).withOpacity(0.1)
+                        : const Color(0xFFF3F4F6)),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(
+                icon,
+                size: 20.w,
+                color: color ??
+                    (isWarning
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFF424242)),
+              ),
+            ),
+        12.horizontalSpace,
+      ],
+
+      // Label + value (giữ cùng cột)
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontWeight: FontWeight.w500,
+                fontSize: 15.sp,
+                color: isWarning
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFF374151),
+              ),
+            ),
+            if (value != null)
+              Text(
+                value!,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14.sp,
+                  color: const Color(0xFF9CA3AF),
+                ),
+              ),
+          ],
+        ),
+      ),
+
+      // Toggle / arrow
+      if (hasSwitch && switchValue != null)
+        _buildSwitch()
+      else ...[
+        if (valueWidget != null) valueWidget!,
+        if (showArrow && !hasSwitch) ...[
+          8.horizontalSpace,
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14.w,
+            color: const Color(0xFF9CA3AF),
+          ),
+        ],
+      ],
+    ],
+  );
+} 
+
+Widget _buildSwitch() {
     return GestureDetector(
       onTap: () => onSwitchChanged?.call(!(switchValue ?? false)),
       child: AnimatedContainer(

@@ -412,7 +412,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                         message: e,
                         downloadProgressView: FileDownloadProgressView(e),
                       ),
-                      content: e.senderNickname,
+                      content: "${StrRes.from} ${e.senderNickname}",
                       onTap: () => logic.viewFile(e),
                       showDivider: index != logic.fileMessageList.length - 1,
                     );

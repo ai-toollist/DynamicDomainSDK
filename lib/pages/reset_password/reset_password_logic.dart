@@ -104,10 +104,11 @@ class ResetPasswordLogic extends GetxController {
         ),
       );
       if (result == true) {
-        IMViews.showToast(StrRes.verificationCodeSent);
+        IMViews.showToast(StrRes.verificationCodeSent,type: 1);
         return true;
       }
     } catch (error) {
+      IMViews.showToast(StrRes.failedToSendVerificationCode);
       Logger.print(error);
     }
     return false;

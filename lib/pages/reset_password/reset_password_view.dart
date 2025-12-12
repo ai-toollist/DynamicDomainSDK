@@ -82,11 +82,12 @@ class ResetPasswordPage extends StatelessWidget {
 
                         // Verification code field
                         PhoneCodeField(
-                          focusNode: logic.smsCodeFocusNode,
-                          controller: logic.smsCodeCtrl,
-                          onSendCode: logic.onSendVerificationCode,
-                          isRequired: true,
-                        ),
+              controller: logic.smsCodeCtrl,
+              phoneController: logic.phoneNumberCtrl,
+              validatePhone: logic.phoneNumberCtrl.text,
+              onSendCode: logic.onSendVerificationCode,
+              isRequired: true,
+            ),
 
                         30.verticalSpace,
 

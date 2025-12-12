@@ -1,18 +1,22 @@
-import java.util.Properties
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Properties
 import java.util.TimeZone
 
 // Read local properties
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
+
 if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
-val flutterRoot: String = localProperties.getProperty("flutter.sdk")
-    ?: throw GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+val flutterRoot: String =
+        localProperties.getProperty("flutter.sdk")
+                ?: throw GradleException(
+                        "Flutter SDK not found. Define location with flutter.sdk in the local.properties file."
+                )
 
 val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
 val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
@@ -37,16 +41,16 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
+    kotlinOptions { jvmTarget = JavaVersion.VERSION_11.toString() }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // TODO: Specify your own unique Application ID
+        // (https://developer.android.com/studio/build/application-id.html).
         // applicationId = "com.tingjunge.cnl"
         applicationId = "com.cnl.chat"
         // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        // For more information, see:
+        // https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = 24
         targetSdk = 34
         versionCode = flutterVersionCode.toInt()
@@ -55,7 +59,8 @@ android {
         multiDexEnabled = true
 
         ndk {
-            // abiFilters += listOf("arm64-v8a") // "armeabi-v7a", "armeabi", "x86", "x86_64", "mips", "mips64"
+            // abiFilters += listOf("arm64-v8a") // "armeabi-v7a", "armeabi", "x86", "x86_64",
+            // "mips", "mips64"
         }
 
         lint {
@@ -64,32 +69,33 @@ android {
             abortOnError = false
         }
 
-        manifestPlaceholders += mapOf(
-            "GETUI_APPID" to "gNpSbOZQsW7y3gZk1WAmi6",
-            // 下面是多厂商配置，如需要开通使用请联系技术支持
+        manifestPlaceholders +=
+                mapOf(
+                        "GETUI_APPID" to "gNpSbOZQsW7y3gZk1WAmi6",
+                        // 下面是多厂商配置，如需要开通使用请联系技术支持
 
-            // 小米
-            "XIAOMI_APP_ID" to "2882303761520473644",
-            "XIAOMI_APP_KEY" to "5202047361644",
+                        // 小米
+                        "XIAOMI_APP_ID" to "2882303761520473644",
+                        "XIAOMI_APP_KEY" to "5202047361644",
 
-            // 魅族
-            "MEIZU_APP_ID" to "",
-            "MEIZU_APP_KEY" to "",
+                        // 魅族
+                        "MEIZU_APP_ID" to "",
+                        "MEIZU_APP_KEY" to "",
 
-            // 华为
-            "HUAWEI_APP_ID" to "116015943",
+                        // 华为
+                        "HUAWEI_APP_ID" to "116015943",
 
-            // OPPO
-            "OPPO_APP_KEY" to "511a10b12e104561a69b66f6c5446b10",
-            "OPPO_APP_SECRET" to "e6a28584e9f9483ca9b2b88dba302b1c",
+                        // OPPO
+                        "OPPO_APP_KEY" to "511a10b12e104561a69b66f6c5446b10",
+                        "OPPO_APP_SECRET" to "e6a28584e9f9483ca9b2b88dba302b1c",
 
-            // VIVO
-            "VIVO_APP_ID" to "105998016",
-            "VIVO_APP_KEY" to "625075cbed80a7e9d14fdf2b11879e3d",
+                        // VIVO
+                        "VIVO_APP_ID" to "105998016",
+                        "VIVO_APP_KEY" to "625075cbed80a7e9d14fdf2b11879e3d",
 
-            // 荣耀
-            "HONOR_APP_ID" to "104531813"
-        )
+                        // 荣耀
+                        "HONOR_APP_ID" to "104531813"
+                )
     }
 
     signingConfigs {
@@ -102,9 +108,7 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("release")
-        }
+        debug { signingConfig = signingConfigs.getByName("release") }
         release {
             // Temporarily disable shrinking/obfuscation to avoid R8 OOM
             isMinifyEnabled = false
@@ -113,85 +117,88 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-
-    applicationVariants.all {
-        outputs.all {
-            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            val abi = output.filters.find { it.filterType == com.android.build.OutputFile.ABI }?.identifier
-            val abiSuffix = if (abi != null) "_$abi" else ""
-            output.outputFileName = 
-                "CNL_${versionName}_${versionCode}_${buildType.name}_${buildTime()}.apk"
-        }
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-        jniLibs {
-            // Fix for ffmpeg-kit-react-native and TRTC conflicts
-            pickFirsts += listOf(
-                "lib/arm64-v8a/libgojni.so",
-                "lib/armeabi-v7a/libgojni.so",
-                "lib/x86/libgojni.so",
-                "lib/x86_64/libgojni.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so",
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/arm64-v8a/libavcodec.so",
-                "lib/arm64-v8a/libavformat.so",
-                "lib/arm64-v8a/libavutil.so",
-                "lib/arm64-v8a/libswscale.so",
-                "lib/arm64-v8a/libavdevice.so",
-                "lib/arm64-v8a/libavfilter.so",
-                "lib/arm64-v8a/libffmpegkit.so",
-                "lib/arm64-v8a/libffmpegkit_abidetect.so",
-                "lib/arm64-v8a/libswresample.so",
-                "lib/arm64-v8a/libswscale.so",
-                "lib/x86/libavcodec.so",
-                "lib/x86/libavformat.so",
-                "lib/x86/libavutil.so",
-                "lib/x86/libswscale.so",
-                "lib/x86/libavdevice.so",
-                "lib/x86/libavfilter.so",
-                "lib/x86/libffmpegkit.so",
-                "lib/x86/libffmpegkit_abidetect.so",
-                "lib/x86/libswresample.so",
-                "lib/x86/libswscale.so",
-                "lib/x86_64/libavcodec.so",
-                "lib/x86_64/libavformat.so",
-                "lib/x86_64/libavutil.so",
-                "lib/x86_64/libswscale.so",
-                "lib/x86_64/libavdevice.so",
-                "lib/x86_64/libavfilter.so",
-                "lib/x86_64/libffmpegkit.so",
-                "lib/x86_64/libffmpegkit_abidetect.so",
-                "lib/x86_64/libswresample.so",
-                "lib/x86_64/libswscale.so",
-                "lib/arm64-v8a/libliteavsdk.so",
-                "lib/armeabi-v7a/libliteavsdk.so",
-                "lib/x86/libliteavsdk.so",
-                "lib/x86_64/libliteavsdk.so"
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }
+
+    // applicationVariants.all {
+    //     outputs.all {
+    //         val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+    //         val abi =
+    //                 output.filters
+    //                         .find { it.filterType == com.android.build.OutputFile.ABI }
+    //                         ?.identifier
+    //         val abiSuffix = if (abi != null) "_$abi" else ""
+    //         output.outputFileName =
+    //                 "CNL_${versionName}_${versionCode}_${buildType.name}_${buildTime()}.apk"
+    //     }
+    // }
+
+    packaging {
+        resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+        jniLibs {
+            // Fix for ffmpeg-kit-react-native and TRTC conflicts
+            pickFirsts +=
+                    listOf(
+                            "lib/arm64-v8a/libgojni.so",
+                            "lib/armeabi-v7a/libgojni.so",
+                            "lib/x86/libgojni.so",
+                            "lib/x86_64/libgojni.so",
+                            "lib/armeabi-v7a/libc++_shared.so",
+                            "lib/x86/libc++_shared.so",
+                            "lib/x86_64/libc++_shared.so",
+                            "lib/arm64-v8a/libc++_shared.so",
+                            "lib/arm64-v8a/libavcodec.so",
+                            "lib/arm64-v8a/libavformat.so",
+                            "lib/arm64-v8a/libavutil.so",
+                            "lib/arm64-v8a/libswscale.so",
+                            "lib/arm64-v8a/libavdevice.so",
+                            "lib/arm64-v8a/libavfilter.so",
+                            "lib/arm64-v8a/libffmpegkit.so",
+                            "lib/arm64-v8a/libffmpegkit_abidetect.so",
+                            "lib/arm64-v8a/libswresample.so",
+                            "lib/arm64-v8a/libswscale.so",
+                            "lib/x86/libavcodec.so",
+                            "lib/x86/libavformat.so",
+                            "lib/x86/libavutil.so",
+                            "lib/x86/libswscale.so",
+                            "lib/x86/libavdevice.so",
+                            "lib/x86/libavfilter.so",
+                            "lib/x86/libffmpegkit.so",
+                            "lib/x86/libffmpegkit_abidetect.so",
+                            "lib/x86/libswresample.so",
+                            "lib/x86/libswscale.so",
+                            "lib/x86_64/libavcodec.so",
+                            "lib/x86_64/libavformat.so",
+                            "lib/x86_64/libavutil.so",
+                            "lib/x86_64/libswscale.so",
+                            "lib/x86_64/libavdevice.so",
+                            "lib/x86_64/libavfilter.so",
+                            "lib/x86_64/libffmpegkit.so",
+                            "lib/x86_64/libffmpegkit_abidetect.so",
+                            "lib/x86_64/libswresample.so",
+                            "lib/x86_64/libswscale.so",
+                            "lib/arm64-v8a/libliteavsdk.so",
+                            "lib/armeabi-v7a/libliteavsdk.so",
+                            "lib/x86/libliteavsdk.so",
+                            "lib/x86_64/libliteavsdk.so"
+                    )
+        }
+    }
 }
 
-flutter {
-    source = "../.."
-}
+flutter { source = "../.." }
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
     // 个推
-    implementation("com.getui:gtsdk:3.3.12.0")  // 个推SDK
-    implementation("com.getui:gtc:3.2.18.0")  // 个推核心组件
+    implementation("com.getui:gtsdk:3.3.12.0") // 个推SDK
+    implementation("com.getui:gtc:3.2.18.0") // 个推核心组件
 
     // 华为
     implementation("com.huawei.hms:push:6.12.0.300")
@@ -201,9 +208,7 @@ dependencies {
     implementation("com.getui.opt:xmp:3.2.0")
 
     // oppo
-    implementation("com.assist-v3:oppo:3.1.0") {
-        exclude(group = "commons-codec")
-    }
+    implementation("com.assist-v3:oppo:3.1.0") { exclude(group = "commons-codec") }
     implementation("com.google.code.gson:gson:2.6.2")
     implementation("commons-codec:commons-codec:1.6")
     implementation("com.android.support:support-annotations:28.0.0")
@@ -225,13 +230,11 @@ dependencies {
 
 // Fix for datastore dependency issues
 configurations.all {
-    resolutionStrategy {
-        force("androidx.datastore:datastore-preferences:1.0.0")
-    }
+    resolutionStrategy { force("androidx.datastore:datastore-preferences:1.0.0") }
 }
 
 fun buildTime(): String {
-    return SimpleDateFormat("MMddHHmm", Locale.getDefault()).apply {
-        timeZone = TimeZone.getTimeZone("GMT+08:00")
-    }.format(Date())
+    return SimpleDateFormat("MMddHHmm", Locale.getDefault())
+            .apply { timeZone = TimeZone.getTimeZone("GMT+08:00") }
+            .format(Date())
 }

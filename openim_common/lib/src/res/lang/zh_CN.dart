@@ -198,6 +198,7 @@ const Map<String, String> zh_CN = {
   "callVoice": "语音通话",
   "callVideo": "视频通话",
   "sentSuccessfully": "发送成功",
+  "failedToSendVerificationCode": "发送验证码失败",
   "copySuccessfully": "复制成功",
   "day": "天",
   "hour": "时",

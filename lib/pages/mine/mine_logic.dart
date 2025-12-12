@@ -80,7 +80,7 @@ class MineLogic extends GetxController {
     }
   }
 
-  // 假的清除缓存，不等待im登录成功就退出登录
+  // 清除缓存时同时清除邀请码和登录信息
   void clearCache() async {
     var confirm = await Get.dialog(
         barrierColor: Colors.transparent,
@@ -88,6 +88,8 @@ class MineLogic extends GetxController {
     if (confirm == true) {
       imLogic.logout();
       await DataSp.removeLoginCertificate();
+      await DataSp.removeLoginAccount();
+      await DataSp.clearSavedInviteCode();
       pushLogic.logout();
       trtcLogic.logout();
       AppNavigator.startInviteCode();

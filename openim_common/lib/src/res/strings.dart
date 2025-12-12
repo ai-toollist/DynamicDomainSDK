@@ -359,6 +359,8 @@ class StrRes {
 
   static String get sentSuccessfully => 'sentSuccessfully'.tr;
 
+  static String get failedToSendVerificationCode => 'failedToSendVerificationCode'.tr;
+
   static String get copySuccessfully => 'copySuccessfully'.tr;
 
   static String get day => 'day'.tr;

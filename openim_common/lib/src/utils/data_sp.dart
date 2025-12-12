@@ -167,6 +167,10 @@ class DataSp {
     return SpUtil().getObject(_loginAccount);
   }
 
+  static Future<bool>? removeLoginAccount() {
+    return SpUtil().remove(_loginAccount);
+  }
+
   static Future<bool>? putServerConfig(Map<String, String> config) {
     return SpUtil().putObject(_server, config);
   }
@@ -404,5 +408,9 @@ class DataSp {
 
   static Future<bool>? putSavedInviteCode(String inviteCode) {
     return SpUtil().putString(_inviteCodeKey, inviteCode);
+  }
+
+  static Future<bool>? clearSavedInviteCode() {
+    return SpUtil().remove(_inviteCodeKey);
   }
 }

@@ -208,6 +208,7 @@ const Map<String, String> en_US = {
   "callVoice": "Voice Call",
   "callVideo": "Video Call",
   "sentSuccessfully": "Sent Successfully",
+  "failedToSendVerificationCode": "Failed to send verification code",
   "copySuccessfully": "Copied Successfully",
   "day": "day",
   "hour": "hour",

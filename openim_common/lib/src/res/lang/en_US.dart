@@ -521,6 +521,8 @@ const Map<String, String> en_US = {
   "rejectSuccessfully": "Rejected successfully",
   "rejectFailed": "Rejection failed",
   "applyJoin": "Apply to join",
+  "applicationPending": "Requested",
+  "requested": "Requested",
   "enterGroup": "Enter Group",
   "applyReason": "Reason: %s",
   'invite': 'Invite',

@@ -36,33 +36,43 @@ class GroupProfilePanelPage extends StatelessWidget {
                       16.verticalSpace,
                       _buildGroupID(),
                       30.verticalSpace,
-                      GestureDetector(
-                        onTap: () => logic.enterGroup(),
-                        child: Container(
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.symmetric(horizontal: 40.w),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 16.h),
-                          decoration: BoxDecoration(
-                            color: Theme.of(Get.context!).primaryColor,
-                            borderRadius: BorderRadius.circular(16.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                offset: const Offset(0, -4),
-                                blurRadius: 16,
-                              ),
-                            ],
-                          ),
-                          child: Text(StrRes.applyJoin,
+                      Obx(() {
+                        final isPending = logic.hasPendingRequest.value;
+                        return GestureDetector(
+                          onTap: isPending ? null : () => logic.enterGroup(),
+                          child: Container(
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.symmetric(horizontal: 40.w),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.w, vertical: 16.h),
+                            decoration: BoxDecoration(
+                              color: isPending
+                                  ? const Color(0xFFD1D5DB)
+                                  : Theme.of(Get.context!).primaryColor,
+                              borderRadius: BorderRadius.circular(16.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  offset: const Offset(0, -4),
+                                  blurRadius: 16,
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              logic.isJoined.value
+                                  ? StrRes.enterGroup
+                                  : isPending
+                                      ? StrRes.requested
+                                      : StrRes.applyJoin,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16.sp,
                                   fontFamily: "FilsonPro",
-                                  )),
-                        ),
-                      )
+                                  ))
+                            ),
+                          );
+                      }),
                     ],
                   ),
                 ),

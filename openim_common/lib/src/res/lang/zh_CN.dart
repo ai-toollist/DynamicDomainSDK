@@ -500,6 +500,8 @@ const Map<String, String> zh_CN = {
   "rejectSuccessfully": "拒绝成功",
   "rejectFailed": "拒绝失败",
   "applyJoin": "申请加入",
+  "applicationPending": "已申请",
+  "requested": "已申请",
   "enterGroup": "进入群聊",
   "applyReason": "申请理由：%s",
   'invite': '邀请',

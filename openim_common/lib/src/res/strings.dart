@@ -970,6 +970,10 @@ class StrRes {
 
   static String get applyJoin => 'applyJoin'.tr;
 
+  static String get applicationPending => 'applicationPending'.tr;
+
+  static String get requested => 'requested'.tr;
+
   static String get enterGroup => 'enterGroup'.tr;
 
   static String get applyReason => 'applyReason'.tr;

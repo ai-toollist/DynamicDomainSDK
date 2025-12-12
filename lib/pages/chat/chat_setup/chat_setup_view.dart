@@ -8,7 +8,7 @@ import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/gradient_scaffold.dart';
-import '../../../widgets/menu_item_widgets.dart';
+import '../../../widgets/settings_menu.dart';
 import 'chat_setup_logic.dart';
 
 class ChatSetupPage extends StatelessWidget {
@@ -107,46 +107,50 @@ class ChatSetupPage extends StatelessWidget {
 
               // Menu Sections
               _buildSectionTitle(StrRes.chatSettings),
-              ToggleMenuItemWidget(
+              SettingsMenuItem(
                 label: StrRes.topContacts,
-                isOn: logic.isPinned,
-                onChanged: (_) => logic.toggleTopContacts(),
+                hasSwitch: true,
+                switchValue: logic.isPinned,
+                onSwitchChanged: (_) => logic.toggleTopContacts(),
+                showArrow: false,
               ),
-              ToggleMenuItemWidget(
+              SettingsMenuItem(
                 label: StrRes.messageNotDisturb,
-                isOn: logic.isNotDisturb,
-                onChanged: (_) => logic.toggleNotDisturb(),
+                hasSwitch: true,
+                switchValue: logic.isNotDisturb,
+                onSwitchChanged: (_) => logic.toggleNotDisturb(),
+                showArrow: false,
               ),
 
               _buildSectionTitle(StrRes.appearance),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.photo,
                 label: StrRes.setChatBackground,
                 onTap: logic.setBackgroundImage,
               ),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.textformat,
                 label: StrRes.fontSize,
                 onTap: logic.setFontSize,
               ),
 
               _buildSectionTitle(StrRes.actions),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.person_2,
                 label: StrRes.createGroup,
                 onTap: logic.createGroup,
               ),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.flag,
                 label: StrRes.report,
                 onTap: logic.startReport,
-                textColor: Colors.amber,
+                color: Colors.amber,
               ),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.delete,
                 label: StrRes.clearChatHistory,
                 onTap: logic.clearChatHistory,
-                textColor: const Color(0xFFF87171),
+                isWarning: true,
               ),
 
               40.verticalSpace,

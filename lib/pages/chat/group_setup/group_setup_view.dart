@@ -8,7 +8,7 @@ import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/gradient_scaffold.dart';
-import '../../../widgets/menu_item_widgets.dart';
+import '../../../widgets/settings_menu.dart';
 import 'group_setup_logic.dart';
 
 class GroupSetupPage extends StatelessWidget {
@@ -136,71 +136,76 @@ class GroupSetupPage extends StatelessWidget {
 
               // Menu Sections
               _buildSectionTitle(StrRes.groupInformation),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.qrcode,
                 label: StrRes.qrcode,
                 onTap: logic.viewGroupQrcode,
               ),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.bell,
                 label: StrRes.groupAc,
                 onTap: logic.editGroupAnnouncement,
               ),
               if (logic.showGroupManagement)
-                MenuItemWidget(
+                SettingsMenuItem(
                   icon: CupertinoIcons.settings,
                   label: StrRes.groupManage,
                   onTap: logic.groupManage,
                 ),
 
               _buildSectionTitle(StrRes.nicknameInGroup),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.person,
                 label: StrRes.myGroupMemberNickname,
                 value: logic.myGroupMembersInfo.value.nickname,
                 onTap: logic.modifyMyGroupNickname,
+                isRow:false
               ),
 
               _buildSectionTitle(StrRes.chatSettings),
-              ToggleMenuItemWidget(
+              SettingsMenuItem(
                 label: StrRes.topChat,
-                isOn: logic.isPinned,
-                onChanged: (_) => logic.toggleTopChat(),
+                hasSwitch: true,
+                switchValue: logic.isPinned,
+                onSwitchChanged: (_) => logic.toggleTopChat(),
+                showArrow: false,
               ),
-              ToggleMenuItemWidget(
+              SettingsMenuItem(
                 label: StrRes.messageNotDisturb,
-                isOn: logic.isNotDisturb,
-                onChanged: (_) => logic.toggleNotDisturb(),
+                hasSwitch: true,
+                switchValue: logic.isNotDisturb,
+                onSwitchChanged: (_) => logic.toggleNotDisturb(),
+                showArrow: false,
               ),
 
               _buildSectionTitle(StrRes.actions),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.flag,
                 label: StrRes.report,
                 onTap: logic.startReport,
-                textColor: Colors.amber,
+                color: Colors.amber,
               ),
-              MenuItemWidget(
+              SettingsMenuItem(
                 icon: CupertinoIcons.delete,
                 label: StrRes.clearChatHistory,
                 onTap: logic.clearChatHistory,
-                textColor: const Color(0xFFF87171),
+                isWarning: true,
               ),
               if (!logic.isOwner)
-                MenuItemWidget(
+                SettingsMenuItem(
                   icon: CupertinoIcons.square_arrow_left,
                   label: logic.isJoinedGroup.value
                       ? StrRes.exitGroup
                       : StrRes.delete,
                   onTap: logic.quitGroup,
-                  textColor: const Color(0xFFF87171),
+                  isWarning: true,
                 ),
               if (logic.isOwner)
-                MenuItemWidget(
+                SettingsMenuItem(
                   icon: CupertinoIcons.xmark_circle,
                   label: StrRes.dismissGroup,
                   onTap: logic.quitGroup,
-                  textColor: const Color(0xFFF87171),
+                  isWarning: true,
                 ),
 
               40.verticalSpace,

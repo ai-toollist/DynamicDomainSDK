@@ -9,7 +9,7 @@ import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/gradient_scaffold.dart';
-import '../../../widgets/menu_item_widgets.dart';
+import '../../../widgets/settings_menu.dart';
 import 'user_profile _panel_logic.dart';
 
 class UserProfilePanelPage extends StatelessWidget {
@@ -288,10 +288,14 @@ class UserProfilePanelPage extends StatelessWidget {
             onTap: logic.viewPersonalInfo,
           ),
         if ((!logic.isMyself && logic.isFriendship) || logic.isBlacklist)
-          ToggleMenuItemWidget(
+          SettingsMenuItem(
             label: StrRes.addToBlacklist,
-            onChanged: (_) => logic.toggleBlacklist(),
-            isOn: logic.isBlacklist,
+            onSwitchChanged: (_) => logic.toggleBlacklist(),
+            switchValue: logic.isBlacklist,
+            hasSwitch: true,
+            showArrow: false,
+            showDivider: false,
+            isRow: true,
           ),
         // Friend Setup features
         if (logic.isFriendship) ...[
@@ -315,24 +319,12 @@ class UserProfilePanelPage extends StatelessWidget {
 
   Widget _buildMenuSection(List<Widget> children) {
     if (children.isEmpty) return const SizedBox();
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.06),
-            offset: const Offset(0, 2),
-            blurRadius: 6.r,
-          ),
-        ],
-        border: Border.all(
-          color: const Color(0xFFF3F4F6),
-          width: 1,
-        ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: SettingsMenuSection(
+        margin: EdgeInsets.symmetric(horizontal: 24.w),
+        items: children,
       ),
-      child: Column(children: children),
     );
   }
 
@@ -344,76 +336,25 @@ class UserProfilePanelPage extends StatelessWidget {
     VoidCallback? onTap,
     bool isLast = false,
   }) =>
-      InkWell(
+      SettingsMenuItem(
+        icon: icon,
+        label: label,
+        value: value,
         onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF1F2937),
-                      ),
-                    ),
-                    if (value != null) ...[
-                      4.verticalSpace,
-                      Text(
-                        value,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (onTap != null)
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14.w,
-                  color: const Color(0xFF9CA3AF),
-                ),
-            ],
-          ),
-        ),
+        showArrow: onTap != null,
+        showDivider: !isLast,
+        color: iconColor,
+        isRow: true,
       );
 
-  Widget _buildDeleteFriendMenuItem() => InkWell(
+  Widget _buildDeleteFriendMenuItem() => SettingsMenuItem(
+        icon: CupertinoIcons.person_badge_minus,
+        label: StrRes.unfriend,
         onTap: logic.deleteFromFriendList,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Row(
-            children: [
-              Icon(
-                CupertinoIcons.person_badge_minus,
-                size: 20.w,
-                color: const Color(0xFFF87171),
-              ),
-              16.horizontalSpace,
-              Expanded(
-                child: Text(
-                  StrRes.unfriend,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFFF87171),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        showArrow: true,
+        showDivider: false,
+        color: const Color(0xFFF87171),
+        isWarning: true,
+        isRow: true,
       );
 }

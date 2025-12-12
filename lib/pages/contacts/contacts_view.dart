@@ -247,8 +247,9 @@ class _ContactsPageState extends State<ContactsPage>
                       child: Center(
                         child: Icon(
                           CupertinoIcons.search,
-                          color: const Color(0xFF424242),
+                          color: Theme.of(context).primaryColor,
                           size: 20.w,
+                          weight: 100,
                         ),
                       ),
                     ),

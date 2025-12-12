@@ -972,9 +972,8 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildConversationItemView(ConversationInfo info) => Slidable(
         endActionPane: ActionPane(
           motion: const BehindMotion(),
-          extentRatio: logic.existUnreadMsg(info) ? 0.65 : 0.45,
+          extentRatio: logic.existUnreadMsg(info) ? 0.45 : 0.3,
           children: [
-            Spacer(),
             CustomButton(
               onTap: () => logic.pinConversation(info),
               icon: info.isPinned!
@@ -999,7 +998,6 @@ class _ConversationPageState extends State<ConversationPage> {
               color: Colors.red,
               iconSize: 25.w,
             ),
-            8.horizontalSpace,
           ],
         ),
         child: _buildItemView(info),
@@ -1036,89 +1034,92 @@ class _ConversationPageState extends State<ConversationPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            _sanitizeText(logic.getShowName(info)),
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: logic.getUnreadCount(info) > 0
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: const Color(0xFF424242),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  _sanitizeText(logic.getShowName(info)),
+                                  style: TextStyle(
+                                    fontFamily: 'FilsonPro',
+                                    fontSize: 16.sp,
+                                    fontWeight: logic.getUnreadCount(info) > 0
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: const Color(0xFF424242),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (info.isPinned!) ...[
+                                4.horizontalSpace,
+                                Icon(
+                                  CupertinoIcons.pin,
+                                  size: 14.w,
+                                  color: Theme.of(Get.context!).primaryColor,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
-                        20.horizontalSpace,
-                        if (info.isPinned!) ...[
-                          Padding(
-                            padding: EdgeInsets.only(left: 6.w),
-                            child: Icon(
-                              CupertinoIcons.pin,
-                              size: 14.w,
-                              color: Theme.of(Get.context!).primaryColor,
-                            ),
+                        if (logic.getUnreadCount(info) > 0) ...[
+                          8.horizontalSpace,
+                          CustomButton(
+                            onTap: () {},
+                            title: logic.getUnreadCount(info) > 99
+                                ? '99+'
+                                : logic.getUnreadCount(info).toString(),
+                            fontSize: 12.sp,
+                            padding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 4.h),
+                            color: Colors.red,
                           ),
                         ],
                       ],
                     ),
-                    // 2.verticalSpace,
-                    Row(
+                   Row(
                       children: [
                         Expanded(
-                          child: logic.getUnreadCount(info) > 0
-                              ? Text(
-                                  (logic.getUnreadCount(info) == 1
-                                          ? StrRes.newMessageCount
-                                          : StrRes.newMessagesCount)
-                                      .replaceFirst(
-                                          '%s',
-                                          logic
-                                              .getUnreadCount(info)
-                                              .toString()),
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF1E40AF),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              : MatchTextView(
-                                  text: _sanitizeText(logic.getContent(info)),
-                                  textStyle: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(0xFF9E9E9E),
-                                  ),
-                                  allAtMap: logic.getAtUserMap(info),
-                                  prefixSpan: TextSpan(
-                                    text: _sanitizeText(
-                                        logic.getPrefixTag(info) ?? ""),
-                                    style: TextStyle(
-                                      fontFamily: 'FilsonPro',
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                      color: const Color(0xFF3B82F6),
-                                    ),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  patterns: <MatchPattern>[
-                                    MatchPattern(
-                                      type: PatternType.at,
-                                      style: TextStyle(
-                                        fontFamily: 'FilsonPro',
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w400,
-                                        color: const Color(0xFF6B7280),
-                                      ),
-                                    ),
-                                  ],
+                          child: MatchTextView(
+                            text: _sanitizeText(logic.getContent(info)),
+                            textStyle: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 14.sp,
+                              fontWeight: logic.getUnreadCount(info) > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              color: logic.getUnreadCount(info) > 0
+                                  ? Theme.of(Get.context!).primaryColor
+                                  : const Color(0xFF9E9E9E),
+                            ),
+                            allAtMap: logic.getAtUserMap(info),
+                            prefixSpan: TextSpan(
+                              text: _sanitizeText(
+                                  logic.getPrefixTag(info) ?? ""),
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 14.sp,
+                                fontWeight: logic.getUnreadCount(info) > 0
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: const Color(0xFF3B82F6),
+                              ),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            patterns: <MatchPattern>[
+                              MatchPattern(
+                                type: PatternType.at,
+                                style: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 14.sp,
+                                  fontWeight: logic.getUnreadCount(info) > 0
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  color: const Color(0xFF6B7280),
                                 ),
+                              ),
+                            ],
+                          ),
                         ),
                         8.horizontalSpace,
                         Text(

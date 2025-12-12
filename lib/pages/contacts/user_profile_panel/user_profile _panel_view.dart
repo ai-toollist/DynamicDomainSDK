@@ -114,7 +114,7 @@ class UserProfilePanelPage extends StatelessWidget {
               const Divider(height: 1, color: Color(0xFFF3F4F6)),
 
               // Menu List
-              if (logic.isGroupMemberPage) ...[
+              if (logic.isGroupMemberPage&& !logic.isMyself ) ...[
                 _buildSectionTitle(StrRes.groupInformation),
                 _buildGroupInfoSection(),
               ],

@@ -10,7 +10,7 @@ import 'package:pull_to_refresh_new/pull_to_refresh.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'multimedia_logic.dart';
-import '../../../../../widgets/base_page.dart';
+import '../../../../../widgets/gradient_scaffold.dart';
 
 class ChatHistoryMultimediaPage extends StatelessWidget {
   final logic = Get.find<ChatHistoryMultimediaLogic>();
@@ -19,32 +19,16 @@ class ChatHistoryMultimediaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
+    return GradientScaffold(
       title: logic.isPicture ? StrRes.picture : StrRes.video,
-      centerTitle: false,
-      showLeading: true,
-      body: Obx(() => Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  blurRadius: 12.r,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SmartRefresher(
-              controller: logic.refreshController,
-              onRefresh: logic.onRefresh,
-              onLoading: logic.onLoad,
-              header: IMViews.buildHeader(),
-              footer: IMViews.buildFooter(),
-              child: _buildListView(),
-            ),
+      showBackButton: true,
+      body: Obx(() => SmartRefresher(
+            controller: logic.refreshController,
+            onRefresh: logic.onRefresh,
+            onLoading: logic.onLoad,
+            header: IMViews.buildHeader(),
+            footer: IMViews.buildFooter(),
+            child: _buildListView(),
           )),
     );
   }
@@ -54,9 +38,8 @@ class ChatHistoryMultimediaPage extends StatelessWidget {
 
     return AnimationLimiter(
       child: ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 16.h),
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
         itemCount: logic.groupMessage.length,
-        // Remove shrinkWrap to allow ListView to scroll
         itemBuilder: (_, index) {
           var entry =
               logic.groupMessage.entries.toList().reversed.elementAt(index);
@@ -117,49 +100,44 @@ class MultimediaItemWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 12.h),
           child: Text(
             label,
             style: TextStyle(
               fontFamily: 'FilsonPro',
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF6B7280),
+              color: const Color(0xFF374151),
               letterSpacing: 0.3,
             ),
           ),
         ),
-        Container(
-          // Remove maxHeight constraint to allow GridView to expand naturally
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: AnimationLimiter(
-            child: GridView.builder(
-              padding: EdgeInsets.zero,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 1.0,
-                crossAxisCount: 3,
-                crossAxisSpacing: 10.w,
-                mainAxisSpacing: 10.h,
-              ),
-              // Disable GridView scroll, let parent ListView handle scrolling
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: list.length,
-              itemBuilder: (_, index) => AnimationConfiguration.staggeredGrid(
-                position: index,
-                duration: const Duration(milliseconds: 400),
-                columnCount: 3,
-                child: ScaleAnimation(
-                  curve: Curves.easeOutCubic,
-                  child: FadeInAnimation(
-                    child: _buildItemView(list.elementAt(index)),
-                  ),
+        AnimationLimiter(
+          child: GridView.builder(
+            padding: EdgeInsets.zero,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              childAspectRatio: 1.0,
+              crossAxisCount: 3,
+              crossAxisSpacing: 8.w,
+              mainAxisSpacing: 8.h,
+            ),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: list.length,
+            itemBuilder: (_, index) => AnimationConfiguration.staggeredGrid(
+              position: index,
+              duration: const Duration(milliseconds: 400),
+              columnCount: 3,
+              child: ScaleAnimation(
+                curve: Curves.easeOutCubic,
+                child: FadeInAnimation(
+                  child: _buildItemView(list.elementAt(index)),
                 ),
               ),
             ),
           ),
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 8.h),
       ],
     );
   }
@@ -172,18 +150,21 @@ class MultimediaItemWidget extends StatelessWidget {
               (BuildContext context, Size heroSize, Widget child) => child,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(width: 1, color: const Color(0xFFF3F4F6)),
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(
+                width: 1,
+                color: const Color(0xFFE5E7EB),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.07),
+                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
                   blurRadius: 8.r,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(14.r),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -192,22 +173,43 @@ class MultimediaItemWidget extends StatelessWidget {
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.cover,
-                    borderRadius: BorderRadius.circular(16.r),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                   if (isVideo)
                     Container(
-                      width: 42.w,
-                      height: 42.h,
+                      width: 40.w,
+                      height: 40.h,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF87171).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12.r),
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Icon(
                         CupertinoIcons.play_fill,
                         color: Colors.white,
-                        size: 20.w,
+                        size: 18.w,
                       ),
                     ),
+                  Positioned(
+                    top: 6.h,
+                    right: 6.w,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.w,
+                        vertical: 2.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      child: Text(
+                        isVideo ? '▶' : '📷',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

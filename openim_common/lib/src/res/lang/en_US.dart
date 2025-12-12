@@ -514,6 +514,7 @@ const Map<String, String> en_US = {
   "groupQrcodeHint": "Scan the QR code below to join the group",
   "approved": "Approved",
   "waiting": "Waiting",
+  "requests": "Requests",
   "accept": "Accept",
   "reject": "Reject",
   "waitingForVerification": "Waiting",

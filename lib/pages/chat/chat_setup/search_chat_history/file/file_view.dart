@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../../../../../widgets/file_download_progress.dart';
 import 'file_logic.dart';
-import '../../../../../widgets/base_page.dart';
+import '../../../../../widgets/gradient_scaffold.dart';
 
 class ChatHistoryFilePage extends StatelessWidget {
   final logic = Get.find<ChatHistoryFileLogic>();
@@ -20,51 +20,39 @@ class ChatHistoryFilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
+    return GradientScaffold(
       title: StrRes.file,
-      centerTitle: false,
-      showLeading: true,
-      body: Obx(() => Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  blurRadius: 12.r,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SmartRefresher(
-              controller: logic.refreshController,
-              onRefresh: logic.onRefresh,
-              onLoading: logic.onLoad,
-              header: IMViews.buildHeader(),
-              footer: IMViews.buildFooter(),
-              child: AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  itemCount: logic.messageList.length,
-                  itemBuilder: (_, index) =>
-                      AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      verticalOffset: 40.0,
-                      child: FadeInAnimation(
-                        curve: Curves.easeOutCubic,
-                        child: _buildItemView(
-                            logic.messageList.reversed.elementAt(index)),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+      showBackButton: true,
+      body: Obx(() => SmartRefresher(
+            controller: logic.refreshController,
+            onRefresh: logic.onRefresh,
+            onLoading: logic.onLoad,
+            header: IMViews.buildHeader(),
+            footer: IMViews.buildFooter(),
+            child: _buildListView(),
           )),
+    );
+  }
+
+  Widget _buildListView() {
+    return AnimationLimiter(
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+        itemCount: logic.messageList.length,
+        itemBuilder: (_, index) =>
+            AnimationConfiguration.staggeredList(
+          position: index,
+          duration: const Duration(milliseconds: 400),
+          child: SlideAnimation(
+            verticalOffset: 40.0,
+            child: FadeInAnimation(
+              curve: Curves.easeOutCubic,
+              child: _buildItemView(
+                  logic.messageList.reversed.elementAt(index)),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -72,31 +60,35 @@ class ChatHistoryFilePage extends StatelessWidget {
         onTap: () => logic.viewFile(message),
         behavior: HitTestBehavior.translucent,
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          margin: EdgeInsets.symmetric(vertical: 8.h),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(14.r),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                blurRadius: 6.r,
+                color: const Color(0xFF9CA3AF).withOpacity(0.08),
+                blurRadius: 8.r,
                 offset: const Offset(0, 2),
               ),
             ],
             border: Border.all(
-              color: const Color(0xFFF3F4F6),
+              color: const Color(0xFFE5E7EB),
               width: 1,
             ),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
           child: Row(
             children: [
               Container(
-                width: 42.w,
-                height: 42.h,
+                width: 46.w,
+                height: 46.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBBF24).withOpacity(0.1),
+                  color: const Color(0xFF60A5FA).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: const Color(0xFF60A5FA).withOpacity(0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Center(
                   child: ChatFileIconView(
@@ -105,7 +97,7 @@ class ChatHistoryFilePage extends StatelessWidget {
                   ),
                 ),
               ),
-              16.horizontalSpace,
+              12.horizontalSpace,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,44 +107,55 @@ class ChatHistoryFilePage extends StatelessWidget {
                       message.fileElem!.fileName!,
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
                         color: const Color(0xFF374151),
                       ),
                     ),
-                    8.verticalSpace,
+                    6.verticalSpace,
                     Row(
                       children: [
-                        Text(
-                          IMUtils.formatBytes(message.fileElem!.fileSize!),
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF6B7280),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 3.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF60A5FA).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                          child: Text(
+                            IMUtils.formatBytes(message.fileElem!.fileSize!),
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF60A5FA),
+                            ),
                           ),
                         ),
-                        10.horizontalSpace,
+                        8.horizontalSpace,
                         Expanded(
-                            child: Text(
-                          message.senderNickname!,
-                          overflow: TextOverflow.ellipsis, // 超出显示省略号
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF6B7280),
+                          child: Text(
+                            message.senderNickname!,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF9CA3AF),
+                            ),
                           ),
-                        )),
-                        10.horizontalSpace,
+                        ),
+                        6.horizontalSpace,
                         Text(
                           IMUtils.getChatTimeline(message.sendTime!),
                           style: TextStyle(
                             fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xFF6B7280),
+                            color: const Color(0xFF9CA3AF),
                           ),
                         ),
                       ],
@@ -160,11 +163,19 @@ class ChatHistoryFilePage extends StatelessWidget {
                   ],
                 ),
               ),
-              12.horizontalSpace,
-              Icon(
-                CupertinoIcons.cloud_download,
-                color: const Color(0xFFFBBF24),
-                size: 18.w,
+              10.horizontalSpace,
+              Container(
+                width: 36.w,
+                height: 36.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF60A5FA).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(
+                  CupertinoIcons.cloud_download,
+                  color: const Color(0xFF60A5FA),
+                  size: 16.w,
+                ),
               ),
             ],
           ),

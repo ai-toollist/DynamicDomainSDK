@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
 import 'package:openim/routes/app_navigator.dart';
@@ -15,6 +16,7 @@ class GroupRequestsLogic extends GetxController {
   final groupList = <String, GroupInfo>{}.obs;
   final memberList = <GroupMembersInfo>[].obs;
   final userInfoList = <UserInfo>[].obs;
+  final selectedTab = 'requests'.obs;
 
   late StreamSubscription _sub;
 
@@ -127,7 +129,7 @@ class GroupRequestsLogic extends GetxController {
     if (pendingUpdates.isNotEmpty) {
       for (var item in list) {
         final key = '${item.groupID}_${item.userID}';
-        if (pendingUpdates.containsKey(key)) {
+        if (pendingUpdates.containsKey(key) && item.handleResult != 0) {
           item.handleResult = pendingUpdates[key];
         }
       }
@@ -193,5 +195,64 @@ class GroupRequestsLogic extends GetxController {
       userID,
       handleResult,
     );
+  }
+
+  /// Approve a group join request inline
+  Future<void> approveApplication(GroupApplicationInfo info) async {
+    try {
+      await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.groupManager.acceptGroupApplication(
+          groupID: info.groupID!,
+          userID: info.userID!,
+          handleMsg: '',
+        ),
+      );
+
+      // Update local status immediately for instant UI feedback
+      await updateApplicationStatus(
+        groupID: info.groupID!,
+        userID: info.userID!,
+        handleResult: 1,
+      );
+      IMViews.showToast(StrRes.approved, type: 1);
+    } catch (e) {
+      Logger.print('Error approving application: $e');
+      if (e is PlatformException &&
+          e.code == '${SDKErrorCode.groupApplicationHasBeenProcessed}') {
+        IMViews.showToast(StrRes.groupRequestHandled);
+      } else {
+        IMViews.showToast(StrRes.sendFailed);
+      }
+    }
+  }
+
+  /// Reject a group join request inline
+  Future<void> rejectApplication(GroupApplicationInfo info) async {
+    try {
+      await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.groupManager.refuseGroupApplication(
+          groupID: info.groupID!,
+          userID: info.userID!,
+          handleMsg: '',
+        ),
+      );
+
+      // Update local status immediately for instant UI feedback
+      await updateApplicationStatus(
+        groupID: info.groupID!,
+        userID: info.userID!,
+        handleResult: -1,
+      );
+
+      IMViews.showToast(StrRes.rejectSuccessfully, type: 1);
+    } catch (e) {
+      Logger.print('Error rejecting application: $e');
+      if (e is PlatformException &&
+          e.code == '${SDKErrorCode.groupApplicationHasBeenProcessed}') {
+        IMViews.showToast(StrRes.groupRequestHandled);
+      } else {
+        IMViews.showToast(StrRes.rejectFailed);
+      }
+    }
   }
 }

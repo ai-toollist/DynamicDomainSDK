@@ -181,7 +181,7 @@ class SendVerificationApplicationLogic extends GetxController {
         ),
       );
       Get.back();
-      IMViews.showToast(StrRes.sendSuccessfully);
+      IMViews.showToast(StrRes.sendSuccessfully,type:1);
     } catch (_) {
       if (_ is PlatformException) {
         if (_.code == '${SDKErrorCode.refuseToAddFriends}') {
@@ -194,17 +194,20 @@ class SendVerificationApplicationLogic extends GetxController {
   }
 
   /// By Invitation = 2 , Search = 3 , QRCode  = 4
-  _applyEnterGroup() {
-    LoadingView.singleton
-        .wrap(
-          asyncFunction: () => OpenIM.iMManager.groupManager.joinGroup(
-            groupID: groupID!,
-            reason: inputCtrl.text.trim(),
-            joinSource: joinGroupMethod == JoinGroupMethod.qrcode ? 4 : 3,
-          ),
-        )
-        .then((value) => IMViews.showToast(StrRes.sendSuccessfully))
-        .then((value) => Get.back())
-        .catchError((e) => IMViews.showToast(StrRes.sendFailed));
+  _applyEnterGroup() async {
+    try {
+      await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.groupManager.joinGroup(
+          groupID: groupID!,
+          reason: inputCtrl.text.trim(),
+          joinSource: joinGroupMethod == JoinGroupMethod.qrcode ? 4 : 3,
+        ),
+      );
+      Get.back();
+      IMViews.showToast(StrRes.sendSuccessfully, type: 1);
+    } catch (e) {
+      Logger.print('Error sending group join request: $e');
+      IMViews.showToast(StrRes.sendFailed);
+    }
   }
 }

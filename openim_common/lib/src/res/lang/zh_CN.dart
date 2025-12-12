@@ -493,6 +493,7 @@ const Map<String, String> zh_CN = {
   "groupQrcodeHint": "扫一扫下面的二维码，立即加入群聊",
   "approved": "已同意",
   "waiting": "等待中",
+  "requests": "请求",
   "accept": "接受",
   "reject": "拒绝",
   "waitingForVerification": "等待验证",

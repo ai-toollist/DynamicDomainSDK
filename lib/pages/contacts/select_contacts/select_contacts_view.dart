@@ -60,7 +60,11 @@ class SelectContactsPage extends StatelessWidget {
                   return WrapAzListView<ISUserInfo>(
                   data: logic.friendList,
                   itemCount: logic.friendList.length,
-                  itemBuilder: (_, friend, index) => Obx(() => FriendItemView(
+                  itemBuilder: (_, friend, index) => Obx(() => 
+                  Column(
+                    children: [
+                      if(logic.friendList.length<7 )...[SizedBox(height: 12.h)],
+                      FriendItemView(
                     info: friend,
                     showDivider: index != logic.friendList.length - 1,
                     checked: logic.isChecked(friend),
@@ -69,6 +73,8 @@ class SelectContactsPage extends StatelessWidget {
                     enabled: true,
                     onTap: () => logic.toggleChecked(friend),
                     showRadioButton: logic.showRadioButton,
+                  )
+                    ],
                   )),
                 );
             }

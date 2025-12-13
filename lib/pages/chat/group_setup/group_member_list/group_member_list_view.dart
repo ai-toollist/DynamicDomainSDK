@@ -80,10 +80,28 @@ class GroupMemberListPage extends StatelessWidget {
         if (logic.isOwnerOrAdmin && logic.isShowEveryone)
           Obx(() {
             if (logic.isOwnerOrAdmin && logic.isShowEveryone && logic.opType == GroupMemberOpType.at) {
-              return GestureDetector(
+              return Column(children:[
+GestureDetector(
                 onTap: logic.selectEveryone,
-                child: Padding(
+                child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  margin:EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
+                      color: logic.checkedList.any((e) => e.userID == OpenIM.iMManager.conversationManager.atAllTag)
+                          ? Theme.of(Get.context!).primaryColor: Colors.transparent,
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF9CA3AF).withOpacity(0.08),
+                        offset: const Offset(0, 4),
+                        blurRadius: 12.r,
+                      ),
+                    ],
+                  ),
                   child: Row(
                     children: [
                       Container(
@@ -129,8 +147,8 @@ class GroupMemberListPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              );
-            }
+              ),
+              ]); }
             return const SizedBox.shrink();
           }),
 

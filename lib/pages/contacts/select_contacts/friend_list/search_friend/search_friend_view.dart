@@ -46,8 +46,9 @@ class SelectContactsFromSearchFriendsPage extends StatelessWidget {
                         final showDivider =
                             index != logic.resultList.length - 1;
                         final checked = selectContactsLogic.isChecked(friend);
-                        final enabled =
-                            !selectContactsLogic.isDefaultChecked(friend);
+                        // Allow toggling selected/default users so they can be removed
+                        // from selection when searching friends.
+                        final enabled = true;
                         return FriendItemView(
                           info: friend,
                           showDivider: showDivider,

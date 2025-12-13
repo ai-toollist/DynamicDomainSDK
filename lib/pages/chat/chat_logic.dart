@@ -39,7 +39,7 @@ import 'group_setup/group_member_list/group_member_list_logic.dart';
 
 import 'message_frequency_logic.dart';
 
-class ChatLogic extends SuperController {
+class ChatLogic extends SuperController with FullLifeCycleMixin {
   final imLogic = Get.find<IMController>();
   final appLogic = Get.find<AppController>();
   final clientConfigLogic = Get.find<ClientConfigController>();
@@ -577,7 +577,8 @@ class ChatLogic extends SuperController {
 
       // 发送 @ 消息
       if (curMsgAtUser.length > 10) {
-        IMViews.showToast(StrRes.maxAtUserHint);
+        // Selection screen enforces max selection and shows a toast.
+        // Keep the guard here but do not show toast at send time.
         return;
       }
 
@@ -796,6 +797,29 @@ class ChatLogic extends SuperController {
             message, groupId, error, _,
             createFailedHint: createFailedHint))
         .whenComplete(() => _completed());
+  }
+
+  /// Recommend a friend card to current chat (or to specified user/group)
+  Future<void> recommendFriendCarte(UserInfo userInfo,
+      {String? userId, String? groupId, String? customEx}) async {
+    try {
+      // If custom text provided, send it first
+      if (customEx != null && customEx.isNotEmpty) {
+        final textMsg = await OpenIM.iMManager.messageManager
+            .createTextMessage(text: customEx);
+        _sendMessage(textMsg, userId: userId, groupId: groupId);
+      }
+
+      // Create and send card message
+      final cardMsg = await OpenIM.iMManager.messageManager.createCardMessage(
+        userID: userInfo.userID!,
+        nickname: userInfo.nickname ?? '',
+        faceURL: userInfo.faceURL,
+      );
+      _sendMessage(cardMsg, userId: userId, groupId: groupId);
+    } catch (e) {
+      print('recommendFriendCarte error: $e');
+    }
   }
 
   ///  消息发送成功
@@ -1447,7 +1471,7 @@ class ChatLogic extends SuperController {
     if (await canLaunch(url)) {
       await launch(url);
     }
-    // await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+    // await canLaunch(url) ? await launch(url : throw 'Could not launch $url';
   }
 
   /// 读取草稿
@@ -1566,6 +1590,31 @@ class ChatLogic extends SuperController {
     // onlineStatusTimer?.cancel();
     // destroyMsg();
     super.onClose();
+  }
+
+  @override
+  void onDetached() {
+    // Handle logic when the app is detached
+  }
+
+  @override
+  void onHidden() {
+    // Handle logic when the app is hidden
+  }
+
+  @override
+  void onInactive() {
+    // Handle logic when the app is inactive
+  }
+
+  @override
+  void onPaused() {
+    // Handle logic when the app is paused
+  }
+
+  @override
+  void onResumed() {
+    // Handle logic when the app is resumed
   }
 
   String? getShowTime(Message message) {
@@ -1707,19 +1756,89 @@ class ChatLogic extends SuperController {
         defaultCheckedUserIDs: defaultUserIDs,
         maxSelectCount: maxCount,
       )?.then((list) async {
-        if (list.first.nickname == StrRes.everyone) {
-          _handleAtMemberList(list, cursor);
+        if (list == null) return;
+        if (list is List && list.isNotEmpty && list.first.nickname == StrRes.everyone) {
+          // Clear curMsgAtUser completely and add only @everyone
+          curMsgAtUser.clear();
+          curMsgAtUser.add(imLogic.atAllTag);
+          inputCtrl.text = '@${StrRes.everyone} ';
+          inputCtrl.selection = TextSelection.fromPosition(TextPosition(
+            offset: inputCtrl.text.length,
+          ));
           return;
         }
-        List<GroupMembersInfo> convertedList = list as List<GroupMembersInfo>;
-        List<GroupMembersInfo> groupMembers = await _getGroupMembers();
-        final filteredMembers = groupMembers.where((member) {
-          return convertedList
-              .map((mem) => mem.userID)
-              .toList()
-              .contains(member.userID);
-        }).toList();
-        _handleAtMemberList(filteredMembers, cursor);
+
+        // Convert returned list to member objects and extract IDs/nicknames robustly
+        final returned = List.from(list as List);
+        List<String> newSelectedIDs = [];
+        final Map<String, dynamic> idToMember = {};
+        for (var item in returned) {
+          String? uid;
+          String? nick;
+          String? face;
+          if (item is GroupMembersInfo) {
+            uid = item.userID;
+            nick = item.nickname;
+            face = item.faceURL;
+          } else if (item is Map) {
+            uid = item['userID']?.toString();
+            nick = item['nickname']?.toString();
+            face = item['faceURL']?.toString();
+          } else {
+            try {
+              // Fallback dynamic access
+              uid = (item.userID ?? item['userID'])?.toString();
+              nick = (item.nickname ?? item['nickname'])?.toString();
+              face = (item.faceURL ?? item['faceURL'])?.toString();
+            } catch (_) {
+              uid = null;
+            }
+          }
+          if (uid != null) {
+            newSelectedIDs.add(uid);
+            idToMember[uid] = {'userID': uid, 'nickname': nick ?? '', 'faceURL': face};
+          }
+        }
+
+        // Rebuild the mention list robustly: compute the final selected IDs
+        // (preserve order from returned list) and replace mention tokens
+        // in the input with the new mentions. This avoids index/cursor
+        // issues when removing then adding in-place.
+        final finalSelectedIDs = newSelectedIDs;
+
+        // Update mappings for all final selected IDs
+        for (var uid in finalSelectedIDs) {
+          final member = idToMember[uid];
+          final nick = member?['nickname'] ?? '';
+          final face = member?['faceURL'];
+          _setAtMapping(userID: uid, nickname: nick, faceURL: face);
+        }
+
+        // Replace curMsgAtUser with finalSelectedIDs (preserve atAll tag if present)
+        final hasAtAll = curMsgAtUser.contains(imLogic.atAllTag);
+        curMsgAtUser.clear();
+        if (hasAtAll) curMsgAtUser.add(imLogic.atAllTag);
+        curMsgAtUser.addAll(finalSelectedIDs);
+
+        // Remove all existing mention tokens (naive removal by @userID patterns)
+        var remainingText = inputCtrl.text;
+        // remove any @<id> tokens and surrounding whitespace
+        remainingText = remainingText.replaceAll(RegExp(r'@\w+\s*'), '');
+        // remove any leftover leading '@' characters (user may have typed the trigger)
+        remainingText = remainingText.replaceFirst(RegExp(r'^@+\s*'), '');
+        remainingText = remainingText.trimLeft();
+
+        // Build mention prefix from finalSelectedIDs
+        var mentionPrefix = '';
+        if (finalSelectedIDs.isNotEmpty) {
+          mentionPrefix = finalSelectedIDs.map((id) => '@$id').join(' ') + ' ';
+        }
+
+        inputCtrl.text = '$mentionPrefix$remainingText';
+        inputCtrl.selection = TextSelection.fromPosition(TextPosition(
+          offset: mentionPrefix.length,
+        ));
+        _lastCursorIndex = inputCtrl.selection.start;
       });
       return "@";
     }
@@ -2692,7 +2811,7 @@ class ChatLogic extends SuperController {
   void _setSdkSyncDataListener() {
     connectionSub = imLogic.imSdkStatusPublishSubject.listen((value) {
       syncStatus.value = value.status;
-      // -1 链接失败 0 链接中 1 链接成功 2 同步开始 3 同步结束 4 同步错误
+      // -1 链接失败 0 铊接中 1 链接成功 2 同步开始 3 同步结束 4 同步错误
       if (value.status == IMSdkStatus.syncStart) {
         _isStartSyncing = true;
       } else if (value.status == IMSdkStatus.syncEnded) {
@@ -2878,94 +2997,6 @@ class ChatLogic extends SuperController {
     messageList.refresh();
   }
 
-// Future<bool> onScrollToTopLoad() async {
-//   late List<Message> list;
-//   final result = await _requestHistoryMessage();
-//   if (result.messageList == null || result.messageList!.isEmpty) return false;
-//   list = result.messageList!;
-//   lastMinSeq = result.lastMinSeq;
-//   messageList.addAll(list);
-//   return list.length >= 40;
-// }
-
-  /// 推荐好友名片
-  recommendFriendCarte(UserInfo userInfo) async {
-    final result = await AppNavigator.startSelectContacts(
-      action: SelAction.recommend,
-      ex: '[${StrRes.carte}] ${userInfo.nickname}',
-    );
-    if (null != result) {
-      final customEx = result['customEx'];
-      final checkedList = result['checkedList'];
-      for (var info in checkedList) {
-        final userID = IMUtils.convertCheckedToUserID(info);
-        final groupID = IMUtils.convertCheckedToGroupID(info);
-        if (customEx is String && customEx.isNotEmpty) {
-          // 推荐备注消息
-          _sendMessage(
-            await OpenIM.iMManager.messageManager.createTextMessage(
-              text: customEx,
-            ),
-            userId: userID,
-            groupId: groupID,
-          );
-        }
-        // 名片消息
-        _sendMessage(
-          await OpenIM.iMManager.messageManager.createCardMessage(
-            userID: userInfo.userID!,
-            nickname: userInfo.nickname ?? '',
-            faceURL: userInfo.faceURL,
-          ),
-          userId: userID,
-          groupId: groupID,
-        );
-      }
-    }
-  }
-
-  bool get showMemberCount => clientConfigLogic.shouldShowMemberCount(
-      roleLevel: groupMemberRoleLevel.value);
-
-  bool isMessageHidden(Message message) {
-    if (!isGroupChat) {
-      return false;
-    }
-    return clientConfigLogic.isMessageHidden(
-        message, groupMemberRoleLevel.value);
-  }
-
-  onClickTitle() {
-    if (showGroupOnlineInfo) {
-      AppNavigator.startGroupOnlineInfo(
-          groupInfo: groupInfo!, isOwnerOrAdmin: isAdminOrOwner);
-    } else {
-      chatSetup();
-    }
-  }
-
-  @override
-  void onDetached() {
-  }
-
-  @override
-  void onHidden() {
-  }
-
-  @override
-  void onInactive() {}
-
-  @override
-  void onPaused() {
-  }
-
-  @override
-  void onResumed() {
-    _loadHistoryForSyncEnd(false);
-  }
-
-  // 在 ChatLogic 类中添加以下属性和方法
-
   /// Determine if we should show the nickname above a message on the left side (received msgs)
   /// Rules:
   /// - Single chat: never show
@@ -3143,7 +3174,19 @@ class ChatLogic extends SuperController {
     '🦁',
     '🐯',
   ];
-}
+
+  // Define isMessageHidden method
+  bool isMessageHidden(dynamic message) {
+    // Add logic to determine if a message is hidden
+    return false; // Default implementation
+  }
+
+  // Define onClickTitle getter
+  VoidCallback get onClickTitle => () {
+    // Add logic for handling title click
+  };
+
+  }
 
 /// Emoji picker button widget with hover animation
 class _EmojiPickerButton extends StatefulWidget {

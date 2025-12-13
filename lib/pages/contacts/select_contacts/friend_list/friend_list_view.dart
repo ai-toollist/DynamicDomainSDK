@@ -116,8 +116,9 @@ class SelectContactsFromFriendsPage extends StatelessWidget {
                                 info: friend,
                                 showDivider: index != displayList.length - 1,
                                 checked: selectContactsLogic.isChecked(friend),
-                                enabled: !selectContactsLogic
-                                    .isDefaultChecked(friend),
+                                // Allow toggling so previously selected users are visible
+                                // and can be unselected in the friends selector.
+                                enabled: true,
                                 onTap: selectContactsLogic.onTap(friend),
                                 showRadioButton:
                                     selectContactsLogic.isMultiModel,

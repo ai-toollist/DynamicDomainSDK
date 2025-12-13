@@ -1081,9 +1081,12 @@ const Map<String, String> en_US = {
   "selectAllMaxUserConfirm": "Confirm",
 
   "createGroupMinMemberHint": "To create a group, you need at least 3 members.",
-  "maxAtUserHint": "Cannot @ more than 10 users.",
+    "maxAtUserHint": "You can only tag up to 10 members or tag everyone.",
   "cannotSelectEveryoneWithOthers":
       "Cannot select @everyone when other members are already selected. Please clear selection first.",
+    "cannotSelectEveryoneWithOthersContent": "Selecting @everyone requires clearing current selections",
+ "doYouWantToRemoveOtherMembers":
+      "Do you want to remove other selected members and only select @everyone?",
   "addMeAsFriend": "Let's be friends!", 
   "acceptMeJoin": "Please accept me to join"
 };

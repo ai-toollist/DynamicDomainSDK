@@ -57,18 +57,20 @@ class SelectContactsPage extends StatelessWidget {
                 return _buildSearchResultsList(displayResults);
               }
               // Show all friends
-              return WrapAzListView<ISUserInfo>(
-                data: logic.friendList,
-                itemCount: logic.friendList.length,
-                itemBuilder: (_, friend, index) => Obx(() => FriendItemView(
-                      info: friend,
-                      showDivider: index != logic.friendList.length - 1,
-                      checked: logic.isChecked(friend),
-                      enabled: !logic.isDefaultChecked(friend),
-                      onTap: () => logic.toggleChecked(friend),
-                      showRadioButton: logic.showRadioButton,
-                    )),
-              );
+                  return WrapAzListView<ISUserInfo>(
+                  data: logic.friendList,
+                  itemCount: logic.friendList.length,
+                  itemBuilder: (_, friend, index) => Obx(() => FriendItemView(
+                    info: friend,
+                    showDivider: index != logic.friendList.length - 1,
+                    checked: logic.isChecked(friend),
+                    // Allow toggling even if previously default-checked so
+                    // selected users are visible and can be unchecked.
+                    enabled: true,
+                    onTap: () => logic.toggleChecked(friend),
+                    showRadioButton: logic.showRadioButton,
+                  )),
+                );
             }
 
             // Normal view with categories and conversations
@@ -155,7 +157,9 @@ class SelectContactsPage extends StatelessWidget {
                 info: info,
                 showDivider: index != results.length - 1,
                 checked: logic.isChecked(info),
-                enabled: !logic.isDefaultChecked(info),
+                // Always enable so previously selected users are visible
+                // and can be unchecked from search results.
+                enabled: true,
                 onTap: () => logic.toggleChecked(info),
                 showRadioButton: logic.showRadioButton,
               ));
@@ -168,27 +172,7 @@ class SelectContactsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSendButton() {
-    return GestureDetector(
-      onTap: logic.sendToSelectedConversations,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        child: Icon(
-          CupertinoIcons.paperplane_fill,
-          size: 12.w,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
+  // _buildSendButton removed: unused in this view
 
   Widget _buildCategoryItemView({
     required String label,
@@ -396,7 +380,6 @@ class CheckedConfirmView extends StatelessWidget {
                   ),
                 ),
               ),
-
               // Confirm Button
               SizedBox(
                 height: 44.h,

@@ -64,7 +64,7 @@ class SelectContactsFromGroupLogic extends GetxController {
     searchResults.clear();
   }
 
-  Iterable<GroupInfo> get operableList => allList.where(_remove);
-
-  bool _remove(GroupInfo info) => !selectContactsLogic.isDefaultChecked(info);
+  // Include all groups so previously selected groups (if any) are visible
+  // and can be toggled/unselected.
+  Iterable<GroupInfo> get operableList => allList;
 }

@@ -61,7 +61,6 @@ class SelectContactsFromFriendsLogic extends GetxController {
     searchResults.clear();
   }
 
-  Iterable<ISUserInfo> get operableList => friendList.where(_remove);
-
-  bool _remove(ISUserInfo info) => !selectContactsLogic.isDefaultChecked(info);
+  // Include all friends in the operable list so defaults are visible
+  Iterable<ISUserInfo> get operableList => friendList;
 }

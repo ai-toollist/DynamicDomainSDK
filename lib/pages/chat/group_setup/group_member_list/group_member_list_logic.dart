@@ -64,7 +64,15 @@ class GroupMemberListLogic extends GetxController {
 
   bool get isOwnerOrAdmin => isAdmin || isOwner;
 
-  int get maxLength => maxSelectCount ?? min(groupInfo.memberCount!, 10);
+  // int get maxLength => maxSelectCount ?? min(groupInfo.memberCount!, 10);
+  int get maxLength =>  min(groupInfo.memberCount!, 10);
+
+  /// Number of selected members excluding the special @everyone tag.
+  int get checkedCountExcludingEveryone {
+    final atAll = OpenIM.iMManager.conversationManager.atAllTag;
+    if (atAll == null || atAll.isEmpty) return checkedList.length;
+    return checkedList.where((e) => e.userID != atAll).length;
+  }
 
   @override
   void onClose() {
@@ -89,6 +97,27 @@ class GroupMemberListLogic extends GetxController {
   @override
   void onReady() {
     _queryMyGroupMemberLevel();
+
+    // If there are default checked user IDs (passed from caller),
+    // load their GroupMembersInfo and initialize the checked list so
+    // they are displayed in the selected area when opening the page.
+    if (defaultCheckedUserIDs.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        try {
+          final list = await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+            groupID: groupInfo.groupID,
+            userIDList: defaultCheckedUserIDs,
+          );
+          // Add to checkedList if not already present
+          for (var member in list) {
+            if (!checkedList.contains(member)) checkedList.add(member);
+          }
+        } catch (e) {
+          Logger.print('Error loading default checked members: $e');
+        }
+      });
+    }
+
     super.onReady();
   }
 
@@ -142,13 +171,18 @@ class GroupMemberListLogic extends GetxController {
 
     _actualLoadedCount += list.length;
 
+    // Always show all members in the list. If some members were passed
+    // in `defaultCheckedUserIDs`, keep them visible and mark them as
+    // checked by adding to `checkedList`.
+    memberList.addAll(list);
+
     if (defaultCheckedUserIDs.isNotEmpty) {
-      final filteredList = list.where((member) {
-        return !defaultCheckedUserIDs.contains(member.userID);
-      }).toList();
-      memberList.addAll(filteredList);
-    } else {
-      memberList.addAll(list);
+      for (var member in list) {
+        if (defaultCheckedUserIDs.contains(member.userID) &&
+            !checkedList.any((e) => e.userID == member.userID)) {
+          checkedList.add(member);
+        }
+      }
     }
 
     if (list.length < count) {
@@ -172,8 +206,19 @@ class GroupMemberListLogic extends GetxController {
       
       if (isChecked(membersInfo)) {
         checkedList.remove(membersInfo);
-      } else if (checkedList.length < maxLength) {
-        checkedList.add(membersInfo);
+      } else {
+        // If "everyone" is currently selected, remove it when selecting any member
+        final everyoneId = OpenIM.iMManager.conversationManager.atAllTag;
+        final everyoneIndex = checkedList.indexWhere((e) => e.userID == everyoneId);
+        if (everyoneIndex > -1) {
+          checkedList.removeAt(everyoneIndex);
+        }
+
+        if (checkedList.length < maxLength) {
+          checkedList.add(membersInfo);
+        } else {
+          IMViews.showToast(StrRes.maxAtUserHint);
+        }
       }
       
       // Khôi phục vị trí scroll sau khi rebuild
@@ -285,25 +330,53 @@ class GroupMemberListLogic extends GetxController {
         nickname: StrRes.everyone,
       );
 
-  void selectEveryone() {
-    if (opType == GroupMemberOpType.at) {
-      if (checkedList.isNotEmpty) {
-        IMViews.showToast(StrRes.cannotSelectEveryoneWithOthers);
-        return;
+  
+  /// Select @everyone tag. If other users are already selected,
+  /// show a toast and do not add the everyone tag.
+  Future<void> selectEveryone() async {
+    final everyoneId = OpenIM.iMManager.conversationManager.atAllTag;
+    if (checkedList.isNotEmpty) {
+      // Ask user whether to remove already-selected users to select everyone
+      final result = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(
+          title: StrRes.cannotSelectEveryoneWithOthersContent,
+          content: StrRes.doYouWantToRemoveOtherMembers,
+          onTapRight: () => Get.back(result: true),
+        ),
+      );
+
+      if (result == true) {
+        checkedList.clear();
+        update(); // Ensure UI and result are in sync
+        print('checkedList cleared: ${checkedList.length} items');
+        final info = _buildEveryoneMemberInfo();
+        if (!checkedList.any((e) => e.userID == everyoneId)) {
+          checkedList.add(info);
+          update();
+          print('checkedList updated with @everyone: ${checkedList.length} items');
+        }
       }
 
-      final alreadySelectedCount = defaultCheckedUserIDs.length;
-      if (alreadySelectedCount >= 10) {
-        IMViews.showToast(StrRes.maxAtUserHint);
-        return;
-      }
+      return;
+    }
+    if (defaultCheckedUserIDs.isNotEmpty) {
+      IMViews.showToast(StrRes.cannotSelectEveryoneWithOthers);
+      return;
+    }
 
-      Get.back(result: <GroupMembersInfo>[_buildEveryoneMemberInfo()]);
+    final info = _buildEveryoneMemberInfo();
+    if (!checkedList.any((e) => e.userID == everyoneId)) {
+      checkedList.add(info);
+      update();
+      print('checkedList updated with @everyone: ${checkedList.length} items');
     }
   }
 
   void confirmSelectedMember() {
-    Get.back(result: checkedList);
+    // Return a snapshot of the selected members to avoid timing/race issues
+    print('confirmSelectedMember called with checkedList: ${checkedList.map((e) => e.userID).toList()}');
+    Get.back(result: checkedList.toList());
   }
 
   bool hiddenMember(GroupMembersInfo membersInfo) =>

@@ -54,6 +54,8 @@ class GroupMemberListPage extends StatelessWidget {
     return WechatStyleSearchBox(
       controller: logic.searchCtrl,
       focusNode: logic.focusNode,
+      enabled: true,
+      hintText: StrRes.search,
       onSubmitted: (_) => logic.search(),
       onChanged: (_) {
         if (logic.searchCtrl.text.trim().isNotEmpty) {
@@ -76,80 +78,61 @@ class GroupMemberListPage extends StatelessWidget {
 
         // @Everyone option for group at
         if (logic.isOwnerOrAdmin && logic.isShowEveryone)
-          AnimationConfiguration.staggeredList(
-            position: 1,
-            duration: const Duration(milliseconds: 400),
-            child: SlideAnimation(
-              curve: Curves.easeOutCubic,
-              verticalOffset: 40.0,
-              child: FadeInAnimation(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: logic.selectEveryone,
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: logic.isOwnerOrAdmin &&
-                            logic.isShowEveryone &&
-                            logic.opType == GroupMemberOpType.at
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 16.h),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 42.w,
-                                  height: 42.w,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF3B82F6),
-                                        Color(0xFF1D4ED8)
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.circular(12.r),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFF3B82F6)
-                                            .withOpacity(0.25),
-                                        offset: const Offset(0, 2),
-                                        blurRadius: 8,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '@',
-                                      style: TextStyle(
-                                        fontFamily: 'FilsonPro',
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                16.horizontalSpace,
-                                Text(
-                                  StrRes.everyone,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF374151),
-                                  ),
-                                ),
-                              ],
+          Obx(() {
+            if (logic.isOwnerOrAdmin && logic.isShowEveryone && logic.opType == GroupMemberOpType.at) {
+              return GestureDetector(
+                onTap: logic.selectEveryone,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42.w,
+                        height: 42.w,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF3B82F6).withOpacity(0.25),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8,
                             ),
-                          )
-                        : const SizedBox(),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '@',
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      16.horizontalSpace,
+                      Text(
+                        StrRes.everyone,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF374151),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-          ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
 
         // Member List
         Flexible(
@@ -528,7 +511,7 @@ class _CheckedConfirmView extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         sprintf(StrRes.confirmSelectedPeople, [
-                          logic.checkedList.length,
+                          logic.checkedCountExcludingEveryone,
                           logic.maxLength,
                         ]),
                         style: TextStyle(

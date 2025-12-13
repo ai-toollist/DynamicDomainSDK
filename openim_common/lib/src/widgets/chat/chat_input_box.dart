@@ -747,7 +747,7 @@ class _ChatInputBoxState extends State<ChatInputBox>
                 fontFamily: 'FilsonPro',
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF4F42FF),
+                color: Theme.of(context).colorScheme.primary,
               ),
           inputFormatters: widget.inputFormatters ??
               [AtTextInputFormatter(widget.openAtList)],

@@ -268,7 +268,9 @@ class SelectContactsLogic
   bool isDefaultChecked(info) => defaultCheckedIDList.contains(parseID(info));
 
   Function()? onTap(dynamic info) {
-    return isDefaultChecked(info) ? null : () => toggleChecked(info);
+    // Allow toggling even for items that were passed as default-checked so
+    // previously selected users are visible and can be unchecked.
+    return () => toggleChecked(info);
   }
 
   removeItem(dynamic info) {

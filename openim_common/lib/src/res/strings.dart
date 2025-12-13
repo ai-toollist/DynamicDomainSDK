@@ -1642,6 +1642,9 @@ class StrRes {
   static String get maxAtUserHint => 'maxAtUserHint'.tr;
   static String get cannotSelectEveryoneWithOthers =>
       'cannotSelectEveryoneWithOthers'.tr;
+  static String get cannotSelectEveryoneWithOthersContent =>
+      'cannotSelectEveryoneWithOthersContent'.tr;
+  static String get doYouWantToRemoveOtherMembers => 'doYouWantToRemoveOtherMembers'.tr;
   static String get addMeAsFriend => 'addMeAsFriend'.tr;
   static String get acceptMeJoin => 'acceptMeJoin'.tr;
 }

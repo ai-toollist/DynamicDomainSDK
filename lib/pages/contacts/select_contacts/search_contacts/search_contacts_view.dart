@@ -67,7 +67,9 @@ class SelectContactsFromSearchPage extends StatelessWidget {
                       padding: EdgeInsets.only(right: 10.w),
                       child: ChatRadio(
                         checked: selectContactsLogic.isChecked(info),
-                        enabled: !selectContactsLogic.isDefaultChecked(info),
+                        // Allow toggling selected/default users so they can be removed
+                        // from selection when searching.
+                        enabled: true,
                       ),
                     ),
                   AvatarView(

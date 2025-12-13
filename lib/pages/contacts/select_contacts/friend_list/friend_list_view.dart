@@ -22,7 +22,6 @@ class SelectContactsFromFriendsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GradientScaffold(
       title: StrRes.chooseFriends,
-      subtitle: StrRes.chooseFriendsHint,
       showBackButton: true,
       searchBox: Container(
         height: 50.h,
@@ -107,21 +106,25 @@ class SelectContactsFromFriendsPage extends StatelessWidget {
                 }
 
                 return WrapAzListView<ISUserInfo>(
-                  data: displayList,
-                  itemCount: displayList.length,
-                  itemBuilder: (_, friend, index) => Obx(
-                    () {
-                      return FriendItemView(
-                        info: friend,
-                        showDivider: index != displayList.length - 1,
-                        checked: selectContactsLogic.isChecked(friend),
-                        enabled: !selectContactsLogic.isDefaultChecked(friend),
-                        onTap: selectContactsLogic.onTap(friend),
-                        showRadioButton: selectContactsLogic.isMultiModel,
-                      );
-                    },
-                  ),
-                );
+                    data: displayList,
+                    itemCount: displayList.length,
+                    itemBuilder: (_, friend, index) => Column(
+                          children: [
+                            if (displayList.length < 7) SizedBox(height: 16.h),
+                            Obx(() {
+                              return FriendItemView(
+                                info: friend,
+                                showDivider: index != displayList.length - 1,
+                                checked: selectContactsLogic.isChecked(friend),
+                                enabled: !selectContactsLogic
+                                    .isDefaultChecked(friend),
+                                onTap: selectContactsLogic.onTap(friend),
+                                showRadioButton:
+                                    selectContactsLogic.isMultiModel,
+                              );
+                            }),
+                          ],
+                        ));
               },
             ),
           ),
@@ -131,4 +134,3 @@ class SelectContactsFromFriendsPage extends StatelessWidget {
     );
   }
 }
-

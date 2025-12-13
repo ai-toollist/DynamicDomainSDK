@@ -76,6 +76,7 @@ class WrapAzListView<T extends ISuspensionBean> extends StatelessWidget {
         height: 23.h,
         color: Colors.white,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
+        // margin: EdgeInsets.only(bottom: 10.h),
         alignment: Alignment.centerLeft,
         width: 1.sw,
         child: tag.toText

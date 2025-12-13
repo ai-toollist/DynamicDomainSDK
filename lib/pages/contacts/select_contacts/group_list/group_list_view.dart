@@ -23,7 +23,6 @@ class SelectContactsFromGroupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GradientScaffold(
       title: StrRes.chooseGroups,
-      subtitle: StrRes.chooseGroupsHint,
       showBackButton: true,
       searchBox: Container(
         height: 50.h,

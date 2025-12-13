@@ -21,8 +21,10 @@ class CreateGroupLogic extends GetxController {
 
   @override
   void onInit() {
-    defaultCheckedList.addAll(Get.arguments['defaultCheckedList']);
-    checkedList.addAll(Get.arguments['checkedList']);
+    final argDefault = Get.arguments?['defaultCheckedList'];
+    if (argDefault is List) defaultCheckedList.addAll(argDefault.cast<UserInfo>());
+    final argChecked = Get.arguments?['checkedList'];
+    if (argChecked is List) checkedList.addAll(argChecked.cast<UserInfo>());
     allList.addAll(defaultCheckedList);
     allList.addAll(checkedList);
     super.onInit();

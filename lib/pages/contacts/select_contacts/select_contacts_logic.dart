@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:openim/core/controller/client_config_controller.dart';
 import 'package:openim/pages/conversation/conversation_logic.dart';
 import 'package:openim/routes/app_navigator.dart';
+import 'package:openim/routes/app_pages.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -498,6 +499,23 @@ class SelectContactsLogic
         final totalSelected = defaultCheckedIDList.length + checkedList.length;
         if (totalSelected < 3) {
           IMViews.showToast(StrRes.selectContactsMinimum.trArgs(["2"]));
+          return;
+        }
+        // Convert checked map to List<UserInfo>
+        final list = IMUtils.convertSelectContactsResultToUserInfo(checkedList);
+        if (list is List<UserInfo>) {
+          // Build defaultCheckedList as List<UserInfo> from default IDs if possible
+          final defaultList = <UserInfo>[];
+          for (final id in defaultCheckedIDList) {
+            try {
+              final f = friendList.firstWhere((f) => f.userID == id);
+              defaultList.add(UserInfo.fromJson(f.toJson()));
+            } catch (_) {}
+          }
+          Get.toNamed(AppRoutes.createGroup, arguments: {
+            'checkedList': list,
+            'defaultCheckedList': defaultList,
+          });
           return;
         }
         Get.back(result: checkedList);

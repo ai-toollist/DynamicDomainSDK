@@ -218,15 +218,21 @@ mixin IMCallback {
   }
 
   void friendInfoChanged(FriendInfo u) {
+    print('📝 FRIEND INFO CHANGED CALLBACK - userID: ${u.userID}, nickname: ${u.nickname}');
     friendInfoChangedSubject.addSafely(u);
+    print('  - Published to friendInfoChangedSubject stream');
   }
 
   void friendAdded(FriendInfo u) {
+    print('🎉 FRIEND ADDED CALLBACK - userID: ${u.userID}, nickname: ${u.nickname}');
     friendAddSubject.addSafely(u);
+    print('  - Published to friendAddSubject stream');
   }
 
   void friendDeleted(FriendInfo u) {
+    print('👋 FRIEND DELETED CALLBACK - userID: ${u.userID}, nickname: ${u.nickname}');
     friendDelSubject.addSafely(u);
+    print('  - Published to friendDelSubject stream');
   }
 
   void conversationChanged(List<ConversationInfo> list) {

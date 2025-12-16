@@ -371,8 +371,8 @@ class ChatPage extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(32.r)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(32.r)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
@@ -382,8 +382,8 @@ class ChatPage extends StatelessWidget {
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(32.r)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(32.r)),
                           child: WaterMarkBgView(
                             text: '',
                             path: logic.background.value,
@@ -464,8 +464,8 @@ class ChatPage extends StatelessWidget {
                                       return AnimationConfiguration
                                           .staggeredList(
                                         position: index,
-                                        duration: const Duration(
-                                            milliseconds: 400),
+                                        duration:
+                                            const Duration(milliseconds: 400),
                                         child: SlideAnimation(
                                           curve: Curves.easeOutCubic,
                                           verticalOffset: 40.0,
@@ -486,8 +486,7 @@ class ChatPage extends StatelessWidget {
                                         onTap: logic.onScrollBottom,
                                         child: Container(
                                           padding: EdgeInsets.symmetric(
-                                              vertical: 12.h,
-                                              horizontal: 16.w),
+                                              vertical: 12.h, horizontal: 16.w),
                                           decoration: BoxDecoration(
                                             color: const Color(0xFF4F42FF)
                                                 .withOpacity(0.1),
@@ -519,8 +518,7 @@ class ChatPage extends StatelessWidget {
                                               6.horizontalSpace,
                                               Text(
                                                 StrRes.newMessagesCount
-                                                    .replaceFirst(
-                                                        '%s',
+                                                    .replaceFirst('%s',
                                                         '${logic.scrollingCacheMessageList.length}'),
                                                 style: TextStyle(
                                                   fontFamily: 'FilsonPro',
@@ -553,8 +551,8 @@ class ChatPage extends StatelessWidget {
                   child: SafeArea(
                     bottom: false,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 8.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       child: Row(
                         children: [
                           CustomButton(
@@ -671,35 +669,40 @@ class ChatPage extends StatelessWidget {
                 ),
                 if (logic.subTitle.isNotEmpty)
                   Obx(
-                    () => Row(
-                      children: [
-                        Container(
-                          width: 6.w,
-                          height: 6.h,
-                          margin: EdgeInsets.only(right: 4.w),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: logic.subTitle
-                                    .toLowerCase()
-                                    .contains(StrRes.online.toLowerCase())
-                                ? const Color(0xFF34D399)
-                                : Colors.white.withOpacity(0.6),
-                          ),
-                        ),
-                        Flexible(
-                          child: Text(
-                            logic.subTitle,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white.withOpacity(0.8),
+                    () => GestureDetector(
+                      onTap: logic.showGroupOnlineInfo
+                          ? logic.viewGroupOnlineInfo
+                          : null,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 6.w,
+                            height: 6.h,
+                            margin: EdgeInsets.only(right: 4.w),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: logic.subTitle
+                                      .toLowerCase()
+                                      .contains(StrRes.online.toLowerCase())
+                                  ? const Color(0xFF34D399)
+                                  : Colors.white.withOpacity(0.6),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                          Flexible(
+                            child: Text(
+                              logic.subTitle,
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
               ],

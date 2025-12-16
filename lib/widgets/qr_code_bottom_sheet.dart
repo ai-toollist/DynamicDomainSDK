@@ -85,7 +85,7 @@ class _QRCodeBottomSheetState extends State<QRCodeBottomSheet> {
       );
 
       if (result['isSuccess'] == true) {
-        IMViews.showToast(StrRes.saveSuccessfully);
+        IMViews.showToast(StrRes.saveSuccessfully,type:1);
       } else {
         IMViews.showToast(StrRes.saveFailed);
       }

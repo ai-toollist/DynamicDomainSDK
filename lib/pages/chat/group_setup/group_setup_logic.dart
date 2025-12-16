@@ -70,9 +70,9 @@ class GroupSetupLogic extends GetxController {
       userID: OpenIM.iMManager.userID,
       nickname: OpenIM.iMManager.userInfo.nickname,
     ));
-    
+
     _initMemberStatusListener();
-    
+
     if (Get.arguments != null && Get.arguments['conversationInfo'] != null) {
       conversationInfo.value = Get.arguments['conversationInfo'];
     } else if (chatLogic != null) {
@@ -86,7 +86,7 @@ class GroupSetupLogic extends GetxController {
     } else {
       return;
     }
-    
+
     groupInfo.value = _defaultGroupInfo;
     myGroupMembersInfo.value = _defaultMemberInfo;
 
@@ -341,6 +341,14 @@ class GroupSetupLogic extends GetxController {
     }
   }
 
+  /// Refresh member list - useful when returning from add/remove member screens
+  void refreshMemberList() {
+    if (isJoinedGroup.value) {
+      getGroupMembers();
+      getAllGroupMembers();
+    }
+  }
+
   getGroupInfo() async {
     var list = await OpenIM.iMManager.groupManager.getGroupsInfo(
       groupIDList: [groupInfo.value.groupID],
@@ -396,7 +404,7 @@ class GroupSetupLogic extends GetxController {
             groupInfo.update((val) {
               val?.faceURL = url;
             });
-            IMViews.showToast(StrRes.groupAvatarUpdatedSuccessfully);
+            IMViews.showToast(StrRes.groupAvatarUpdatedSuccessfully,type:1);
           } catch (e) {
             IMViews.showToast(StrRes.groupAvatarUpdateFailed);
           }
@@ -670,7 +678,7 @@ class GroupSetupLogic extends GetxController {
         val?.groupName = groupName;
       });
 
-      IMViews.showToast(StrRes.groupNameUpdatedSuccessfully);
+      IMViews.showToast(StrRes.groupNameUpdatedSuccessfully,type:1);
     } catch (e) {
       IMViews.showToast(StrRes.failedToUpdateGroupName);
     }
@@ -960,7 +968,7 @@ class GroupSetupLogic extends GetxController {
         val?.nickname = nickname;
       });
 
-      IMViews.showToast(StrRes.groupNicknameUpdatedSuccessfully);
+      IMViews.showToast(StrRes.groupNicknameUpdatedSuccessfully,type:1);
     } catch (e) {
       IMViews.showToast(StrRes.failedToUpdateGroupNickname);
     }
@@ -992,9 +1000,22 @@ class GroupSetupLogic extends GetxController {
   void startReport() => AppNavigator.startReportReasonList(
       chatType: 'groupChat', groupID: groupInfo.value.groupID);
 
-  void viewGroupMembers({bool isShowEveryone = true}) =>
-      AppNavigator.startGroupMemberList(
-          groupInfo: groupInfo.value, isShowEveryone: isShowEveryone);
+  void viewGroupMembers({bool isShowEveryone = true}) async {
+    await AppNavigator.startGroupMemberList(
+      groupInfo: groupInfo.value,
+      opType: GroupMemberOpType.view,
+      isShowEveryone: isShowEveryone,
+    );
+    // Refresh member list after returning from member management screen
+    refreshMemberList();
+  }
+
+  void viewGroupOnlineInfo() {
+    AppNavigator.startGroupOnlineInfo(
+      groupInfo: groupInfo.value,
+      isOwnerOrAdmin: isOwnerOrAdmin,
+    );
+  }
 
   void editGroupAnnouncement() => AppNavigator.startEditGroupAnnouncement(
         groupID: groupInfo.value.groupID,
@@ -1153,7 +1174,7 @@ class GroupSetupLogic extends GetxController {
         );
       });
       chatLogic?.clearAllMessage();
-      IMViews.showToast(StrRes.clearSuccessfully);
+      IMViews.showToast(StrRes.clearSuccessfully,type:1);
       AppNavigator.startBackMain();
       Future.delayed(const Duration(milliseconds: 100), () {
         if (Get.isRegistered<ConversationLogic>()) {
@@ -1181,16 +1202,16 @@ class GroupSetupLogic extends GetxController {
         );
         LoadingView.singleton.dismiss();
         if (isOwnerOrAdmin) {
-          IMViews.showToast(StrRes.addSuccessfully,type:1);
+          IMViews.showToast(StrRes.addSuccessfully, type: 1);
         } else {
-          IMViews.showToast(StrRes.inviteSuccessfully,type:1);
+          IMViews.showToast(StrRes.inviteSuccessfully, type: 1);
         }
       } catch (e) {
         LoadingView.singleton.dismiss();
-        IMViews.showToast(StrRes.inviteFailed,type:1);
+        IMViews.showToast(StrRes.inviteFailed, type: 1);
       }
 
-      getGroupMembers();
+      refreshMemberList();
     }
   }
 
@@ -1210,7 +1231,7 @@ class GroupSetupLogic extends GetxController {
           ),
         );
       } catch (_) {}
-      getGroupMembers();
+      refreshMemberList();
     }
   }
 

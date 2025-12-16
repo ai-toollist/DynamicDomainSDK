@@ -131,7 +131,7 @@ class AccountSetupLogic extends GetxController {
             }
           });
         });
-        IMViews.showToast(StrRes.clearSuccessfully);
+        IMViews.showToast(StrRes.clearSuccessfully,type:1);
       } catch (e) {
         Logger.print('Clear chat history error: $e');
         IMViews.showToast(e.toString());

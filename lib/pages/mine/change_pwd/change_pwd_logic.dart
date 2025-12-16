@@ -60,7 +60,7 @@ class ChangePwdLogic extends GetxController {
       ),
     );
     if (result) {
-      IMViews.showToast(StrRes.changedSuccessfully);
+      IMViews.showToast(StrRes.changedSuccessfully,type:1);
       await LoadingView.singleton.wrap(asyncFunction: () async {
         await OpenIM.iMManager.logout();
         await DataSp.removeLoginCertificate();

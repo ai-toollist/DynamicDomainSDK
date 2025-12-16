@@ -140,7 +140,7 @@ class ChatSetupLogic extends GetxController {
         );
       });
       chatLogic?.clearAllMessage();
-      IMViews.showToast(StrRes.clearSuccessfully);
+      IMViews.showToast(StrRes.clearSuccessfully,type:1);
 
       AppNavigator.startBackMain();
       Future.delayed(const Duration(milliseconds: 100), () {

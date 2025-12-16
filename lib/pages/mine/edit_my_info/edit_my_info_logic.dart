@@ -96,7 +96,7 @@ class EditMyInfoLogic extends GetxController {
         trtcLogic.setNicknameAvatar(
             value, imLogic.userInfo.value.faceURL ?? "");
 
-        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully);
+        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully,type:1);
       } else if (editAttr == EditAttr.mobile) {
         await LoadingView.singleton.wrap(
           asyncFunction: () => ChatApis.updateUserInfo(
@@ -107,7 +107,7 @@ class EditMyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.phoneNumber = value;
         });
-        IMViews.showToast(StrRes.phoneUpdatedSuccessfully);
+        IMViews.showToast(StrRes.phoneUpdatedSuccessfully,type:1);
       } else if (editAttr == EditAttr.email) {
         await LoadingView.singleton.wrap(
           asyncFunction: () => ChatApis.updateUserInfo(
@@ -118,7 +118,7 @@ class EditMyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.email = value;
         });
-        IMViews.showToast(StrRes.emailUpdatedSuccessfully);
+        IMViews.showToast(StrRes.emailUpdatedSuccessfully,type:1);
       }
       Get.back();
     } catch (e) {

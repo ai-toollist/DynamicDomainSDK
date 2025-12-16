@@ -32,8 +32,7 @@ class GroupMemberListPage extends StatelessWidget {
                   popCtrl: logic.poController,
                   horizontalMargin: 1.w,
                   menus: [
-                    PopMenuInfo(
-                        text: StrRes.addMember, onTap: logic.addMember),
+                    PopMenuInfo(text: StrRes.addMember, onTap: logic.addMember),
                     if (logic.isOwnerOrAdmin)
                       PopMenuInfo(
                           text: StrRes.delMember, onTap: logic.delMember),
@@ -79,76 +78,84 @@ class GroupMemberListPage extends StatelessWidget {
         // @Everyone option for group at
         if (logic.isOwnerOrAdmin && logic.isShowEveryone)
           Obx(() {
-            if (logic.isOwnerOrAdmin && logic.isShowEveryone && logic.opType == GroupMemberOpType.at) {
-              return Column(children:[
-GestureDetector(
-                onTap: logic.selectEveryone,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  margin:EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: logic.checkedList.any((e) => e.userID == OpenIM.iMManager.conversationManager.atAllTag)
-                          ? Theme.of(Get.context!).primaryColor: Colors.transparent,
-                      width: 1,
+            if (logic.isOwnerOrAdmin &&
+                logic.isShowEveryone &&
+                logic.opType == GroupMemberOpType.at) {
+              return Column(children: [
+                GestureDetector(
+                  onTap: logic.selectEveryone,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                    margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: logic.checkedList.any((e) =>
+                                e.userID ==
+                                OpenIM.iMManager.conversationManager.atAllTag)
+                            ? Theme.of(Get.context!).primaryColor
+                            : Colors.transparent,
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF9CA3AF).withOpacity(0.08),
+                          offset: const Offset(0, 4),
+                          blurRadius: 12.r,
+                        ),
+                      ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                        offset: const Offset(0, 4),
-                        blurRadius: 12.r,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 42.w,
-                        height: 42.w,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withOpacity(0.25),
-                              offset: const Offset(0, 2),
-                              blurRadius: 8,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42.w,
+                          height: 42.w,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            '@',
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    const Color(0xFF3B82F6).withOpacity(0.25),
+                                offset: const Offset(0, 2),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              '@',
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      16.horizontalSpace,
-                      Text(
-                        StrRes.everyone,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF374151),
+                        16.horizontalSpace,
+                        Text(
+                          StrRes.everyone,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF374151),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              ]); }
+              ]);
+            }
             return const SizedBox.shrink();
           }),
 
@@ -169,11 +176,11 @@ GestureDetector(
         // Chỉ observe isSearching và searchResults/memberList cho empty state và list data
         final isSearching = logic.isSearching.value;
         final isSearchNotResult = logic.isSearchNotResult;
-        
+
         // Lấy reference của list (không tạo bản copy)
         final searchResultsRef = logic.searchResults;
         final memberListRef = logic.memberList;
-        
+
         if (isSearching && isSearchNotResult) {
           return Center(
             child: Text(
@@ -187,10 +194,10 @@ GestureDetector(
             ),
           );
         }
-        
+
         final list = isSearching ? searchResultsRef : memberListRef;
         final listLength = list.length;
-        
+
         return _MemberListViewWidget(
           logic: logic,
           isSearching: isSearching,
@@ -216,7 +223,8 @@ class _MemberListViewWidget extends StatefulWidget {
   State<_MemberListViewWidget> createState() => _MemberListViewWidgetState();
 }
 
-class _MemberListViewWidgetState extends State<_MemberListViewWidget> with AutomaticKeepAliveClientMixin {
+class _MemberListViewWidgetState extends State<_MemberListViewWidget>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -238,7 +246,9 @@ class _MemberListViewWidgetState extends State<_MemberListViewWidget> with Autom
           padding: EdgeInsets.zero,
           itemCount: widget.listLength,
           itemBuilder: (_, index) {
-            final list = widget.isSearching ? widget.logic.searchResults : widget.logic.memberList;
+            final list = widget.isSearching
+                ? widget.logic.searchResults
+                : widget.logic.memberList;
             if (index >= list.length) return const SizedBox();
             final member = list[index];
             return _MemberItemView(
@@ -341,7 +351,8 @@ class _MemberItemView extends StatelessWidget {
                   ),
                   if (member.roleLevel == GroupRoleLevel.owner)
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF59E0B).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(12.r),
@@ -362,7 +373,8 @@ class _MemberItemView extends StatelessWidget {
                     ),
                   if (member.roleLevel == GroupRoleLevel.admin)
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: const Color(0xFF8B5CF6).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(12.r),
@@ -388,8 +400,7 @@ class _MemberItemView extends StatelessWidget {
         ),
         if (showDivider)
           Padding(
-            padding: EdgeInsets.only(
-                left: logic.isMultiSelMode ? 90.w : 74.w),
+            padding: EdgeInsets.only(left: logic.isMultiSelMode ? 90.w : 74.w),
             child: Container(
               height: 1,
               color: const Color(0xFFF3F4F6),
@@ -666,7 +677,8 @@ class SelectedMemberListView extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckedItemView(GroupMembersInfo membersInfo, {bool isLast = false}) =>
+  Widget _buildCheckedItemView(GroupMembersInfo membersInfo,
+          {bool isLast = false}) =>
       Material(
         color: Colors.transparent,
         child: InkWell(
@@ -753,7 +765,3 @@ class SelectedMemberListView extends StatelessWidget {
         ),
       );
 }
-
-
-
-

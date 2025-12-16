@@ -121,7 +121,7 @@ class FriendListLogic extends GetxController {
   }
 
   _friendInfoChanged(FriendInfo user) {
-    friendList.removeWhere((e) => e.userID == user.userID);
+   friendList.removeWhere((e) => e.userID == user.userID);
     _addUser(user.toJson());
   }
 

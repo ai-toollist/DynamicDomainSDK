@@ -200,7 +200,7 @@ class OldApis {
         'invitationCode': invitationCode
       },
     ).then((value) {
-      IMViews.showToast(StrRes.sentSuccessfully);
+      IMViews.showToast(StrRes.sentSuccessfully,type:1);
       return true;
     }).catchError((e, s) {
       Logger.print('e:$e s:$s');

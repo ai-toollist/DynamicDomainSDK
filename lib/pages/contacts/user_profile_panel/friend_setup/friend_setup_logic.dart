@@ -96,7 +96,7 @@ class FriendSetupLogic extends GetxController {
         conversationLogic.list
             .removeWhere((e) => e.conversationID == conversationID);
       });
-      IMViews.showToast(StrRes.friendDeletedSuccessfully);
+      IMViews.showToast(StrRes.friendDeletedSuccessfully,type:1);
       // 如果从聊天窗口查看用户资料
       if (userProfilesLogic.offAllWhenDelFriend == true) {
         AppNavigator.startBackMain();

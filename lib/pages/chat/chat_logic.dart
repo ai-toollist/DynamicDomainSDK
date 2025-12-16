@@ -501,6 +501,15 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         : AppNavigator.startGroupChatSetup(conversationInfo: conversationInfo);
   }
 
+  void viewGroupOnlineInfo() {
+    if (groupInfo != null) {
+      AppNavigator.startGroupOnlineInfo(
+        groupInfo: groupInfo!,
+        isOwnerOrAdmin: isAdminOrOwner,
+      );
+    }
+  }
+
   void clearCurAtMap() {
     curMsgAtUser.removeWhere((uid) {
       final nickname = atUserNameMappingMap[uid];
@@ -1018,7 +1027,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       }
 
       await Future.delayed(const Duration(milliseconds: 300));
-      IMViews.showToast(StrRes.sendSuccessfully);
+      IMViews.showToast(StrRes.sendSuccessfully,type:1);
     }
   }
 
@@ -1956,7 +1965,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       var width = message.pictureElem?.sourcePicture?.width;
       var height = message.pictureElem?.sourcePicture?.height;
       cacheLogic.addFavoriteFromUrl(url, width, height);
-      IMViews.showToast(StrRes.addSuccessfully);
+      IMViews.showToast(StrRes.addSuccessfully,type:1);
     } else if (message.contentType == MessageType.customFace) {
       var index = message.faceElem?.index;
       var data = message.faceElem?.data;
@@ -1967,7 +1976,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         var width = map['width'];
         var height = map['height'];
         cacheLogic.addFavoriteFromUrl(url, width, height);
-        IMViews.showToast(StrRes.addSuccessfully);
+        IMViews.showToast(StrRes.addSuccessfully,type:1);
       }
     }
   }
@@ -2029,7 +2038,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   changeFontSize(double factor) async {
     await DataSp.putChatFontSizeFactor(factor);
     scaleFactor.value = factor;
-    IMViews.showToast(StrRes.setSuccessfully);
+    IMViews.showToast(StrRes.setSuccessfully,type:1);
   }
 
   /// 修改聊天背景

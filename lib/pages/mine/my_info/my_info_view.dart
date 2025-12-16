@@ -31,88 +31,87 @@ class MyInfoPage extends StatelessWidget {
       bodyColor: const Color(0xFFF8F9FA),
       avatar: _buildAvatar(),
       body: Column(
-          children: [
-            // User ID
-            Obx(() {
-              final user = imLogic.userInfo.value;
-              return GestureDetector(
-                onTap: () {
-                  if (user.userID != null) {
-                    Clipboard.setData(ClipboardData(text: user.userID!));
-                    IMViews.showToast(StrRes.copySuccessfully,type:1);
-                  }
-                },
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'ID: ${user.userID ?? ''}',
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                      8.horizontalSpace,
-                      Icon(
-                        CupertinoIcons.doc_on_doc,
-                        size: 14.sp,
-                        color: primaryColor,
-                      ),
-                    ],
+        children: [
+          // User ID
+          Obx(() {
+            final user = imLogic.userInfo.value;
+            return GestureDetector(
+              onTap: () {
+                if (user.userID != null) {
+                  Clipboard.setData(ClipboardData(text: user.userID!));
+                  IMViews.showToast(StrRes.copySuccessfully, type: 1);
+                }
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'ID: ${user.userID ?? ''}',
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF6B7280),
+                    ),
                   ),
-                
-              );
-            }),
+                  8.horizontalSpace,
+                  Icon(
+                    CupertinoIcons.doc_on_doc,
+                    size: 14.sp,
+                    color: primaryColor,
+                  ),
+                ],
+              ),
+            );
+          }),
 
-            24.verticalSpace,
+          24.verticalSpace,
 
-            // Info Group
-            Obx(() => SettingsMenuSection(
-                  items: [
-                    SettingsMenuItem(
-                      icon: CupertinoIcons.person,
-                      color: const Color(0xFF10B981),
-                      label: StrRes.nickname,
-                      value: imLogic.userInfo.value.nickname ?? '',
-                      onTap: logic.editMyName,
-                      isRow: false,
+          // Info Group
+          Obx(() => SettingsMenuSection(
+                items: [
+                  SettingsMenuItem(
+                    icon: CupertinoIcons.person,
+                    color: const Color(0xFF10B981),
+                    label: StrRes.nickname,
+                    value: imLogic.userInfo.value.nickname ?? '',
+                    onTap: logic.editMyName,
+                    isRow: false,
+                  ),
+                  SettingsMenuItem(
+                    icon: CupertinoIcons.person_2_fill,
+                    color: const Color(0xFFF87171),
+                    label: StrRes.gender,
+                    value: imLogic.userInfo.value.gender == 1
+                        ? StrRes.man
+                        : StrRes.woman,
+                    onTap: logic.selectGender,
+                    isRow: false,
+                  ),
+                  SettingsMenuItem(
+                    icon: CupertinoIcons.gift,
+                    color: const Color(0xFF8B5CF6),
+                    label: StrRes.birthDay,
+                    value: DateUtil.formatDateMs(
+                      imLogic.userInfo.value.birth ?? 0,
+                      format: IMUtils.getTimeFormat1(),
                     ),
-                    SettingsMenuItem(
-                      icon: CupertinoIcons.person_2_fill,
-                      color: const Color(0xFFF87171),
-                      label: StrRes.gender,
-                      value: imLogic.userInfo.value.gender == 1
-                          ? StrRes.man
-                          : StrRes.woman,
-                      onTap: logic.selectGender,
-                      isRow: false,
-                    ),
-                    SettingsMenuItem(
-                      icon: CupertinoIcons.gift,
-                      color: const Color(0xFF8B5CF6),
-                      label: StrRes.birthDay,
-                      value: DateUtil.formatDateMs(
-                        imLogic.userInfo.value.birth ?? 0,
-                        format: IMUtils.getTimeFormat1(),
-                      ),
-                      onTap: logic.openDatePicker,
-                      isRow: false,
-                    ),
-                    SettingsMenuItem(
-                      icon: CupertinoIcons.phone,
-                      color: const Color(0xFF3B82F6),
-                      label: StrRes.mobile,
-                      value: imLogic.userInfo.value.phoneNumber ?? '',
-                      showArrow: false,
-                      isRow: false,
-                    ),
-                  ],
-                )),
-          ],
-        ),
-      );
+                    onTap: logic.openDatePicker,
+                    isRow: false,
+                  ),
+                  SettingsMenuItem(
+                    icon: CupertinoIcons.phone,
+                    color: const Color(0xFF3B82F6),
+                    label: StrRes.mobile,
+                    value: imLogic.userInfo.value.phoneNumber ?? '',
+                    showArrow: false,
+                    isRow: false,
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
   }
 
   Widget _buildAvatar() {
@@ -140,8 +139,7 @@ class MyInfoPage extends StatelessWidget {
                 text: user.nickname,
                 width: 100.w,
                 height: 100.w,
-                textStyle:
-                    TextStyle(fontSize: 32.sp, color: Colors.white),
+                textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
                 isCircle: true,
               ),
             ),
@@ -149,7 +147,7 @@ class MyInfoPage extends StatelessWidget {
               margin: EdgeInsets.only(right: 4.w, bottom: 4.w),
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: const Color(0xFF212121),
+                color: Theme.of(Get.context!).primaryColor,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2.w),
                 boxShadow: [
@@ -172,4 +170,3 @@ class MyInfoPage extends StatelessWidget {
     });
   }
 }
-

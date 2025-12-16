@@ -65,7 +65,7 @@ class GroupMemberListLogic extends GetxController {
   bool get isOwnerOrAdmin => isAdmin || isOwner;
 
   // int get maxLength => maxSelectCount ?? min(groupInfo.memberCount!, 10);
-  int get maxLength =>  min(groupInfo.memberCount!, 10);
+  int get maxLength => min(groupInfo.memberCount!, 10);
 
   /// Number of selected members excluding the special @everyone tag.
   int get checkedCountExcludingEveryone {
@@ -202,14 +202,16 @@ class GroupMemberListLogic extends GetxController {
     }
     if (isMultiSelMode) {
       // Lưu vị trí scroll trước khi thay đổi checkedList
-      final scrollOffset = scrollController.hasClients ? scrollController.offset : 0.0;
-      
+      final scrollOffset =
+          scrollController.hasClients ? scrollController.offset : 0.0;
+
       if (isChecked(membersInfo)) {
         checkedList.remove(membersInfo);
       } else {
         // If "everyone" is currently selected, remove it when selecting any member
         final everyoneId = OpenIM.iMManager.conversationManager.atAllTag;
-        final everyoneIndex = checkedList.indexWhere((e) => e.userID == everyoneId);
+        final everyoneIndex =
+            checkedList.indexWhere((e) => e.userID == everyoneId);
         if (everyoneIndex > -1) {
           checkedList.removeAt(everyoneIndex);
         }
@@ -220,7 +222,7 @@ class GroupMemberListLogic extends GetxController {
           IMViews.showToast(StrRes.maxAtUserHint);
         }
       }
-      
+
       // Khôi phục vị trí scroll sau khi rebuild
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (scrollController.hasClients) {
@@ -274,6 +276,7 @@ class GroupMemberListLogic extends GetxController {
   void refreshData() {
     LoadingView.singleton.wrap(asyncFunction: () async {
       memberList.clear();
+      _actualLoadedCount = 0; // Reset offset counter to load from beginning
       await onLoad();
     });
   }
@@ -330,7 +333,6 @@ class GroupMemberListLogic extends GetxController {
         nickname: StrRes.everyone,
       );
 
-  
   /// Select @everyone tag. If other users are already selected,
   /// show a toast and do not add the everyone tag.
   Future<void> selectEveryone() async {
@@ -354,7 +356,8 @@ class GroupMemberListLogic extends GetxController {
         if (!checkedList.any((e) => e.userID == everyoneId)) {
           checkedList.add(info);
           update();
-          print('checkedList updated with @everyone: ${checkedList.length} items');
+          print(
+              'checkedList updated with @everyone: ${checkedList.length} items');
         }
       }
 
@@ -375,7 +378,8 @@ class GroupMemberListLogic extends GetxController {
 
   void confirmSelectedMember() {
     // Return a snapshot of the selected members to avoid timing/race issues
-    print('confirmSelectedMember called with checkedList: ${checkedList.map((e) => e.userID).toList()}');
+    print(
+        'confirmSelectedMember called with checkedList: ${checkedList.map((e) => e.userID).toList()}');
     Get.back(result: checkedList.toList());
   }
 

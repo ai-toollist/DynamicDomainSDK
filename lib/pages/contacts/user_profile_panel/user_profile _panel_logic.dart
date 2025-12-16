@@ -436,7 +436,7 @@ class UserProfilePanelLogic extends GetxController {
     if (null != groupMembersInfo) {
       imLogic.memberInfoChangedSubject.add(groupMembersInfo!);
     }
-    IMViews.showToast(StrRes.setSuccessfully);
+    IMViews.showToast(StrRes.setSuccessfully,type:1);
   }
 
   void toChat() {
@@ -578,7 +578,7 @@ class UserProfilePanelLogic extends GetxController {
         conversationLogic.list
             .removeWhere((e) => e.conversationID == conversationID);
       });
-      IMViews.showToast(StrRes.friendDeletedSuccessfully);
+      IMViews.showToast(StrRes.friendDeletedSuccessfully,type:1);
       if (offAllWhenDelFriend == true) {
         AppNavigator.startBackMain();
       } else {

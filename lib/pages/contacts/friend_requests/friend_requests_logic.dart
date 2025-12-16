@@ -148,7 +148,7 @@ class FriendRequestsLogic extends GetxController {
         applicationList[index] = updatedInfo;
       }
       
-      IMViews.showToast(StrRes.rejectSuccessfully);
+      IMViews.showToast(StrRes.rejectSuccessfully,type:1);
       homeLogic.getUnhandledFriendApplicationCount();
     } catch (e) {
       IMViews.showToast(StrRes.rejectFailed);

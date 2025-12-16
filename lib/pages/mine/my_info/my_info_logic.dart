@@ -227,7 +227,7 @@ class MyInfoLogic extends GetxController {
                       imLogic.userInfo.value.faceURL ?? "");
                 });
 
-                IMViews.showToast(StrRes.avatarUpdatedSuccessfully);
+                IMViews.showToast(StrRes.avatarUpdatedSuccessfully,type:1);
               }),
             );
           } catch (e) {
@@ -494,7 +494,7 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.nickname = nickname;
         });
-        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully);
+        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully,type:1);
       }).catchError((error) {
         IMViews.showToast(StrRes.nicknameUpdateFailed);
         throw error;
@@ -510,7 +510,7 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.gender = gender;
         });
-        IMViews.showToast(StrRes.genderUpdatedSuccessfully);
+        IMViews.showToast(StrRes.genderUpdatedSuccessfully,type:1);
       }).catchError((error) {
         IMViews.showToast(StrRes.genderUpdateFailed);
         throw error;
@@ -527,7 +527,7 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.birth = birthday * 1000;
         });
-        IMViews.showToast(StrRes.birthdayUpdatedSuccessfully);
+        IMViews.showToast(StrRes.birthdayUpdatedSuccessfully,type:1);
       }).catchError((error) {
         IMViews.showToast(StrRes.birthdayUpdateFailed);
         throw error;

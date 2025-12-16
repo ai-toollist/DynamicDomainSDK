@@ -24,6 +24,11 @@ class GroupSetupPage extends StatelessWidget {
       title: StrRes.groupChatSetup,
       showBackButton: true,
       scrollable: true,
+      trailing: CustomButton(
+        color: Colors.white,
+        icon: CupertinoIcons.qrcode,
+        onTap: logic.viewGroupQrcode,
+      ),
       avatar: _buildAvatar(),
       body: Obx(() => Column(
             mainAxisSize: MainAxisSize.min,
@@ -31,35 +36,37 @@ class GroupSetupPage extends StatelessWidget {
               // Group Name
               GestureDetector(
                 onTap: logic.isOwnerOrAdmin
-                    ? () => logic.modifyGroupName(
-                        logic.conversationInfo.value.faceURL)
+                    ? () => logic
+                        .modifyGroupName(logic.conversationInfo.value.faceURL)
                     : null,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        logic.groupInfo.value.groupName ?? '',
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            logic.groupInfo.value.groupName ?? '',
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (logic.isOwnerOrAdmin) ...[
-                      8.horizontalSpace,
-                      Icon(
-                        Icons.edit,
-                        size: 16.sp,
-                        color: const Color(0xFF6B7280),
-                      ),
-                    ],
-                  ],
-                ),
+                        if (logic.isOwnerOrAdmin) ...[
+                          8.horizontalSpace,
+                          Icon(
+                            Icons.edit,
+                            size: 16.sp,
+                            color: const Color(0xFF6B7280),
+                          ),
+                        ],
+                      ],
+                    )),
               ),
               8.verticalSpace,
               // Group ID
@@ -137,15 +144,16 @@ class GroupSetupPage extends StatelessWidget {
               // Menu Sections
               _buildSectionTitle(StrRes.groupInformation),
               SettingsMenuItem(
-                icon: CupertinoIcons.qrcode,
-                label: StrRes.qrcode,
-                onTap: logic.viewGroupQrcode,
-              ),
-              SettingsMenuItem(
                 icon: CupertinoIcons.bell,
                 label: StrRes.groupAc,
                 onTap: logic.editGroupAnnouncement,
               ),
+              if (logic.isOwnerOrAdmin)
+                SettingsMenuItem(
+                  icon: CupertinoIcons.person_2,
+                  label: StrRes.onlineInfo,
+                  onTap: logic.viewGroupOnlineInfo,
+                ),
               if (logic.showGroupManagement)
                 SettingsMenuItem(
                   icon: CupertinoIcons.settings,
@@ -155,12 +163,11 @@ class GroupSetupPage extends StatelessWidget {
 
               _buildSectionTitle(StrRes.nicknameInGroup),
               SettingsMenuItem(
-                icon: CupertinoIcons.person,
-                label: StrRes.myGroupMemberNickname,
-                value: logic.myGroupMembersInfo.value.nickname,
-                onTap: logic.modifyMyGroupNickname,
-                isRow:false
-              ),
+                  icon: CupertinoIcons.person,
+                  label: StrRes.myGroupMemberNickname,
+                  value: logic.myGroupMembersInfo.value.nickname,
+                  onTap: logic.modifyMyGroupNickname,
+                  isRow: false),
 
               _buildSectionTitle(StrRes.chatSettings),
               SettingsMenuItem(
@@ -217,27 +224,58 @@ class GroupSetupPage extends StatelessWidget {
   Widget _buildAvatar() {
     return Obx(() => GestureDetector(
           onTap: logic.isOwnerOrAdmin ? logic.modifyGroupAvatar : null,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4.w),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 4.w),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: AvatarView(
-              url: logic.groupInfo.value.faceURL,
-              text: logic.groupInfo.value.groupName,
-              width: 100.w,
-              height: 100.w,
-              textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
-              isCircle: true,
-              isGroup: true,
-            ),
+                child: AvatarView(
+                  url: logic.groupInfo.value.faceURL,
+                  text: logic.groupInfo.value.groupName,
+                  width: 100.w,
+                  height: 100.w,
+                  textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
+                  isCircle: true,
+                  isGroup: true,
+                ),
+              ),
+              if (logic.isOwnerOrAdmin)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: BoxDecoration(
+                      color: Theme.of(Get.context!).primaryColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2.w),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      CupertinoIcons.camera_fill,
+                      size: 16.w,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ));
   }
@@ -347,17 +385,12 @@ class GroupSetupPage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 48.w,
-                        height: 48.h,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.add,
-                            color: const Color(0xFF6B7280), size: 24.w),
+                      CustomButton(
+                        color: Theme.of(context).primaryColor,
+                        icon: CupertinoIcons.add,
+                        iconSize: 26,
                       ),
-                      4.verticalSpace,
+                      6.verticalSpace,
                       Text(
                         StrRes.addMember,
                         style: TextStyle(
@@ -377,17 +410,12 @@ class GroupSetupPage extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              width: 48.w,
-                              height: 48.h,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFF3F4F6),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(Icons.remove,
-                                  color: const Color(0xFF6B7280), size: 24.w),
+                            CustomButton(
+                              color: Colors.red,
+                              icon: CupertinoIcons.minus,
+                              iconSize: 26,
                             ),
-                            4.verticalSpace,
+                            6.verticalSpace,
                             Text(
                               StrRes.delMember,
                               style: TextStyle(

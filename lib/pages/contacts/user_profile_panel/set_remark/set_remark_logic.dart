@@ -21,7 +21,7 @@ class SetFriendRemarkLogic extends GetxController {
           updateFriendsReq,
         ),
       );
-      IMViews.showToast(StrRes.saveSuccessfully);
+      IMViews.showToast(StrRes.saveSuccessfully,type:1);
       Get.back(result: inputCtrl.text.trim());
     } catch (_) {
       IMViews.showToast(StrRes.saveFailed);

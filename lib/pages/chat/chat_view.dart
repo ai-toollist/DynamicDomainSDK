@@ -125,6 +125,10 @@ class ChatPage extends StatelessWidget {
         type: PatternType.at,
         onTap: logic.clickLinkText,
       ),
+      // Add @everyone pattern for highlighting
+      MatchPattern(
+        type: PatternType.atAll,
+      ),
       MatchPattern(
         type: PatternType.email,
         style: TextStyle(

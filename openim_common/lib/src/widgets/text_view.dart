@@ -72,7 +72,9 @@ class MatchTextView extends StatelessWidget {
     );
     return Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        child: isSupportCopy ? SelectionArea(focusNode: copyFocusNode, child: text) : text);
+        child: isSupportCopy
+            ? SelectionArea(focusNode: copyFocusNode, child: text)
+            : text);
   }
 
   _normalModel(List<InlineSpan> children) {
@@ -80,12 +82,24 @@ class MatchTextView extends StatelessWidget {
   }
 
   _matchModel(List<InlineSpan> children) {
+    // Debug: Log the input text being processed
+    print('[DEBUG @everyone] Processing text: "$text"');
+
     final mappingMap = <String, MatchPattern>{};
 
     for (var e in patterns) {
       if (e.type == PatternType.at) {
         mappingMap[regexAt] = e;
         mappingMap[regexAtAll] = MatchPattern(type: PatternType.atAll);
+        print(
+            '[DEBUG @everyone] Registered PatternType.at with regexAt: $regexAt');
+        print(
+            '[DEBUG @everyone] Registered PatternType.atAll with regexAtAll: $regexAtAll');
+      } else if (e.type == PatternType.atAll) {
+        // Handle atAll pattern explicitly
+        mappingMap[regexAtAll] = e;
+        print(
+            '[DEBUG @everyone] Registered explicit PatternType.atAll: $regexAtAll');
       } else if (e.type == PatternType.email) {
         mappingMap[regexEmail] = e;
       } else if (e.type == PatternType.mobile) {
@@ -99,7 +113,13 @@ class MatchTextView extends StatelessWidget {
       }
     }
 
-    var regexEmoji = emojiFaces.keys.toList().join('|').replaceAll('[', '\\[').replaceAll(']', '\\]');
+    print('[DEBUG @everyone] Total patterns registered: ${mappingMap.length}');
+
+    var regexEmoji = emojiFaces.keys
+        .toList()
+        .join('|')
+        .replaceAll('[', '\\[')
+        .replaceAll(']', '\\]');
 
     mappingMap[regexEmoji] = MatchPattern(type: PatternType.email);
 
@@ -128,7 +148,22 @@ class MatchTextView extends StatelessWidget {
         if (mapping != null) {
           if (mapping.type == PatternType.at) {
             String userID = matchText.replaceFirst("@", "").trim();
-            if (allAtMap.containsKey(userID)) {
+            // Handle AtAllTag with special highlighting
+            if (userID == 'AtAllTag') {
+              matchText = '@${StrRes.everyone} ';
+              // Use amber color and bold font only, no background
+              inlineSpan = TextSpan(
+                text: matchText,
+                style: (mapping.style ??
+                        matchTextStyle ??
+                        textStyle ??
+                        const TextStyle())
+                    .copyWith(
+                  color: const Color(0xFFD97706), // Amber text color
+                  fontWeight: FontWeight.w700, // Bold
+                ),
+              );
+            } else if (allAtMap.containsKey(userID)) {
               matchText = '@${allAtMap[userID]} ';
               inlineSpan = TextSpan(
                 text: matchText,
@@ -136,17 +171,26 @@ class MatchTextView extends StatelessWidget {
                 recognizer: mapping.onTap == null
                     ? null
                     : (TapGestureRecognizer()
-                      ..onTap = () => mapping.onTap!(_getUrl(userID, mapping.type), mapping.type)),
+                      ..onTap = () => mapping.onTap!(
+                          _getUrl(userID, mapping.type), mapping.type)),
               );
             } else {
               inlineSpan = TextSpan(text: matchText, style: textStyle);
             }
           } else if (mapping.type == PatternType.atAll) {
             matchText = '@${StrRes.everyone} ';
+            // Use amber color and bold font only, no background
             inlineSpan = TextSpan(
               text: matchText,
-              style: mapping.style ?? matchTextStyle ?? textStyle,
-              );
+              style: (mapping.style ??
+                      matchTextStyle ??
+                      textStyle ??
+                      const TextStyle())
+                  .copyWith(
+                color: const Color(0xFFD97706), // Amber text color
+                fontWeight: FontWeight.w700, // Bold
+              ),
+            );
           }
           /* else if (mapping.type == PatternType.EMOJI) {
             inlineSpan = ImageSpan();
@@ -158,7 +202,8 @@ class MatchTextView extends StatelessWidget {
               recognizer: mapping.onTap == null
                   ? null
                   : (TapGestureRecognizer()
-                    ..onTap = () => mapping.onTap!(_getUrl(matchText, mapping.type), mapping.type)),
+                    ..onTap = () => mapping.onTap!(
+                        _getUrl(matchText, mapping.type), mapping.type)),
             );
           }
         } else {
@@ -212,13 +257,14 @@ enum PatternType { at, atAll, email, mobile, tel, url, emoji, custom }
 const regexAt = r"(@\d+\s)|(@\d+)";
 // const regexAt = r"(\s@\S+\s)";
 
-const regexAtAll = r'@AtAllTag ';
+const regexAtAll = r'@Everyone\s?';
 
 /// Email Regex - A predefined type for handling email matching
 const regexEmail = r"\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b";
 
 /// URL Regex - A predefined type for handling URL matching
-const regexUrl = r"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:._\+-~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:_\+.~#?&\/\/=]*)";
+const regexUrl =
+    r"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:._\+-~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:_\+.~#?&\/\/=]*)";
 
 /// Phone Regex - A predefined type for handling phone matching
 // const regexMobile =

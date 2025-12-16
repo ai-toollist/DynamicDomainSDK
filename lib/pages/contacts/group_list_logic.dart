@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
 import 'package:openim/core/controller/client_config_controller.dart';
@@ -13,6 +15,10 @@ class GroupListLogic extends GetxController {
   int offset = 0;
   final int count = 1000;
 
+  StreamSubscription? _joinedGroupAddedSub;
+  StreamSubscription? _joinedGroupDeletedSub;
+  StreamSubscription? _groupInfoUpdatedSub;
+
   @override
   void onInit() {
     imLogic.imSdkStatusPublishSubject.last.then((con) {
@@ -21,7 +27,52 @@ class GroupListLogic extends GetxController {
       }
     });
     initialLoad();
+    _initListeners();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    _joinedGroupAddedSub?.cancel();
+    _joinedGroupDeletedSub?.cancel();
+    _groupInfoUpdatedSub?.cancel();
+    super.onClose();
+  }
+
+  void _initListeners() {
+    // Listen for new groups joined
+    _joinedGroupAddedSub = imLogic.joinedGroupAddedSubject.listen((groupInfo) {
+      print('📢 Group joined: ${groupInfo.groupName} (${groupInfo.groupID})');
+      // Check if group already exists
+      final index = allGroups.indexWhere((g) => g.groupID == groupInfo.groupID);
+      if (index == -1) {
+        allGroups.add(groupInfo);
+        print('  - Added to group list');
+      } else {
+        print('  - Group already exists, updating info');
+        allGroups[index] = groupInfo;
+      }
+    });
+
+    // Listen for groups deleted/left
+    _joinedGroupDeletedSub =
+        imLogic.joinedGroupDeletedSubject.listen((groupInfo) {
+      print(
+          '📢 Group deleted/left: ${groupInfo.groupName} (${groupInfo.groupID})');
+      allGroups.removeWhere((g) => g.groupID == groupInfo.groupID);
+      print('  - Removed from group list');
+    });
+
+    // Listen for group info updates
+    _groupInfoUpdatedSub = imLogic.groupInfoUpdatedSubject.listen((groupInfo) {
+      print(
+          '📢 Group info updated: ${groupInfo.groupName} (${groupInfo.groupID})');
+      final index = allGroups.indexWhere((g) => g.groupID == groupInfo.groupID);
+      if (index != -1) {
+        allGroups[index] = groupInfo;
+        print('  - Updated group info in list');
+      }
+    });
   }
 
   void initialLoad() async {

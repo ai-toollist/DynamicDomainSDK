@@ -102,11 +102,17 @@ class SearchChatHistoryPage extends StatelessWidget {
       // decoration removed as it is handled by the parent container
       child: Builder(
         builder: (context) => Obx(() => logic.isNotKey && logic.isNotDate
-            ? SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.only(bottom: 20.h),
-                child: _defaultView(context),
-              )
+            ?
+            //  SingleChildScrollView(
+            //     physics: const BouncingScrollPhysics(),
+            //     padding: EdgeInsets.only(bottom: 20.h),
+            //     child: _defaultView(context),
+            //   )
+            EmptyView(
+              message: StrRes.pleaseEnterToSearch,
+              icon: Ionicons.search,
+            )
+
             : (logic.isSearchNotResult
                 ? SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),

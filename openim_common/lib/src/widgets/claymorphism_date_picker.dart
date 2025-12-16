@@ -109,13 +109,14 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                           width: 32.w,
                           height: 32.w,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFBBF24).withOpacity(0.1),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: Icon(
                             widget.icon!,
                             size: 18.w,
-                            color: const Color(0xFFFBBF24),
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                         12.horizontalSpace,
@@ -123,11 +124,10 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                       Text(
                         widget.title,
                         style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 20.sp,
+                          fontFamily: 'FilsonPro',
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF374151
-    ),
+                          color: const Color(0xFF374151),
                         ),
                       ),
                     ],
@@ -234,22 +234,20 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                 Text(
                   _getMonthYearText(),
                   style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 18.sp,
+                    fontFamily: 'FilsonPro',
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF374151
-    ),
+                    color: const Color(0xFF374151),
                   ),
                 ),
                 2.verticalSpace,
                 Text(
                   _getSelectedDateText(),
                   style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 12.sp,
+                    fontFamily: 'FilsonPro',
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFF6B7280
-    ),
+                    color: const Color(0xFF6B7280),
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -304,11 +302,10 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                       child: Text(
                         day,
                         style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 14.sp,
+                          fontFamily: 'FilsonPro',
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6B7280
-    ),
+                          color: const Color(0xFF6B7280),
                         ),
                       ),
                     ),
@@ -354,14 +351,16 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFFFBBF24)
+                                ? Theme.of(context).primaryColor
                                 : isToday
-                                    ? const Color(0xFFFBBF24).withOpacity(0.1)
+                                    ? Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1)
                                     : Colors.transparent,
                             borderRadius: BorderRadius.circular(10.r),
                             border: isToday && !isSelected
                                 ? Border.all(
-                                    color: const Color(0xFFFBBF24),
+                                    color: Theme.of(context).primaryColor,
                                     width: 1,
                                   )
                                 : null,
@@ -370,16 +369,15 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                             child: Text(
                               day.toString(),
                               style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 16.sp,
+                                fontFamily: 'FilsonPro',
+                                fontSize: 16.sp,
                                 fontWeight: isSelected || isToday
                                     ? FontWeight.w600
                                     : FontWeight.w500,
                                 color: isSelected
                                     ? Colors.white
                                     : isToday
-                                        ? const Color(0xFFFBBF24
-    )
+                                        ? Theme.of(context).primaryColor
                                         : const Color(0xFF374151),
                               ),
                             ),
@@ -428,11 +426,10 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                   child: Text(
                     StrRes.cancel,
                     style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 16.sp,
+                      fontFamily: 'FilsonPro',
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF6B7280
-    ),
+                      color: const Color(0xFF6B7280),
                     ),
                   ),
                 ),
@@ -453,7 +450,7 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
               child: Container(
                 height: 50.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBBF24),
+                  color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(16.r),
                   boxShadow: [
                     BoxShadow(
@@ -476,11 +473,11 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                       Text(
                         StrRes.confirm,
                         style: TextStyle(
-      fontFamily: 'FilsonPro',
-      fontSize: 16.sp,
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-    ),
+                        ),
                       ),
                     ],
                   ),

@@ -288,125 +288,149 @@ class _MemberItemView extends StatelessWidget {
 
     final bool hasIcon = logic.isMultiSelMode;
 
-    return Column(
-      children: [
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => logic.clickMember(member),
-            borderRadius: BorderRadius.circular(16.r),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: Row(
-                children: [
-                  if (hasIcon)
-                    Padding(
-                      padding: EdgeInsets.only(right: 16.w),
-                      child: Obx(
-                        () => Container(
-                          width: 24.w,
-                          height: 24.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: logic.isChecked(member)
-                                ? const Color(0xFF3B82F6)
-                                : Colors.transparent,
-                            border: Border.all(
-                              color: logic.isChecked(member)
-                                  ? const Color(0xFF3B82F6)
-                                  : const Color(0xFFD1D5DB),
-                              width: 2.w,
-                            ),
+    // Use RepaintBoundary to isolate painting for better scroll performance
+    return RepaintBoundary(
+      child: Column(
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => logic.clickMember(member),
+              borderRadius: BorderRadius.circular(16.r),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                child: Row(
+                  children: [
+                    if (hasIcon)
+                      Padding(
+                        padding: EdgeInsets.only(right: 16.w),
+                        child: _CheckboxWidget(
+                          logic: logic,
+                          member: member,
+                        ),
+                      ),
+                    AvatarView(
+                      url: member.faceURL,
+                      text: member.nickname,
+                      width: 42.w,
+                      height: 42.w,
+                      isCircle: true,
+                    ),
+                    16.horizontalSpace,
+                    Expanded(
+                      child: Text(
+                        member.nickname ?? '',
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1E293B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (member.roleLevel == GroupRoleLevel.owner)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF59E0B).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: const Color(0xFFF59E0B).withOpacity(0.3),
+                            width: 1,
                           ),
-                          child: logic.isChecked(member)
-                              ? Icon(
-                                  Ionicons.checkmark,
-                                  size: 14.w,
-                                  color: Colors.white,
-                                )
-                              : null,
+                        ),
+                        child: Text(
+                          StrRes.groupOwner,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFF59E0B),
+                          ),
                         ),
                       ),
-                    ),
-                  AvatarView(
-                    url: member.faceURL,
-                    text: member.nickname,
-                    width: 42.w,
-                    height: 42.w,
-                    isCircle: true,
-                  ),
-                  16.horizontalSpace,
-                  Expanded(
-                    child: Text(
-                      member.nickname ?? '',
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1E293B),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (member.roleLevel == GroupRoleLevel.owner)
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF59E0B).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: const Color(0xFFF59E0B).withOpacity(0.3),
-                          width: 1,
+                    if (member.roleLevel == GroupRoleLevel.admin)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF8B5CF6).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          StrRes.groupAdmin,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF8B5CF6),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        StrRes.groupOwner,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFF59E0B),
-                        ),
-                      ),
-                    ),
-                  if (member.roleLevel == GroupRoleLevel.admin)
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF8B5CF6).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        StrRes.groupAdmin,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF8B5CF6),
-                        ),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        if (showDivider)
-          Padding(
-            padding: EdgeInsets.only(left: logic.isMultiSelMode ? 90.w : 74.w),
-            child: Container(
-              height: 1,
-              color: const Color(0xFFF3F4F6),
+          if (showDivider)
+            Padding(
+              padding:
+                  EdgeInsets.only(left: logic.isMultiSelMode ? 90.w : 74.w),
+              child: Container(
+                height: 1,
+                color: const Color(0xFFF3F4F6),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Isolated checkbox widget to prevent flicker and improve scroll performance
+class _CheckboxWidget extends StatelessWidget {
+  final GroupMemberListLogic logic;
+  final GroupMembersInfo member;
+
+  const _CheckboxWidget({
+    required this.logic,
+    required this.member,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Use RepaintBoundary to isolate painting for better scroll performance
+    return RepaintBoundary(
+      child: Obx(() {
+        final isChecked = logic.isChecked(member);
+        return Container(
+          width: 24.w,
+          height: 24.w,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isChecked ? const Color(0xFF3B82F6) : Colors.transparent,
+            border: Border.all(
+              color:
+                  isChecked ? const Color(0xFF3B82F6) : const Color(0xFFD1D5DB),
+              width: 2.w,
             ),
           ),
-      ],
+          child: isChecked
+              ? Icon(
+                  Ionicons.checkmark,
+                  size: 14.w,
+                  color: Colors.white,
+                )
+              : null,
+        );
+      }),
     );
   }
 }
@@ -452,8 +476,10 @@ class _CheckedConfirmView extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-        child: Obx(
-          () => Row(
+        child: GetBuilder<GroupMemberListLogic>(
+          id: 'selected_count',
+          tag: logic.opType.name,
+          builder: (_) => Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
@@ -492,21 +518,32 @@ class _CheckedConfirmView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (logic.checkedList.isNotEmpty) 4.verticalSpace,
-                      if (logic.checkedList.isNotEmpty)
-                        Text(
-                          logic.checkedList
-                              .map((e) => e.nickname ?? '')
-                              .join('、'),
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF64748B),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      // Use AnimatedOpacity instead of conditional to prevent layout shift
+                      AnimatedOpacity(
+                        opacity: logic.checkedList.isNotEmpty ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 150),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            4.verticalSpace,
+                            Text(
+                              logic.checkedList.isNotEmpty
+                                  ? logic.checkedList
+                                      .map((e) => e.nickname ?? '')
+                                      .join('、')
+                                  : '',
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xFF64748B),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),

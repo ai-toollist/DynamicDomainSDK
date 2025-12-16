@@ -207,17 +207,24 @@ class GroupMemberListLogic extends GetxController {
 
       if (isChecked(membersInfo)) {
         checkedList.remove(membersInfo);
+        // Update checkbox and selected count
+        update(['checkbox_${membersInfo.userID}', 'selected_count']);
       } else {
         // If "everyone" is currently selected, remove it when selecting any member
         final everyoneId = OpenIM.iMManager.conversationManager.atAllTag;
         final everyoneIndex =
             checkedList.indexWhere((e) => e.userID == everyoneId);
         if (everyoneIndex > -1) {
+          final everyoneMember = checkedList[everyoneIndex];
           checkedList.removeAt(everyoneIndex);
+          // Update everyone checkbox and selected count
+          update(['checkbox_${everyoneMember.userID}', 'selected_count']);
         }
 
         if (checkedList.length < maxLength) {
           checkedList.add(membersInfo);
+          // Update checkbox and selected count
+          update(['checkbox_${membersInfo.userID}', 'selected_count']);
         } else {
           IMViews.showToast(StrRes.maxAtUserHint);
         }

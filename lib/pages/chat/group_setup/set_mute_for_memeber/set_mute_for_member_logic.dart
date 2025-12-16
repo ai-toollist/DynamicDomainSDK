@@ -67,7 +67,7 @@ class SetMuteForGroupMemberLogic extends GetxController {
         seconds: seconds,
       );
     });
-    IMViews.showToast(StrRes.setSuccessfully,type:1);
     Get.back();
+    IMViews.showToast(StrRes.setSuccessfully,type:1);
   }
 }

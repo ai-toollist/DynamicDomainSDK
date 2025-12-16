@@ -24,18 +24,17 @@ class ReportDetailPage extends StatelessWidget {
         subtitle: logic.reportReason.value,
         showBackButton: true,
         trailing: CustomButton(
-          icon: CupertinoIcons.paperplane,
           onTap: logic.submitReport,
+          icon: CupertinoIcons.paperplane,
           color: Colors.white,
         ),
-        scrollable: true,
+        scrollable: false,
         body: ClipRRect(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(30.r),
           ),
           child: Container(
             color: const Color(0xFFF9FAFB),
-            height: double.infinity,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(

@@ -275,21 +275,22 @@ class AppPages {
       page: () => BlacklistPage(),
       binding: BlacklistBinding(),
     ),
-    _pageBuilder(
-      name: AppRoutes.languageSetup,
-      page: () => LanguageSetupPage(),
-      binding: LanguageSetupBinding(),
-    ),
-    _pageBuilder(
-      name: AppRoutes.unlockSetup,
-      page: () => UnlockSetupPage(),
-      binding: UnlockSetupBinding(),
-    ),
-    _pageBuilder(
-      name: AppRoutes.changePassword,
-      page: () => ChangePwdPage(),
-      binding: ChangePwdBinding(),
-    ),
+    // Language, Unlock, and Change Password are now bottom sheets in account_setup_logic
+    // _pageBuilder(
+    //   name: AppRoutes.languageSetup,
+    //   page: () => LanguageSetupPage(),
+    //   binding: LanguageSetupBinding(),
+    // ),
+    // _pageBuilder(
+    //   name: AppRoutes.unlockSetup,
+    //   page: () => UnlockSetupPage(),
+    //   binding: UnlockSetupBinding(),
+    // ),
+    // _pageBuilder(
+    //   name: AppRoutes.changePassword,
+    //   page: () => ChangePwdPage(),
+    //   binding: ChangePwdBinding(),
+    // ),
     _pageBuilder(
       name: AppRoutes.aboutUs,
       page: () => AboutUsPage(),

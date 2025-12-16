@@ -13,6 +13,7 @@ import 'package:openim_common/openim_common.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:openim/pages/auth/widget/app_text_form_field.dart';
 import 'package:openim/widgets/qr_code_bottom_sheet.dart';
 
 import '../../../core/controller/im_controller.dart';
@@ -404,7 +405,7 @@ class GroupSetupLogic extends GetxController {
             groupInfo.update((val) {
               val?.faceURL = url;
             });
-            IMViews.showToast(StrRes.groupAvatarUpdatedSuccessfully,type:1);
+            IMViews.showToast(StrRes.groupAvatarUpdatedSuccessfully, type: 1);
           } catch (e) {
             IMViews.showToast(StrRes.groupAvatarUpdateFailed);
           }
@@ -678,7 +679,7 @@ class GroupSetupLogic extends GetxController {
         val?.groupName = groupName;
       });
 
-      IMViews.showToast(StrRes.groupNameUpdatedSuccessfully,type:1);
+      IMViews.showToast(StrRes.groupNameUpdatedSuccessfully, type: 1);
     } catch (e) {
       IMViews.showToast(StrRes.failedToUpdateGroupName);
     }
@@ -726,7 +727,7 @@ class GroupSetupLogic extends GetxController {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(32.r),
                 topRight: Radius.circular(32.r),
@@ -760,10 +761,24 @@ class GroupSetupLogic extends GetxController {
                       EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   child: Row(
                     children: [
-                      HugeIcon(
-                        icon: HugeIcons.strokeRoundedUserEdit01,
-                        size: 24.w,
-                        color: const Color(0xFF374151),
+                      Container(
+                        padding: EdgeInsets.all(8.w),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Get.theme.primaryColor.withOpacity(0.1),
+                              Get.theme.primaryColor.withOpacity(0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: HugeIcon(
+                          icon: HugeIcons.strokeRoundedUserEdit01,
+                          size: 24.w,
+                          color: Get.theme.primaryColor,
+                        ),
                       ),
                       12.horizontalSpace,
                       Text(
@@ -772,7 +787,7 @@ class GroupSetupLogic extends GetxController {
                           fontFamily: 'FilsonPro',
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF374151),
+                          color: Get.theme.primaryColor,
                         ),
                       ),
                     ],
@@ -782,86 +797,17 @@ class GroupSetupLogic extends GetxController {
                 // Input Container
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                        offset: const Offset(0, 2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                    border: Border.all(
-                      color: const Color(0xFFF3F4F6),
-                      width: 1,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          StrRes.enterYourNicknameInGroup,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF6B7280),
-                          ),
-                        ),
-                        12.verticalSpace,
-                        TextField(
-                          controller: nameController,
-                          autofocus: true,
-                          maxLength: 20,
-                          decoration: InputDecoration(
-                            hintText: StrRes.enterYourGroupNickname,
-                            hintStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF4F42FF),
-                                width: 2,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFFF9FAFB),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 12.h,
-                            ),
-                            counterText: '',
-                          ),
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF374151),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: AppTextFormField(
+                    focusNode: FocusNode()..requestFocus(),
+                    controller: nameController,
+                    label: StrRes.enterYourNicknameInGroup,
+                    hint: StrRes.enterYourGroupNickname,
+                    keyboardType: TextInputType.text,
+                    maxLength: 20,
+                    onChanged: (value) {
+                      // Listener already set up above
+                    },
+                    validator: (value) => null,
                   ),
                 ),
 
@@ -916,10 +862,31 @@ class GroupSetupLogic extends GetxController {
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 12.h),
                                 decoration: BoxDecoration(
+                                  gradient: canSubmit.value
+                                      ? LinearGradient(
+                                          colors: [
+                                            Get.theme.primaryColor,
+                                            Get.theme.primaryColor
+                                                .withOpacity(0.8),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        )
+                                      : null,
                                   color: canSubmit.value
-                                      ? const Color(0xFF3B82F6)
+                                      ? null
                                       : const Color(0xFF9CA3AF),
                                   borderRadius: BorderRadius.circular(12.r),
+                                  boxShadow: canSubmit.value
+                                      ? [
+                                          BoxShadow(
+                                            color: Get.theme.primaryColor
+                                                .withOpacity(0.3),
+                                            offset: const Offset(0, 2),
+                                            blurRadius: 6,
+                                          ),
+                                        ]
+                                      : null,
                                 ),
                                 child: Text(
                                   StrRes.confirm,
@@ -968,7 +935,7 @@ class GroupSetupLogic extends GetxController {
         val?.nickname = nickname;
       });
 
-      IMViews.showToast(StrRes.groupNicknameUpdatedSuccessfully,type:1);
+      IMViews.showToast(StrRes.groupNicknameUpdatedSuccessfully, type: 1);
     } catch (e) {
       IMViews.showToast(StrRes.failedToUpdateGroupNickname);
     }
@@ -1174,7 +1141,7 @@ class GroupSetupLogic extends GetxController {
         );
       });
       chatLogic?.clearAllMessage();
-      IMViews.showToast(StrRes.clearSuccessfully,type:1);
+      IMViews.showToast(StrRes.clearSuccessfully, type: 1);
       AppNavigator.startBackMain();
       Future.delayed(const Duration(milliseconds: 100), () {
         if (Get.isRegistered<ConversationLogic>()) {

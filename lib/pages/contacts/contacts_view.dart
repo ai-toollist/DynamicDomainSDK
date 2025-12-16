@@ -43,6 +43,7 @@ class _ContactsPageState extends State<ContactsPage>
   late final FocusNode _friendSearchFocusNode;
   late final FocusNode _groupSearchFocusNode;
   bool _isFriendSearchActive = false;
+  bool _isGroupSearchActive = false;
 
   @override
   void initState() {
@@ -131,7 +132,7 @@ class _ContactsPageState extends State<ContactsPage>
                                   child: Text(
                                     logic.friendApplicationCount > 99
                                         ? StrRes.moreThan99
-                                          : logic.friendApplicationCount
+                                        : logic.friendApplicationCount
                                             .toString(),
                                     style: TextStyle(
                                       fontFamily: 'FilsonPro',
@@ -165,7 +166,7 @@ class _ContactsPageState extends State<ContactsPage>
                                   child: Text(
                                     logic.groupApplicationCount > 99
                                         ? StrRes.moreThan99
-                                          : logic.groupApplicationCount
+                                        : logic.groupApplicationCount
                                             .toString(),
                                     style: TextStyle(
                                       fontFamily: 'FilsonPro',
@@ -347,19 +348,95 @@ class _ContactsPageState extends State<ContactsPage>
   Widget _buildGroupsTab() {
     return Column(
       children: [
-        _buildFunctionItem(
-          icon: HugeIcons.strokeRoundedUserGroup,
-          label: StrRes.groupJoinRequests,
-          count: logic.groupApplicationCount,
-          onTap: logic.newGroup,
+        // Group function button & search box
+        AnimatedCrossFade(
+          firstChild: IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildFunctionItem(
+                    icon: HugeIcons.strokeRoundedUserGroup,
+                    label: StrRes.groupJoinRequests,
+                    count: logic.groupApplicationCount,
+                    onTap: logic.newGroup,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isGroupSearchActive = true;
+                      _groupSearchFocusNode.requestFocus();
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    color: const Color(0xFFFFFFFF),
+                    child: Center(
+                      child: Icon(
+                        CupertinoIcons.search,
+                        color: Theme.of(context).primaryColor,
+                        size: 20.w,
+                        weight: 100,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          secondChild: Container(
+            height: 48.h,
+            margin: EdgeInsets.symmetric(vertical: 6.h),
+            color: const Color(0xFFFFFFFF),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isGroupSearchActive = false;
+                      _groupSearchController.clear();
+                      _groupSearchFocusNode.unfocus();
+                    });
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: const Color(0xFF424242),
+                    size: 20.w,
+                  ),
+                ),
+                Expanded(
+                  child: AppTextFormField(
+                    focusNode: _groupSearchFocusNode,
+                    controller: _groupSearchController,
+                    label: StrRes.search,
+                    keyboardType: TextInputType.text,
+                    onChanged: (value) => setState(() {}),
+                    validator: (value) => null,
+                    prefixIcon: Icon(CupertinoIcons.search),
+                    suffixIcon: _groupSearchController.text.isNotEmpty
+                        ? GestureDetector(
+                            onTap: () {
+                              _groupSearchController.clear();
+                              setState(() {});
+                            },
+                            child: Icon(
+                              CupertinoIcons.xmark_circle_fill,
+                              size: 18.w,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+                16.horizontalSpace,
+              ],
+            ),
+          ),
+          crossFadeState: _isGroupSearchActive
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 300),
         ),
-        // Search box
-        // _buildSearchBox(
-        //   focusNode: _groupSearchFocusNode,
-        //   controller: _groupSearchController,
-        //   hintText: 'Search groups...',
-        //   onChanged: (value) => setState(() {}),
-        // ),
         Container(
           width: double.infinity,
           height: 5.h,
@@ -413,8 +490,7 @@ class _ContactsPageState extends State<ContactsPage>
                 message: searchQuery.isEmpty
                     ? (_selectedGroupFilter == GroupFilterType.myGroup
                         ? StrRes.noCreatedGroupsYet
-                        : _selectedGroupFilter ==
-                                GroupFilterType.joinedGroup
+                        : _selectedGroupFilter == GroupFilterType.joinedGroup
                             ? StrRes.noJoinedGroupsYet
                             : StrRes.noGroupChatsYet)
                     : 'No groups found',

@@ -83,6 +83,9 @@ class GroupRequestsLogic extends GetxController {
       }
       DataSp.putHaveReadUnHandleGroupApplication(haveReadList);
 
+      // Update badge count immediately after marking as read
+      homeLogic.getUnhandledGroupApplicationCount();
+
       // ignore: unused_local_variable
       var groupIDList = <String>[];
       // 记录邀请者id
@@ -201,7 +204,8 @@ class GroupRequestsLogic extends GetxController {
   Future<void> approveApplication(GroupApplicationInfo info) async {
     try {
       await LoadingView.singleton.wrap(
-        asyncFunction: () => OpenIM.iMManager.groupManager.acceptGroupApplication(
+        asyncFunction: () =>
+            OpenIM.iMManager.groupManager.acceptGroupApplication(
           groupID: info.groupID!,
           userID: info.userID!,
           handleMsg: '',
@@ -230,7 +234,8 @@ class GroupRequestsLogic extends GetxController {
   Future<void> rejectApplication(GroupApplicationInfo info) async {
     try {
       await LoadingView.singleton.wrap(
-        asyncFunction: () => OpenIM.iMManager.groupManager.refuseGroupApplication(
+        asyncFunction: () =>
+            OpenIM.iMManager.groupManager.refuseGroupApplication(
           groupID: info.groupID!,
           userID: info.userID!,
           handleMsg: '',

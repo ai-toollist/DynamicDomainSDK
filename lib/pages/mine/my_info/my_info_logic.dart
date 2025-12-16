@@ -21,6 +21,8 @@ class MyInfoLogic extends GetxController {
   final userInfo =
       UserFullInfo.fromJson(OpenIM.iMManager.userInfo.toJson()).obs;
 
+  bool isUpdatingGender = false; // Prevent race condition
+
   void editMyName() => editNameBottomSheet();
 
   void editNameBottomSheet() {
@@ -226,8 +228,7 @@ class MyInfoLogic extends GetxController {
                   trtcLogic.setNicknameAvatar(userInfo.value.nickname ?? "",
                       imLogic.userInfo.value.faceURL ?? "");
                 });
-
-                IMViews.showToast(StrRes.avatarUpdatedSuccessfully,type:1);
+                IMViews.showToast(StrRes.avatarUpdatedSuccessfully, type: 1);
               }),
             );
           } catch (e) {
@@ -350,6 +351,8 @@ class MyInfoLogic extends GetxController {
   }
 
   void selectGender() {
+    final currentGender = imLogic.userInfo.value.gender ?? 0;
+
     Get.bottomSheet(
       barrierColor: Colors.black.withOpacity(0.25),
       Container(
@@ -406,8 +409,14 @@ class MyInfoLogic extends GetxController {
                       title: StrRes.man,
                       iconColor: const Color(0xFF4F42FF),
                       onTap: () {
-                        Get.back();
-                        _updateGender(1);
+                        Get.until((route) =>
+                            !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+                        if (currentGender != 1) {
+                          _updateGender(1);
+                        } else {
+                          IMViews.showToast(StrRes.genderUpdatedSuccessfully,
+                              type: 1);
+                        }
                       },
                       index: 0,
                     ),
@@ -420,8 +429,14 @@ class MyInfoLogic extends GetxController {
                       title: StrRes.woman,
                       iconColor: const Color(0xFFF9A8D4),
                       onTap: () {
-                        Get.back();
-                        _updateGender(2);
+                        Get.until((route) =>
+                            !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+                        if (currentGender != 2) {
+                          _updateGender(2);
+                        } else {
+                          IMViews.showToast(StrRes.genderUpdatedSuccessfully,
+                              type: 1);
+                        }
                       },
                       index: 1,
                       isLast: true,
@@ -494,7 +509,7 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.nickname = nickname;
         });
-        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully,type:1);
+        IMViews.showToast(StrRes.nicknameUpdatedSuccessfully, type: 1);
       }).catchError((error) {
         IMViews.showToast(StrRes.nicknameUpdateFailed);
         throw error;
@@ -503,6 +518,9 @@ class MyInfoLogic extends GetxController {
   }
 
   void _updateGender(int gender) {
+    if (isUpdatingGender) return; // Prevent concurrent updates
+
+    isUpdatingGender = true;
     LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
               userID: OpenIM.iMManager.userID, gender: gender)
@@ -510,10 +528,12 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.gender = gender;
         });
-        IMViews.showToast(StrRes.genderUpdatedSuccessfully,type:1);
+        IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
       }).catchError((error) {
         IMViews.showToast(StrRes.genderUpdateFailed);
         throw error;
+      }).whenComplete(() {
+        isUpdatingGender = false; // Release lock
       }),
     );
   }
@@ -527,7 +547,7 @@ class MyInfoLogic extends GetxController {
         imLogic.userInfo.update((val) {
           val?.birth = birthday * 1000;
         });
-        IMViews.showToast(StrRes.birthdayUpdatedSuccessfully,type:1);
+        IMViews.showToast(StrRes.birthdayUpdatedSuccessfully, type: 1);
       }).catchError((error) {
         IMViews.showToast(StrRes.birthdayUpdateFailed);
         throw error;

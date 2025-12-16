@@ -65,6 +65,10 @@ class FriendRequestsLogic extends GetxController {
       }
     }
     DataSp.putHaveReadUnHandleFriendApplication(haveReadList);
+
+    // Update badge count immediately after marking as read
+    homeLogic.getUnhandledFriendApplicationCount();
+
     applicationList.assignAll(allList);
   }
 
@@ -75,20 +79,19 @@ class FriendRequestsLogic extends GetxController {
   void acceptFriendApplication(FriendApplicationInfo info) async {
     try {
       await LoadingView.singleton.wrap(
-        asyncFunction: () => OpenIM.iMManager.friendshipManager
-            .acceptFriendApplication(
+        asyncFunction: () =>
+            OpenIM.iMManager.friendshipManager.acceptFriendApplication(
           userID: info.fromUserID ?? '',
           handleMsg: '',
         ),
       );
-      
+
       // 更新该条申请的状态
-      final index = applicationList.indexWhere((item) => 
-        item.fromUserID == info.fromUserID && 
-        item.toUserID == info.toUserID &&
-        item.createTime == info.createTime
-      );
-      
+      final index = applicationList.indexWhere((item) =>
+          item.fromUserID == info.fromUserID &&
+          item.toUserID == info.toUserID &&
+          item.createTime == info.createTime);
+
       if (index != -1) {
         final updatedInfo = FriendApplicationInfo(
           fromUserID: info.fromUserID,
@@ -105,8 +108,8 @@ class FriendRequestsLogic extends GetxController {
         );
         applicationList[index] = updatedInfo;
       }
-      
-      IMViews.showToast(StrRes.approved,type:1);
+
+      IMViews.showToast(StrRes.approved, type: 1);
       homeLogic.getUnhandledFriendApplicationCount();
     } catch (e) {
       IMViews.showToast(StrRes.addFailed);
@@ -117,20 +120,19 @@ class FriendRequestsLogic extends GetxController {
   void refuseFriendApplication(FriendApplicationInfo info) async {
     try {
       await LoadingView.singleton.wrap(
-        asyncFunction: () => OpenIM.iMManager.friendshipManager
-            .refuseFriendApplication(
+        asyncFunction: () =>
+            OpenIM.iMManager.friendshipManager.refuseFriendApplication(
           userID: info.fromUserID ?? '',
           handleMsg: '',
         ),
       );
-      
+
       // 更新该条申请的状态
-      final index = applicationList.indexWhere((item) => 
-        item.fromUserID == info.fromUserID && 
-        item.toUserID == info.toUserID &&
-        item.createTime == info.createTime
-      );
-      
+      final index = applicationList.indexWhere((item) =>
+          item.fromUserID == info.fromUserID &&
+          item.toUserID == info.toUserID &&
+          item.createTime == info.createTime);
+
       if (index != -1) {
         final updatedInfo = FriendApplicationInfo(
           fromUserID: info.fromUserID,
@@ -147,8 +149,8 @@ class FriendRequestsLogic extends GetxController {
         );
         applicationList[index] = updatedInfo;
       }
-      
-      IMViews.showToast(StrRes.rejectSuccessfully,type:1);
+
+      IMViews.showToast(StrRes.rejectSuccessfully, type: 1);
       homeLogic.getUnhandledFriendApplicationCount();
     } catch (e) {
       IMViews.showToast(StrRes.rejectFailed);

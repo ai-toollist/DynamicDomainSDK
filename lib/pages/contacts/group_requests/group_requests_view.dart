@@ -39,74 +39,76 @@ class GroupRequestsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    // Count by status
-    final requestsCount =
-        logic.list.where((item) => item.handleResult == 0).length;
-    final approvedCount =
-        logic.list.where((item) => item.handleResult == 1).length;
-    final rejectedCount =
-        logic.list.where((item) => item.handleResult == -1).length;
+    return Obx(() {
+      // Count by status - now reactive to list changes
+      final requestsCount =
+          logic.list.where((item) => item.handleResult == 0).length;
+      final approvedCount =
+          logic.list.where((item) => item.handleResult == 1).length;
+      final rejectedCount =
+          logic.list.where((item) => item.handleResult == -1).length;
 
-    return GradientScaffold(
-      title: StrRes.groupJoinRequests,
-      subtitle:
-          "${StrRes.requests}: $requestsCount | ${StrRes.approved}: $approvedCount | ${StrRes.rejected}: $rejectedCount",
-      showBackButton: true,
-      body: Column(
-        children: [
-          // Tab Bar
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.05),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
+      return GradientScaffold(
+        title: StrRes.groupJoinRequests,
+        subtitle:
+            "${StrRes.requests}: $requestsCount | ${StrRes.approved}: $approvedCount | ${StrRes.rejected}: $rejectedCount",
+        showBackButton: true,
+        body: Column(
+          children: [
+            // Tab Bar
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9CA3AF).withOpacity(0.05),
+                    offset: const Offset(0, 2),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  _buildTab('requests', StrRes.requests, primaryColor),
+                  _buildTab('approved', StrRes.approved, primaryColor),
+                  _buildTab('rejected', StrRes.rejected, primaryColor),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                _buildTab('requests', StrRes.requests, primaryColor),
-                _buildTab('approved', StrRes.approved, primaryColor),
-                _buildTab('rejected', StrRes.rejected, primaryColor),
-              ],
-            ),
-          ),
-          // Content
-          Expanded(
-            child: Obx(() {
-              final filteredList = _getFilteredList();
+            // Content
+            Expanded(
+              child: Obx(() {
+                final filteredList = _getFilteredList();
 
-              if (filteredList.isEmpty) {
-                return EmptyView(
-                  message: StrRes.noGroupRequests,
-                  icon: CupertinoIcons.group,
-                );
-              }
+                if (filteredList.isEmpty) {
+                  return EmptyView(
+                    message: StrRes.noGroupRequests,
+                    icon: CupertinoIcons.group,
+                  );
+                }
 
-              return AnimationLimiter(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    child: Column(
-                      children: List.generate(
-                        filteredList.length,
-                        (index) => AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 400),
-                          child: SlideAnimation(
-                            verticalOffset: 40.0,
-                            curve: Curves.easeOutCubic,
-                            child: FadeInAnimation(
-                              child: _buildItemView(
-                                context,
-                                filteredList[index],
-                                index,
+                return AnimationLimiter(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 16.h),
+                      child: Column(
+                        children: List.generate(
+                          filteredList.length,
+                          (index) => AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 400),
+                            child: SlideAnimation(
+                              verticalOffset: 40.0,
+                              curve: Curves.easeOutCubic,
+                              child: FadeInAnimation(
+                                child: _buildItemView(
+                                  context,
+                                  filteredList[index],
+                                  index,
+                                ),
                               ),
                             ),
                           ),
@@ -114,13 +116,13 @@ class GroupRequestsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildTab(String tabId, String label, Color primaryColor) {
@@ -161,7 +163,6 @@ class GroupRequestsPage extends StatelessWidget {
       }),
     );
   }
-
 
   Widget _buildItemView(
       BuildContext context, GroupApplicationInfo info, int index) {

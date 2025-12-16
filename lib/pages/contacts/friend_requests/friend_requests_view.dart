@@ -19,20 +19,16 @@ class FriendRequestsPage extends StatelessWidget {
 
   List<FriendApplicationInfo> _getFilteredList() {
     final tab = logic.selectedTab.value;
-    
+
     switch (tab) {
       case 'waiting':
         return logic.applicationList
             .where((item) => item.isWaitingHandle)
             .toList();
       case 'approved':
-        return logic.applicationList
-            .where((item) => item.isAgreed)
-            .toList();
+        return logic.applicationList.where((item) => item.isAgreed).toList();
       case 'rejected':
-        return logic.applicationList
-            .where((item) => item.isRejected)
-            .toList();
+        return logic.applicationList.where((item) => item.isRejected).toList();
       default:
         return logic.applicationList;
     }
@@ -41,88 +37,89 @@ class FriendRequestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    
-    // Count by status
-    final waitingCount = logic.applicationList
-        .where((item) => item.isWaitingHandle)
-        .length;
-    final approvedCount = logic.applicationList
-        .where((item) => item.isAgreed)
-        .length;
-    final rejectedCount = logic.applicationList
-        .where((item) => item.isRejected)
-        .length;
 
-    return GradientScaffold(
-      title: StrRes.newFriend,
-      subtitle: "${StrRes.waiting}: $waitingCount | ${StrRes.approved}: $approvedCount | ${StrRes.rejected}: $rejectedCount",
-      showBackButton: true,
-      body: Column(
-        children: [
-          // Tab Bar
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.05),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                _buildTab('waiting', StrRes.waiting, primaryColor),
-                12.horizontalSpace,
-                _buildTab('approved', StrRes.approved, primaryColor),
-                12.horizontalSpace,
-                _buildTab('rejected', StrRes.rejected, primaryColor),
-              ],
-            ),
-          ),
-          // Content
-          Expanded(
-            child: Obx(() {
-              final filteredList = _getFilteredList();
-              
-              if (filteredList.isEmpty) {
-                return EmptyView(
-                  message: StrRes.noFriendRequests,
-                  icon: Ionicons.people_outline,
-                );}
+    return Obx(() {
+      // Count by status - now reactive to list changes
+      final waitingCount =
+          logic.applicationList.where((item) => item.isWaitingHandle).length;
+      final approvedCount =
+          logic.applicationList.where((item) => item.isAgreed).length;
+      final rejectedCount =
+          logic.applicationList.where((item) => item.isRejected).length;
 
-              return AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  itemCount: filteredList.length,
-                  itemBuilder: (_, index) =>
-                      AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      curve: Curves.easeOutCubic,
-                      child: FadeInAnimation(
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 12.h),
-                          child: _buildItemView(
-                            filteredList[index],
-                            index,
-                            primaryColor,
+      return GradientScaffold(
+        title: StrRes.newFriend,
+        subtitle:
+            "${StrRes.waiting}: $waitingCount | ${StrRes.approved}: $approvedCount | ${StrRes.rejected}: $rejectedCount",
+        showBackButton: true,
+        body: Column(
+          children: [
+            // Tab Bar
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9CA3AF).withOpacity(0.05),
+                    offset: const Offset(0, 2),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  _buildTab('waiting', StrRes.waiting, primaryColor),
+                  12.horizontalSpace,
+                  _buildTab('approved', StrRes.approved, primaryColor),
+                  12.horizontalSpace,
+                  _buildTab('rejected', StrRes.rejected, primaryColor),
+                ],
+              ),
+            ),
+            // Content
+            Expanded(
+              child: Obx(() {
+                final filteredList = _getFilteredList();
+
+                if (filteredList.isEmpty) {
+                  return EmptyView(
+                    message: StrRes.noFriendRequests,
+                    icon: Ionicons.people_outline,
+                  );
+                }
+
+                return AnimationLimiter(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: filteredList.length,
+                    itemBuilder: (_, index) =>
+                        AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 400),
+                      child: SlideAnimation(
+                        verticalOffset: 30.0,
+                        curve: Curves.easeOutCubic,
+                        child: FadeInAnimation(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 12.h),
+                            child: _buildItemView(
+                              filteredList[index],
+                              index,
+                              primaryColor,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildTab(String value, String label, Color primaryColor) {

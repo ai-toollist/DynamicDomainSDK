@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
 import 'preview_chat_history_logic.dart';
-import '../../../../../widgets/base_page.dart';
+import '../../../../../widgets/gradient_scaffold.dart';
 
 class PreviewChatHistoryPage extends StatelessWidget {
   final logic = Get.find<PreviewChatHistoryLogic>();
@@ -20,7 +20,7 @@ class PreviewChatHistoryPage extends StatelessWidget {
         String? groupID
       }) userProfile) {}
 
-  Widget _buildItemView(Message message) => ChatItemView(
+  Widget _buildItemView(Message message) => Obx(() => ChatItemView(
         // isBubbleMsg: logic.showBubbleBg(message),
         message: message,
         highlightColor:
@@ -28,6 +28,7 @@ class PreviewChatHistoryPage extends StatelessWidget {
         timelineStr: logic.getShowTime(message),
         rightNickname: OpenIM.iMManager.userInfo.nickname,
         rightFaceUrl: OpenIM.iMManager.userInfo.faceURL,
+        isPlayingSound: logic.isPlaySound(message),
         enabledCopyMenu: message.contentType == MessageType.text ||
             message.contentType == MessageType.atText,
         enabledRevokeMenu: false,
@@ -63,7 +64,7 @@ class PreviewChatHistoryPage extends StatelessWidget {
           ),
         ],
         onTapUserProfile: handleUserProfileTap,
-      );
+      ));
 
   CustomTypeInfo? _buildCustomTypeItemView(_, Message message) {
     final data = IMUtils.parseCustomMessage(message);
@@ -94,6 +95,21 @@ class PreviewChatHistoryPage extends StatelessWidget {
           false,
           false,
         );
+      } else if (viewType == CustomMessageType.tag) {
+        // Handle tag messages with sound elements
+        if (null != data['soundElem']) {
+          final soundElem = SoundElem.fromJson(data['soundElem']);
+          final isISend = message.sendID == OpenIM.iMManager.userID;
+          return CustomTypeInfo(
+            Obx(() => ChatVoiceView(
+                  isISend: isISend,
+                  soundPath: soundElem.soundPath,
+                  soundUrl: soundElem.sourceUrl,
+                  duration: soundElem.duration,
+                  isPlaying: logic.isPlaySound(message),
+                )),
+          );
+        }
       }
     }
     return null;
@@ -101,11 +117,9 @@ class PreviewChatHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      showAppBar: true,
+    return GradientScaffold(
       title: logic.conversationInfo.showName,
-      centerTitle: false,
-      showLeading: true,
+      showBackButton: true,
       body: CustomChatListView(
         scrollController: logic.scrollController,
         onScrollToTopLoad: logic.scrollToTopLoad,

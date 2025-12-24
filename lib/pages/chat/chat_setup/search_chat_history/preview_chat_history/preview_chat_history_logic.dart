@@ -2,10 +2,13 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:openim/routes/app_navigator.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
@@ -22,10 +25,15 @@ class PreviewChatHistoryLogic extends GetxController {
   int? upLastMinSeq;
   int? downLostMinSeq;
 
+  // Audio player for voice messages
+  final _audioPlayer = AudioPlayer();
+  final _currentPlayClientMsgID = ''.obs;
+
   @override
   void onReady() {
     scrollToTopLoad();
     scrollToBottomLoad();
+    _initPlayListener();
     super.onReady();
   }
 
@@ -36,6 +44,86 @@ class PreviewChatHistoryLogic extends GetxController {
     searchMessage = arguments['message'];
     controller = CustomChatListViewController<Message>([searchMessage]);
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    _audioPlayer.dispose();
+    super.onClose();
+  }
+
+  /// Initialize audio player listener
+  void _initPlayListener() {
+    _audioPlayer.playerStateStream.listen((state) {
+      switch (state.processingState) {
+        case ProcessingState.idle:
+        case ProcessingState.loading:
+        case ProcessingState.buffering:
+        case ProcessingState.ready:
+          break;
+        case ProcessingState.completed:
+          _currentPlayClientMsgID.value = "";
+          break;
+      }
+    });
+  }
+
+  /// Check if voice message is playing
+  bool isPlaySound(Message message) {
+    return _currentPlayClientMsgID.value == message.clientMsgID!;
+  }
+
+  /// Play voice message
+  void _playVoiceMessage(Message message) async {
+    var isClickSame = _currentPlayClientMsgID.value == message.clientMsgID;
+    if (_audioPlayer.playerState.playing) {
+      _currentPlayClientMsgID.value = "";
+      _audioPlayer.stop();
+    }
+    if (!isClickSame) {
+      bool isValid = await _initVoiceSource(message);
+      if (isValid) {
+        _audioPlayer.seek(Duration.zero);
+        _audioPlayer.play();
+        _currentPlayClientMsgID.value = message.clientMsgID!;
+      }
+    }
+  }
+
+  /// Initialize voice source (path or url)
+  Future<bool> _initVoiceSource(Message message) async {
+    bool isReceived = message.sendID != OpenIM.iMManager.userID;
+    String? path = message.soundElem?.soundPath;
+    String? url = message.soundElem?.sourceUrl;
+    bool isExistSource = false;
+    if (isReceived) {
+      if (null != url && url.trim().isNotEmpty) {
+        isExistSource = true;
+        _audioPlayer.setUrl(url);
+      }
+    } else {
+      bool existFile = false;
+      if (path != null && path.trim().isNotEmpty) {
+        var file = File(path);
+        existFile = await file.exists();
+      }
+      if (existFile) {
+        isExistSource = true;
+        _audioPlayer.setFilePath(path!);
+      } else if (null != url && url.trim().isNotEmpty) {
+        isExistSource = true;
+        _audioPlayer.setUrl(url);
+      }
+    }
+    return isExistSource;
+  }
+
+  /// Stop voice playback
+  void stopVoice() {
+    if (_audioPlayer.playerState.playing) {
+      _currentPlayClientMsgID.value = '';
+      _audioPlayer.stop();
+    }
   }
 
   Future<bool> scrollToTopLoad() async {
@@ -83,11 +171,34 @@ class PreviewChatHistoryLogic extends GetxController {
       var customType = map['customType'];
       if (CustomMessageType.call == customType) {
         var type = map['data']['type'];
+      } else if (CustomMessageType.tag == customType) {
+        final data = map['data'];
+        if (null != data['soundElem']) {
+          final soundElem = SoundElem.fromJson(data['soundElem']);
+          msg.soundElem = soundElem;
+          _playVoiceMessage(msg);
+        }
       }
       return;
     }
-    if (msg.contentType == MessageType.voice) {}
-    IMUtils.parseClickEvent(msg, messageList: messageList);
+    if (msg.contentType == MessageType.voice) {
+      _playVoiceMessage(msg);
+      return;
+    }
+    IMUtils.parseClickEvent(
+      msg,
+      messageList: messageList,
+      onViewUserInfo: viewUserInfo,
+    );
+  }
+
+  /// View user profile (for card messages)
+  void viewUserInfo(UserInfo userInfo) {
+    AppNavigator.startUserProfilePane(
+      userID: userInfo.userID!,
+      nickname: userInfo.nickname,
+      faceURL: userInfo.faceURL,
+    );
   }
 
   /// 点击引用消息
@@ -106,14 +217,12 @@ class PreviewChatHistoryLogic extends GetxController {
 
   ValueKey itemKey(Message message) => ValueKey(message.clientMsgID!);
 
-
   String? getShowTime(Message message) {
     if (message.exMap['showTime'] == true) {
       return IMUtils.getChatTimeline(message.sendTime!);
     }
     return null;
   }
-
 }
 
 /// 新版聊天列表控件

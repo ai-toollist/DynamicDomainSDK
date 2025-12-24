@@ -31,6 +31,7 @@ class GroupMemberListPage extends StatelessWidget {
               ? PopButton(
                   popCtrl: logic.poController,
                   horizontalMargin: 1.w,
+                  verticalMargin: 0,
                   menus: [
                     PopMenuInfo(text: StrRes.addMember, onTap: logic.addMember),
                     if (logic.isOwnerOrAdmin)

@@ -159,7 +159,7 @@ class MyInfoPage extends StatelessWidget {
                 ],
               ),
               child: Icon(
-                CupertinoIcons.camera,
+                CupertinoIcons.camera_fill,
                 size: 14.w,
                 color: Colors.white,
               ),

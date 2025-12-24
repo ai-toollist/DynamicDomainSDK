@@ -217,10 +217,11 @@ class GatewayApi {
           'areaCode': '+86',
         },
         baseURLType: BaseURLType.gateway,
+        showErrorToast: false,
       ).catchApiError();
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 

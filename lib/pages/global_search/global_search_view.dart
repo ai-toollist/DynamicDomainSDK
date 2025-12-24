@@ -291,7 +291,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                                 downloadProgressView:
                                     FileDownloadProgressView(entry.value),
                               ),
-                              content: entry.value.senderNickname,
+                              senderName: entry.value.senderNickname,
                               onTap: () => logic.viewFile(entry.value),
                               showDivider:
                                   entry.key != logic.contactsList.length - 1))
@@ -422,7 +422,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                         message: e,
                         downloadProgressView: FileDownloadProgressView(e),
                       ),
-                      content: "${StrRes.from} ${e.senderNickname}",
+                      senderName: e.senderNickname,
                       onTap: () => logic.viewFile(e),
                       showDivider: index != logic.fileMessageList.length - 1,
                     );
@@ -588,6 +588,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
     String? faceURL,
     String? time,
     String? content,
+    String? senderName,
     Widget? fileIcon,
     bool showDivider = false,
     bool isGroup = false,
@@ -650,7 +651,35 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
                           ],
                         ],
                       ),
-                      if (content != null) ...[
+                      if (senderName != null) ...[
+                        4.verticalSpace,
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${StrRes.from} ',
+                                style: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xFF6B7280),
+                                ),
+                              ),
+                              TextSpan(
+                                text: senderName,
+                                style: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                            ],
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ] else if (content != null) ...[
                         4.verticalSpace,
                         SearchKeywordText(
                           text: content,

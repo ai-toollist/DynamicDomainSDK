@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:openim/pages/mine/edit_my_info/edit_my_info_logic.dart';
 import 'package:openim/routes/app_navigator.dart';
+import 'package:openim/widgets/custom_bottom_sheet.dart';
 import 'package:openim/widgets/qr_code_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
 
@@ -29,154 +30,77 @@ class MyInfoLogic extends GetxController {
     final nameController = TextEditingController();
     nameController.text = imLogic.userInfo.value.nickname ?? '';
 
-    Get.bottomSheet(
-      barrierColor: Colors.black.withOpacity(0.25),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      StrRes.nickname,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        padding: EdgeInsets.all(6.w),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: 20.w,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    CustomBottomSheet.show(
+      title: StrRes.nickname,
+      icon: CupertinoIcons.person_crop_circle,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              StrRes.enterYourNickname,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF6B7280),
               ),
-              const Divider(height: 1, color: Color(0xFFE5E7EB)),
-              Padding(
-                padding: EdgeInsets.all(20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      StrRes.enterYourNickname,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF6B7280),
-                      ),
-                    ),
-                    12.verticalSpace,
-                    TextField(
-                      controller: nameController,
-                      autofocus: true,
-                      maxLength: 20,
-                      decoration: InputDecoration(
-                        hintText: StrRes.plsEnterYourNickname,
-                        hintStyle: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF9CA3AF),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide:
-                              const BorderSide(color: Color(0xFFE5E7EB)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide:
-                              const BorderSide(color: Color(0xFFE5E7EB)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                              color: Color(0xFF3B82F6), width: 2),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF9FAFB),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 14.h),
-                        counterText: '',
-                      ),
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                    24.verticalSpace,
-                    GestureDetector(
-                      onTap: () {
-                        final newName = nameController.text.trim();
-                        if (newName.isNotEmpty &&
-                            newName != imLogic.userInfo.value.nickname) {
-                          Get.back();
-                          _updateNickname(newName);
-                        } else {
-                          Get.back();
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 14.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3B82F6),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withOpacity(0.2),
-                              offset: const Offset(0, 4),
-                              blurRadius: 12,
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          StrRes.confirm,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            ),
+            12.verticalSpace,
+            TextField(
+              controller: nameController,
+              autofocus: true,
+              maxLength: 20,
+              decoration: InputDecoration(
+                hintText: StrRes.plsEnterYourNickname,
+                hintStyle: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF9CA3AF),
                 ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide:
+                      const BorderSide(color: Color(0xFF3B82F6), width: 2),
+                ),
+                filled: true,
+                fillColor: const Color(0xFFF9FAFB),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                counterText: '',
               ),
-            ],
-          ),
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF111827),
+              ),
+            ),
+          ],
         ),
       ),
-      isScrollControlled: true,
+      onConfirm: () {
+        final newName = nameController.text.trim();
+        if (newName.isNotEmpty && newName != imLogic.userInfo.value.nickname) {
+          Get.back();
+          _updateNickname(newName);
+        } else {
+          Get.back();
+        }
+      },
+      confirmText: StrRes.confirm,
+      isDismissible: true,
     );
   }
 
@@ -249,208 +173,80 @@ class MyInfoLogic extends GetxController {
 
     DateTime selectedDate = initialDate;
 
-    Get.bottomSheet(
-      barrierColor: Colors.black.withOpacity(0.25),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      StrRes.birthDay,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        padding: EdgeInsets.all(6.w),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: 20.w,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1, color: Color(0xFFE5E7EB)),
-              SizedBox(
-                height: 200.h,
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: initialDate,
-                  maximumDate: DateTime.now(),
-                  minimumDate: DateTime(1900, 1, 1),
-                  onDateTimeChanged: (DateTime dateTime) {
-                    selectedDate = dateTime;
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(20.w),
-                child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                    _updateBirthday(
-                        selectedDate.millisecondsSinceEpoch ~/ 1000);
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6),
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF3B82F6).withOpacity(0.2),
-                          offset: const Offset(0, 4),
-                          blurRadius: 12,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      StrRes.confirm,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+    CustomBottomSheet.show(
+      title: StrRes.birthDay,
+      icon: CupertinoIcons.calendar,
+      body: SizedBox(
+        height: 200.h,
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.date,
+          initialDateTime: initialDate,
+          maximumDate: DateTime.now(),
+          minimumDate: DateTime(1900, 1, 1),
+          onDateTimeChanged: (DateTime dateTime) {
+            selectedDate = dateTime;
+          },
         ),
       ),
-      isScrollControlled: true,
+      onConfirm: () {
+        Get.back();
+        _updateBirthday(selectedDate.millisecondsSinceEpoch ~/ 1000);
+      },
+      confirmText: StrRes.confirm,
+      isDismissible: true,
     );
   }
 
   void selectGender() {
     final currentGender = imLogic.userInfo.value.gender ?? 0;
 
-    Get.bottomSheet(
-      barrierColor: Colors.black.withOpacity(0.25),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      StrRes.gender,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        padding: EdgeInsets.all(6.w),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: 20.w,
-                          color: const Color(0xFF6B7280),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1, color: Color(0xFFE5E7EB)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                child: Column(
-                  children: [
-                    _buildGenderActionItem(
-                      icon: CupertinoIcons.person,
-                      title: StrRes.man,
-                      iconColor: const Color(0xFF4F42FF),
-                      onTap: () {
-                        Get.until((route) =>
-                            !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
-                        if (currentGender != 1) {
-                          _updateGender(1);
-                        } else {
-                          IMViews.showToast(StrRes.genderUpdatedSuccessfully,
-                              type: 1);
-                        }
-                      },
-                      index: 0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 52.w),
-                      child: const Divider(height: 1, color: Color(0xFFF3F4F6)),
-                    ),
-                    _buildGenderActionItem(
-                      icon: CupertinoIcons.person,
-                      title: StrRes.woman,
-                      iconColor: const Color(0xFFF9A8D4),
-                      onTap: () {
-                        Get.until((route) =>
-                            !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
-                        if (currentGender != 2) {
-                          _updateGender(2);
-                        } else {
-                          IMViews.showToast(StrRes.genderUpdatedSuccessfully,
-                              type: 1);
-                        }
-                      },
-                      index: 1,
-                      isLast: true,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.h),
-            ],
-          ),
+    CustomBottomSheet.show(
+      title: StrRes.gender,
+      icon: CupertinoIcons.person_2,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildGenderActionItem(
+              icon: CupertinoIcons.person,
+              title: StrRes.man,
+              iconColor: const Color(0xFF4F42FF),
+              onTap: () {
+                Get.until((route) =>
+                    !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+                if (currentGender != 1) {
+                  _updateGender(1);
+                } else {
+                  IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
+                }
+              },
+              index: 0,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 52.w),
+              child: const Divider(height: 1, color: Color(0xFFF3F4F6)),
+            ),
+            _buildGenderActionItem(
+              icon: CupertinoIcons.person,
+              title: StrRes.woman,
+              iconColor: const Color(0xFFF9A8D4),
+              onTap: () {
+                Get.until((route) =>
+                    !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+                if (currentGender != 2) {
+                  _updateGender(2);
+                } else {
+                  IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
+                }
+              },
+              index: 1,
+              isLast: true,
+            ),
+          ],
         ),
       ),
-      isScrollControlled: true,
+      isDismissible: true,
     );
   }
 

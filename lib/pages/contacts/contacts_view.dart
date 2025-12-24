@@ -188,7 +188,6 @@ class _ContactsPageState extends State<ContactsPage>
                   ],
                 ),
                 const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
                 // Tab Bar View
                 Expanded(
                   child: TabBarView(
@@ -268,8 +267,7 @@ class _ContactsPageState extends State<ContactsPage>
             ),
             secondChild: Container(
               height: 48.h,
-              margin: EdgeInsets.symmetric(vertical: 6.h),
-              // padding: EdgeInsets.only(top: 10.h),
+              margin: EdgeInsets.only(top: 12.h,bottom:4),
               color: const Color(0xFFFFFFFF),
               child: Row(
                 children: [

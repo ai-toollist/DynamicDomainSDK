@@ -1,4 +1,4 @@
-import 'dart:ui' show ImageFilter, window;
+import 'dart:ui' show window;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +6,10 @@ import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:openim/routes/app_navigator.dart';
-import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 
+import '../../../widgets/custom_bottom_sheet.dart';
 import '../../../widgets/settings_menu.dart';
 import '../unlock_setup/unlock_setup_logic.dart';
 
@@ -153,235 +152,153 @@ class AccountSetupLogic extends GetxController {
     final list = await OpenIM.iMManager.friendshipManager.getBlacklist();
     blacklist.addAll(list);
 
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
+    CustomBottomSheet.show(
+      title: StrRes.blacklist,
+      icon: CupertinoIcons.nosign,
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
+          // Subtitle with count
           Container(
-            constraints: BoxConstraints(maxHeight: 0.8.sh),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
+            margin: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.h),
+            alignment: Alignment.centerLeft,
+            child: Obx(() => Text(
+                  '${blacklist.length} ${StrRes.blockedContacts}',
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF9CA3AF),
                   ),
-                ),
+                )),
+          ),
 
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Get.theme.primaryColor.withOpacity(0.1),
-                              Get.theme.primaryColor.withOpacity(0.05),
-                            ],
+          // Blacklist content
+          Container(
+            constraints: BoxConstraints(maxHeight: 0.5.sh),
+            child: Obx(() => blacklist.isEmpty
+                ? Container(
+                    padding: EdgeInsets.symmetric(vertical: 40.h),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          CupertinoIcons.person_crop_circle_badge_xmark,
+                          size: 60.w,
+                          color: const Color(0xFFD1D5DB),
+                        ),
+                        16.verticalSpace,
+                        Text(
+                          StrRes.blacklistEmpty,
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 14.sp,
+                            color: const Color(0xFF9CA3AF),
                           ),
-                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        child: Icon(
-                          CupertinoIcons.nosign,
-                          size: 24.w,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              StrRes.blacklist,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Get.theme.primaryColor,
-                              ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: blacklist.length,
+                    itemBuilder: (context, index) {
+                      final info = blacklist[index];
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 12.h),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(
+                            color: const Color(0xFFE5E7EB),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8,
                             ),
-                            2.verticalSpace,
-                            Obx(() => Text(
-                                  '${blacklist.length} ${StrRes.blockedContacts}',
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(0xFF9CA3AF),
-                                  ),
-                                )),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Blacklist
-                Flexible(
-                  child: Obx(() => blacklist.isEmpty
-                      ? Container(
-                          padding: EdgeInsets.symmetric(vertical: 40.h),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                        child: Padding(
+                          padding: EdgeInsets.all(12.w),
+                          child: Row(
                             children: [
-                              Icon(
-                                CupertinoIcons.person_crop_circle_badge_xmark,
-                                size: 60.w,
-                                color: const Color(0xFFD1D5DB),
+                              AvatarView(
+                                url: info.faceURL,
+                                text: info.nickname,
+                                width: 48.w,
+                                height: 48.h,
+                                isCircle: true,
                               ),
-                              16.verticalSpace,
-                              Text(
-                                StrRes.blacklistEmpty,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 14.sp,
-                                  color: const Color(0xFF9CA3AF),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          itemCount: blacklist.length,
-                          itemBuilder: (context, index) {
-                            final info = blacklist[index];
-                            return Container(
-                              margin: EdgeInsets.only(bottom: 12.h),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14.r),
-                                border: Border.all(
-                                  color: const Color(0xFFE5E7EB),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF9CA3AF)
-                                        .withOpacity(0.06),
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(12.w),
-                                child: Row(
+                              12.horizontalSpace,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AvatarView(
-                                      url: info.faceURL,
-                                      text: info.nickname,
-                                      width: 48.w,
-                                      height: 48.h,
-                                      isCircle: true,
-                                    ),
-                                    12.horizontalSpace,
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            info.nickname ?? '',
-                                            style: TextStyle(
-                                              fontFamily: 'FilsonPro',
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF1F2937),
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          4.verticalSpace,
-                                          Text(
-                                            'ID: ${info.userID ?? ''}',
-                                            style: TextStyle(
-                                              fontFamily: 'FilsonPro',
-                                              fontSize: 12.sp,
-                                              color: const Color(0xFF9CA3AF),
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
+                                    Text(
+                                      info.nickname ?? '',
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF1F2937),
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await OpenIM.iMManager.friendshipManager
-                                            .removeBlacklist(
-                                          userID: info.userID!,
-                                        );
-                                        blacklist.remove(info);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 12.w,
-                                          vertical: 6.h,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFFEE2E2),
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                        ),
-                                        child: Text(
-                                          StrRes.remove,
-                                          style: TextStyle(
-                                            fontFamily: 'FilsonPro',
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color(0xFFDC2626),
-                                          ),
-                                        ),
+                                    4.verticalSpace,
+                                    Text(
+                                      'ID: ${info.userID ?? ''}',
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 12.sp,
+                                        color: const Color(0xFF9CA3AF),
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
                               ),
-                            );
-                          },
-                        )),
-                ),
-
-                SizedBox(height: 20.h),
-              ],
-            ),
+                              GestureDetector(
+                                onTap: () async {
+                                  await OpenIM.iMManager.friendshipManager
+                                      .removeBlacklist(
+                                    userID: info.userID!,
+                                  );
+                                  blacklist.remove(info);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 6.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFEE2E2),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Text(
+                                    StrRes.remove,
+                                    style: TextStyle(
+                                      fontFamily: 'FilsonPro',
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFFDC2626),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )),
           ),
         ],
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
     );
   }
 
@@ -539,196 +456,113 @@ class AccountSetupLogic extends GetxController {
   Future<void> _showLanguageBottomSheet() async {
     final selectedLanguage = Rx<int>(DataSp.getLanguage() ?? 0);
 
-    await Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Get.theme.primaryColor.withOpacity(0.1),
-                              Get.theme.primaryColor.withOpacity(0.05),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.textformat,
-                          size: 24.w,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Text(
-                        StrRes.languageSetup,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Language Options
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8.w),
-                  child: Obx(() => SettingsMenuSection(
-                        items: [
-                          SettingsMenuItem(
-                            iconWidget: Container(
-                              padding: EdgeInsets.all(8.w),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Get.theme.primaryColor.withOpacity(0.1),
-                                    Get.theme.primaryColor.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: Icon(
-                                CupertinoIcons.device_phone_portrait,
-                                size: 20.w,
-                                color: Get.theme.primaryColor,
-                              ),
-                            ),
-                            label: StrRes.followSystem,
-                            onTap: () {
-                              selectedLanguage.value = 0;
-                              _switchLanguage(0);
-                            },
-                            showArrow: false,
-                            valueWidget: selectedLanguage.value == 0
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: Get.theme.primaryColor,
-                                    size: 24.w,
-                                  )
-                                : null,
-                          ),
-                          SettingsMenuItem(
-                            iconWidget: Container(
-                              padding: EdgeInsets.all(8.w),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Get.theme.primaryColor.withOpacity(0.1),
-                                    Get.theme.primaryColor.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: Icon(
-                                CupertinoIcons.textformat,
-                                size: 20.w,
-                                color: Get.theme.primaryColor,
-                              ),
-                            ),
-                            label: StrRes.chinese,
-                            onTap: () {
-                              selectedLanguage.value = 1;
-                              _switchLanguage(1);
-                            },
-                            showArrow: false,
-                            valueWidget: selectedLanguage.value == 1
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: Get.theme.primaryColor,
-                                    size: 24.w,
-                                  )
-                                : null,
-                          ),
-                          SettingsMenuItem(
-                            iconWidget: Container(
-                              padding: EdgeInsets.all(8.w),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Get.theme.primaryColor.withOpacity(0.1),
-                                    Get.theme.primaryColor.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: Icon(
-                                CupertinoIcons.globe,
-                                size: 20.w,
-                                color: Get.theme.primaryColor,
-                              ),
-                            ),
-                            label: StrRes.english,
-                            onTap: () {
-                              selectedLanguage.value = 2;
-                              _switchLanguage(2);
-                            },
-                            showArrow: false,
-                            showDivider: false,
-                            valueWidget: selectedLanguage.value == 2
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: Get.theme.primaryColor,
-                                    size: 24.w,
-                                  )
-                                : null,
-                          ),
+    await CustomBottomSheet.show(
+      title: StrRes.languageSetup,
+      icon: CupertinoIcons.globe,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8.w),
+        child: Obx(() => SettingsMenuSection(
+              items: [
+                SettingsMenuItem(
+                  iconWidget: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Get.theme.primaryColor.withOpacity(0.1),
+                          Get.theme.primaryColor.withOpacity(0.05),
                         ],
-                      )),
+                      ),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      CupertinoIcons.device_phone_portrait,
+                      size: 20.w,
+                      color: Get.theme.primaryColor,
+                    ),
+                  ),
+                  label: StrRes.followSystem,
+                  onTap: () {
+                    selectedLanguage.value = 0;
+                    _switchLanguage(0);
+                  },
+                  showArrow: false,
+                  valueWidget: selectedLanguage.value == 0
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Get.theme.primaryColor,
+                          size: 24.w,
+                        )
+                      : null,
                 ),
-
-                SizedBox(height: 30.h),
+                SettingsMenuItem(
+                  iconWidget: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Get.theme.primaryColor.withOpacity(0.1),
+                          Get.theme.primaryColor.withOpacity(0.05),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      CupertinoIcons.textformat,
+                      size: 20.w,
+                      color: Get.theme.primaryColor,
+                    ),
+                  ),
+                  label: StrRes.chinese,
+                  onTap: () {
+                    selectedLanguage.value = 1;
+                    _switchLanguage(1);
+                  },
+                  showArrow: false,
+                  valueWidget: selectedLanguage.value == 1
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Get.theme.primaryColor,
+                          size: 24.w,
+                        )
+                      : null,
+                ),
+                SettingsMenuItem(
+                  iconWidget: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Get.theme.primaryColor.withOpacity(0.1),
+                          Get.theme.primaryColor.withOpacity(0.05),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      CupertinoIcons.globe,
+                      size: 20.w,
+                      color: Get.theme.primaryColor,
+                    ),
+                  ),
+                  label: StrRes.english,
+                  onTap: () {
+                    selectedLanguage.value = 2;
+                    _switchLanguage(2);
+                  },
+                  showArrow: false,
+                  showDivider: false,
+                  valueWidget: selectedLanguage.value == 2
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Get.theme.primaryColor,
+                          size: 24.w,
+                        )
+                      : null,
+                ),
               ],
-            ),
-          ),
-        ],
+            )),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
     );
   }
 
@@ -757,164 +591,81 @@ class AccountSetupLogic extends GetxController {
       unlockLogic = Get.put(UnlockSetupLogic());
     }
 
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
+    CustomBottomSheet.show(
+      title: StrRes.unlockSettings,
+      icon: CupertinoIcons.lock,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Obx(() {
+          List<Widget> items = [];
 
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Get.theme.primaryColor.withOpacity(0.1),
-                              Get.theme.primaryColor.withOpacity(0.05),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.lock,
-                          size: 24.w,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Text(
-                        StrRes.unlockSettings,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
+          items.add(
+            SettingsMenuItem(
+              iconWidget: Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Get.theme.primaryColor.withOpacity(0.1),
+                      Get.theme.primaryColor.withOpacity(0.05),
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
-
-                // Security Options
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Obx(() {
-                    List<Widget> items = [];
-
-                    items.add(
-                      SettingsMenuItem(
-                        iconWidget: Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Get.theme.primaryColor.withOpacity(0.1),
-                                Get.theme.primaryColor.withOpacity(0.05),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Icon(
-                            CupertinoIcons.lock,
-                            size: 20.w,
-                            color: Get.theme.primaryColor,
-                          ),
-                        ),
-                        label: StrRes.password,
-                        hasSwitch: true,
-                        switchValue: unlockLogic.passwordEnabled.value,
-                        onSwitchChanged: (value) {
-                          unlockLogic.togglePwdLock();
-                        },
-                        showDivider: unlockLogic.passwordEnabled.value &&
-                            (unlockLogic.isSupportedBiometric.value &&
-                                unlockLogic.canCheckBiometrics.value),
-                      ),
-                    );
-
-                    if (unlockLogic.passwordEnabled.value &&
-                        (unlockLogic.isSupportedBiometric.value &&
-                            unlockLogic.canCheckBiometrics.value)) {
-                      items.add(
-                        SettingsMenuItem(
-                          iconWidget: Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Get.theme.primaryColor.withOpacity(0.1),
-                                  Get.theme.primaryColor.withOpacity(0.05),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            child: Icon(
-                              CupertinoIcons.hand_raised,
-                              size: 20.w,
-                              color: Get.theme.primaryColor,
-                            ),
-                          ),
-                          label: StrRes.biometrics,
-                          hasSwitch: true,
-                          switchValue: unlockLogic.biometricsEnabled.value,
-                          onSwitchChanged: (value) {
-                            unlockLogic.toggleBiometricLock();
-                          },
-                          showDivider: false,
-                        ),
-                      );
-                    }
-
-                    return SettingsMenuSection(items: items);
-                  }),
+                child: Icon(
+                  CupertinoIcons.lock,
+                  size: 20.w,
+                  color: Get.theme.primaryColor,
                 ),
-
-                SizedBox(height: 30.h),
-              ],
+              ),
+              label: StrRes.password,
+              hasSwitch: true,
+              switchValue: unlockLogic.passwordEnabled.value,
+              onSwitchChanged: (value) {
+                unlockLogic.togglePwdLock();
+              },
+              showDivider: unlockLogic.passwordEnabled.value &&
+                  (unlockLogic.isSupportedBiometric.value &&
+                      unlockLogic.canCheckBiometrics.value),
             ),
-          ),
-        ],
+          );
+
+          if (unlockLogic.passwordEnabled.value &&
+              (unlockLogic.isSupportedBiometric.value &&
+                  unlockLogic.canCheckBiometrics.value)) {
+            items.add(
+              SettingsMenuItem(
+                iconWidget: Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Get.theme.primaryColor.withOpacity(0.1),
+                        Get.theme.primaryColor.withOpacity(0.05),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(
+                    CupertinoIcons.hand_raised,
+                    size: 20.w,
+                    color: Get.theme.primaryColor,
+                  ),
+                ),
+                label: StrRes.biometrics,
+                hasSwitch: true,
+                switchValue: unlockLogic.biometricsEnabled.value,
+                onSwitchChanged: (value) {
+                  unlockLogic.toggleBiometricLock();
+                },
+                showDivider: false,
+              ),
+            );
+          }
+
+          return SettingsMenuSection(items: items);
+        }),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
     );
   }
 
@@ -969,127 +720,37 @@ class AccountSetupLogic extends GetxController {
       }
     }
 
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(color: Colors.transparent),
+    CustomBottomSheet.show(
+      title: StrRes.changePassword,
+      icon: CupertinoIcons.lock_rotation,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        child: SettingsMenuSection(
+          items: [
+            _buildPasswordField(
+              label: StrRes.oldPwd,
+              controller: oldPwdCtrl,
+              obscureRx: oldPwdObscure,
+              icon: CupertinoIcons.lock,
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                ),
-              ],
+            _buildPasswordField(
+              label: StrRes.newPwd,
+              controller: newPwdCtrl,
+              obscureRx: newPwdObscure,
+              icon: CupertinoIcons.lock_rotation,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Get.theme.primaryColor.withOpacity(0.1),
-                              Get.theme.primaryColor.withOpacity(0.05),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.lock,
-                          size: 24.w,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Text(
-                        StrRes.changePassword,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Password Fields
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: SettingsMenuSection(
-                    items: [
-                      _buildPasswordField(
-                        label: StrRes.oldPwd,
-                        controller: oldPwdCtrl,
-                        obscureRx: oldPwdObscure,
-                        icon: CupertinoIcons.lock,
-                      ),
-                      _buildPasswordField(
-                        label: StrRes.newPwd,
-                        controller: newPwdCtrl,
-                        obscureRx: newPwdObscure,
-                        icon: CupertinoIcons.lock_rotation,
-                      ),
-                      _buildPasswordField(
-                        label: StrRes.confirmNewPwd,
-                        controller: againPwdCtrl,
-                        obscureRx: againPwdObscure,
-                        icon: CupertinoIcons.checkmark_shield,
-                        showDivider: false,
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // Confirm Button
-                CustomButton(
-                  onTap: confirm,
-                  title: StrRes.confirm,
-                  color: Get.theme.primaryColor,
-                ),
-
-                SizedBox(height: 30.h),
-              ],
+            _buildPasswordField(
+              label: StrRes.confirmNewPwd,
+              controller: againPwdCtrl,
+              obscureRx: againPwdObscure,
+              icon: CupertinoIcons.checkmark_shield,
+              showDivider: false,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      onConfirm: confirm,
+      confirmText: StrRes.confirm,
       isDismissible: true,
     ).then((_) {
       // Add delay to ensure bottom sheet is fully closed before disposing

@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
-import '../../widgets/custom_buttom.dart';
 import '../../widgets/gradient_scaffold.dart';
 import '../../widgets/settings_menu.dart';
 import '../../widgets/section_title.dart';
@@ -20,39 +19,45 @@ class MinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-
     return GradientScaffold(
       title: StrRes.mine,
-      scrollable: false, // Changed to false - we'll handle scrolling manually
-      avatar: Obx(() => AvatarView(
-            url: logic.imLogic.userInfo.value.faceURL,
-            text: logic.imLogic.userInfo.value.nickname,
+      // Avatar overlapping header and body
+      avatar: Obx(() {
+        final user = logic.imLogic.userInfo.value;
+        return GestureDetector(
+          onTap: logic.viewMyInfo,
+          child: AvatarView(
+            url: user.faceURL,
+            text: user.nickname,
             width: 100.w,
             height: 100.w,
-            textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
+            textStyle: TextStyle(fontSize: 28.sp, color: Colors.white),
             isCircle: true,
-            onTap: logic.viewMyInfo,
-          )),
+          ),
+        );
+      }),
       body: Column(
         children: [
-          // === FIXED SECTION ===
-          // User Info
+          // Name and ID Section (below avatar)
           Obx(() {
             final user = logic.imLogic.userInfo.value;
             return Column(
               children: [
+                // Name
                 Text(
                   user.nickname ?? '',
                   style: TextStyle(
                     fontFamily: 'FilsonPro',
-                    fontSize: 22.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                 ),
                 8.verticalSpace,
+                // ID with copy button
                 GestureDetector(
                   onTap: logic.copyID,
+                  behavior: HitTestBehavior.opaque,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -69,7 +74,7 @@ class MinePage extends StatelessWidget {
                       Icon(
                         CupertinoIcons.doc_on_doc,
                         size: 14.sp,
-                        color: primaryColor,
+                        color: const Color(0xFF9CA3AF),
                       ),
                     ],
                   ),
@@ -78,37 +83,39 @@ class MinePage extends StatelessWidget {
             );
           }),
 
-          24.verticalSpace,
+          20.verticalSpace,
 
-          // Action Buttons Row (FIXED)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CustomButton(
-                  icon: CupertinoIcons.qrcode,
-                  label: StrRes.qrcode,
-                  onTap: logic.viewMyQrcode,
-                  color: primaryColor,
-                ),
-                CustomButton(
-                  icon: CupertinoIcons.person,
-                  label: StrRes.information,
-                  onTap: logic.viewMyInfo,
-                  color: primaryColor,
-                ),
-                CustomButton(
-                  icon: CupertinoIcons.settings,
-                  label: StrRes.settings,
-                  onTap: logic.accountSetup,
-                  color: primaryColor,
-                ),
-              ],
-            ),
+          // Action Buttons Row (QR Code, Information, Settings)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildActionButton(
+                context,
+                icon: CupertinoIcons.qrcode,
+                label: StrRes.qrcode,
+                onTap: logic.viewMyQrcode,
+                primaryColor: primaryColor,
+              ),
+              32.horizontalSpace,
+              _buildActionButton(
+                context,
+                icon: CupertinoIcons.person,
+                label: StrRes.information,
+                onTap: logic.viewMyInfo,
+                primaryColor: primaryColor,
+              ),
+              32.horizontalSpace,
+              _buildActionButton(
+                context,
+                icon: CupertinoIcons.settings,
+                label: StrRes.settings,
+                onTap: logic.accountSetup,
+                primaryColor: primaryColor,
+              ),
+            ],
           ),
 
-          24.verticalSpace,
+          20.verticalSpace,
           const Divider(height: 1, color: Color(0xFFF3F4F6)),
 
           // === SCROLLABLE SECTION ===
@@ -167,12 +174,6 @@ class MinePage extends StatelessWidget {
                         onTap: logic.startChatAnalytics,
                       ),
                       SettingsMenuItem(
-                        icon: CupertinoIcons.delete,
-                        label: StrRes.clearCache,
-                        onTap: logic.clearCache,
-                        isWarning: true,
-                      ),
-                      SettingsMenuItem(
                         icon: Icons.logout,
                         label: StrRes.logout,
                         onTap: logic.logout,
@@ -184,6 +185,46 @@ class MinePage extends StatelessWidget {
                   40.verticalSpace,
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build circular action button with icon and label
+  Widget _buildActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required Color primaryColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 56.w,
+            height: 56.w,
+            decoration: BoxDecoration(
+              color: primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 24.sp,
+              color: primaryColor,
+            ),
+          ),
+          8.verticalSpace,
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'FilsonPro',
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF374151),
             ),
           ),
         ],

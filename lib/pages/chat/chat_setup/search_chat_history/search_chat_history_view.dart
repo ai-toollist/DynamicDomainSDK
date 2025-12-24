@@ -468,7 +468,6 @@ class SearchChatHistoryPage extends StatelessWidget {
   }
 
   Future<void> datePicker(BuildContext ctx) async {
-    logic.clearDateTime();
     await showModalBottomSheet<DateTime>(
       context: ctx,
       isScrollControlled: true,
@@ -476,7 +475,9 @@ class SearchChatHistoryPage extends StatelessWidget {
       builder: (BuildContext context) {
         return ClaymorphismDatePicker(
           title: StrRes.selectSearchDate,
-          initialDate: DateTime.now(),
+          initialDate: logic.dateTime.value.year > 1
+              ? logic.dateTime.value
+              : DateTime.now(),
           minDate: DateTime(2000),
           maxDate: DateTime.now(),
           icon: CupertinoIcons.calendar,

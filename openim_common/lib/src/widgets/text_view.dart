@@ -89,10 +89,10 @@ class MatchTextView extends StatelessWidget {
       if (e.type == PatternType.at) {
         mappingMap[regexAt] = e;
         mappingMap[regexAtAll] = MatchPattern(type: PatternType.atAll);
-       } else if (e.type == PatternType.atAll) {
+      } else if (e.type == PatternType.atAll) {
         // Handle atAll pattern explicitly
         mappingMap[regexAtAll] = e;
-        } else if (e.type == PatternType.email) {
+      } else if (e.type == PatternType.email) {
         mappingMap[regexEmail] = e;
       } else if (e.type == PatternType.mobile) {
         mappingMap[regexMobile] = e;
@@ -185,8 +185,17 @@ class MatchTextView extends StatelessWidget {
             inlineSpan = ImageSpan();
           } */
           else {
+            // For URLs, prevent line breaking at slashes by using zero-width no-break space
+            final displayText = mapping.type == PatternType.url
+                ? matchText.replaceAllMapped(
+                    RegExp(r'[/.]'),
+                    (match) =>
+                        '${match[0]}\u200B', // Add zero-width space after / and .
+                  )
+                : matchText;
+
             inlineSpan = TextSpan(
-              text: matchText,
+              text: displayText,
               style: mapping.style ?? matchTextStyle ?? textStyle,
               recognizer: mapping.onTap == null
                   ? null

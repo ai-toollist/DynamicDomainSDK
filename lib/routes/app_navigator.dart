@@ -23,7 +23,7 @@ class AppNavigator {
   }
 
   static void startInviteCode() {
-    Get.offAndToNamed(AppRoutes.inviteCode);
+    Get.offNamed(AppRoutes.inviteCode);
   }
 
   static void startAuth({int initialTab = 0}) {
@@ -239,7 +239,8 @@ class AppNavigator {
 
   static startChangePassword() => Get.toNamed(AppRoutes.changePassword);
 
-  static startResetPassword({bool fromLogin = true}) => Get.toNamed(AppRoutes.resetPassword, arguments: {'fromLogin': fromLogin});
+  static startResetPassword({bool fromLogin = true}) =>
+      Get.toNamed(AppRoutes.resetPassword, arguments: {'fromLogin': fromLogin});
 
   static startAboutUs() => Get.toNamed(AppRoutes.aboutUs);
 
@@ -448,9 +449,11 @@ class AppNavigator {
   static startCreateGroup({
     List<UserInfo> defaultCheckedList = const [],
   }) async {
+    final excludeIDs = defaultCheckedList.map((e) => e.userID!).toList();
     final result = await startSelectContacts(
       action: SelAction.crateGroup,
-      defaultCheckedIDList: defaultCheckedList.map((e) => e.userID!).toList(),
+      defaultCheckedIDList: excludeIDs,
+      excludeIDList: excludeIDs, // Hide already-selected users from the list
     );
     final list = IMUtils.convertSelectContactsResultToUserInfo(result);
     if (list is List<UserInfo>) {

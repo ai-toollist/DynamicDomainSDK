@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:openim/core/controller/client_config_controller.dart';
 import 'package:openim/pages/chat/chat_setup/search_chat_history/multimedia/multimedia_logic.dart';
+import 'package:openim/widgets/custom_bottom_sheet.dart';
 import 'package:openim/widgets/font_size_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -37,9 +38,10 @@ class ChatSetupLogic extends GetxController {
   late Rx<ConversationInfo> conversationInfo;
   late StreamSubscription ccSub;
   late StreamSubscription fcSub;
+  late StreamSubscription _blacklistAddedSub;
+  late StreamSubscription _blacklistDeletedSub;
 
-  // Flag to prevent spam clicking on create group button
-  bool _isCreatingGroup = false;
+  final isBlacklist = false.obs;
 
   String get conversationID => conversationInfo.value.conversationID;
 
@@ -53,6 +55,8 @@ class ChatSetupLogic extends GetxController {
   void onClose() {
     ccSub.cancel();
     fcSub.cancel();
+    _blacklistAddedSub.cancel();
+    _blacklistDeletedSub.cancel();
     super.onClose();
   }
 
@@ -73,6 +77,15 @@ class ChatSetupLogic extends GetxController {
       return;
     }
 
+    if (conversationInfo.value.isSingleChat &&
+        conversationInfo.value.userID != null) {
+      final list = await OpenIM.iMManager.friendshipManager.getBlacklist();
+      final isBlack = list.firstWhereOrNull(
+              (e) => e.userID == conversationInfo.value.userID) !=
+          null;
+      isBlacklist.value = isBlack;
+    }
+
     ccSub = imLogic.conversationChangedSubject.listen((newList) {
       for (var newValue in newList) {
         if (newValue.conversationID == conversationID) {
@@ -89,6 +102,7 @@ class ChatSetupLogic extends GetxController {
         }
       }
     });
+
     // 好友信息变化
     fcSub = imLogic.friendInfoChangedSubject.listen((value) {
       if (conversationInfo.value.userID == value.userID) {
@@ -98,6 +112,18 @@ class ChatSetupLogic extends GetxController {
         });
       }
     });
+
+    _blacklistAddedSub = imLogic.blacklistAddedSubject.listen((user) {
+      if (user.userID == conversationInfo.value.userID) {
+        isBlacklist.value = true;
+      }
+    });
+    _blacklistDeletedSub = imLogic.blacklistDeletedSubject.listen((user) {
+      if (user.userID == conversationInfo.value.userID) {
+        isBlacklist.value = false;
+      }
+    });
+
     super.onInit();
   }
 
@@ -118,6 +144,38 @@ class ChatSetupLogic extends GetxController {
               conversationID: conversationID,
               status: !isNotDisturb ? 2 : 0,
             ));
+  }
+
+  void toggleBlacklist() async {
+    if (isBlacklist.value) {
+      await _removeBlacklist();
+    } else {
+      await _addBlacklist();
+    }
+  }
+
+  Future<void> _addBlacklist() async {
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(title: StrRes.areYouSureAddBlacklist));
+    if (confirm == true) {
+      await OpenIM.iMManager.friendshipManager.addBlacklist(
+        userID: conversationInfo.value.userID!,
+      );
+      IMViews.showToast(StrRes.addedBlacklistSuccessfully, type: 1);
+    }
+  }
+
+  Future<void> _removeBlacklist() async {
+    var confirm = await Get.dialog(
+        barrierColor: Colors.transparent,
+        CustomDialog(title: StrRes.areYouSureRemoveBlacklist));
+    if (confirm == true) {
+      await OpenIM.iMManager.friendshipManager.removeBlacklist(
+        userID: conversationInfo.value.userID!,
+      );
+      IMViews.showToast(StrRes.removedBlacklistSuccessfully, type: 1);
+    }
   }
 
   void setConversationBurnDuration(int duration) {
@@ -156,10 +214,6 @@ class ChatSetupLogic extends GetxController {
   }
 
   Future<void> createGroup() async {
-    // Prevent spam clicking - if already showing dialog, return early
-    if (_isCreatingGroup) return;
-    _isCreatingGroup = true;
-
     try {
       final result = await GatewayApi.getRealNameAuthInfo();
       final status = result['status'] ?? 0;
@@ -168,7 +222,6 @@ class ChatSetupLogic extends GetxController {
           title: StrRes.realNameAuthRequiredForGroup,
           rightText: StrRes.goToRealNameAuth,
         ));
-        _isCreatingGroup = false; // Reset flag after dialog closes
         if (confirm == true) AppNavigator.startRealNameAuth();
         return;
       }
@@ -177,12 +230,9 @@ class ChatSetupLogic extends GetxController {
         title: StrRes.realNameAuthRequiredForGroup,
         rightText: StrRes.goToRealNameAuth,
       ));
-      _isCreatingGroup = false; // Reset flag after dialog closes
       if (confirm == true) AppNavigator.startRealNameAuth();
       return;
     }
-
-    _isCreatingGroup = false; // Reset flag before navigating
 
     AppNavigator.startCreateGroup(defaultCheckedList: [
       UserInfo(
@@ -208,126 +258,47 @@ class ChatSetupLogic extends GetxController {
   void setBackgroundImage() => _showBackgroundImageBottomSheet();
 
   void _showBackgroundImageBottomSheet() {
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(
-                color: Colors.transparent,
-              ),
+    CustomBottomSheet.show(
+      title: StrRes.setChatBackground,
+      icon: CupertinoIcons.photo_fill,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildOptionItem(
+              icon: CupertinoIcons.photo,
+              title: StrRes.selectAssetsFromAlbum,
+              color: const Color(0xFF34D399),
+              onTap: () {
+                Get.back();
+                _onTapAlbum();
+              },
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
+            16.verticalSpace,
+            _buildOptionItem(
+              icon: CupertinoIcons.camera,
+              title: StrRes.selectAssetsFromCamera,
+              color: const Color(0xFF4F42FF),
+              onTap: () {
+                Get.back();
+                _onTapCamera();
+              },
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10.w),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF3F4F6),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.photo_fill,
-                          size: 24.w,
-                          color: const Color(0xFF374151),
-                        ),
-                      ),
-                      16.horizontalSpace,
-                      Text(
-                        StrRes.setChatBackground,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF111827),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Options
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Column(
-                    children: [
-                      _buildOptionItem(
-                        icon: CupertinoIcons.photo,
-                        title: StrRes.selectAssetsFromAlbum,
-                        color: const Color(0xFF34D399),
-                        onTap: () {
-                          Get.back();
-                          _onTapAlbum();
-                        },
-                      ),
-                      16.verticalSpace,
-                      _buildOptionItem(
-                        icon: CupertinoIcons.camera,
-                        title: StrRes.selectAssetsFromCamera,
-                        color: const Color(0xFF4F42FF),
-                        onTap: () {
-                          Get.back();
-                          _onTapCamera();
-                        },
-                      ),
-                      16.verticalSpace,
-                      _buildOptionItem(
-                        icon: CupertinoIcons.refresh,
-                        title: StrRes.setDefaultBackground,
-                        color: const Color(0xFFFBBF24),
-                        onTap: () {
-                          Get.back();
-                          _recoverBackground();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 40.h),
-              ],
+            16.verticalSpace,
+            _buildOptionItem(
+              icon: CupertinoIcons.refresh,
+              title: StrRes.setDefaultBackground,
+              color: const Color(0xFFFBBF24),
+              onTap: () {
+                Get.back();
+                _recoverBackground();
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      isDismissible: true,
     );
   }
 

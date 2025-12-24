@@ -191,15 +191,10 @@ class AuthController extends SuperController {
             );
           } else {
             print('---- login error: $errCode, $errMsg');
-            String msg = StrRes.loginFailed;
-            switch (errCode) {
-              case 51:
-                msg = StrRes.notFoundAccount;
-              case 53:
-                msg = StrRes.loginIncorrectPwd;
-              default:
-                msg = StrRes.loginFailed;
-            }
+            // Use SDK message if available, fallback to generic message
+            final msg = (errMsg != null && errMsg.isNotEmpty)
+                ? errMsg
+                : StrRes.loginFailed;
             IMViews.showToast(msg);
           }
         } else if (isNetworkError(e)) {
@@ -211,6 +206,11 @@ class AuthController extends SuperController {
               onSuccess: onSuccess,
             ),
           );
+        } else {
+          // Handle any other unexpected errors
+          LoadingView.singleton.dismiss();
+          print('---- login unexpected error: $e');
+          IMViews.showToast(StrRes.loginFailed);
         }
       }
     });

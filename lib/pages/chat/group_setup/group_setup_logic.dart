@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
 import 'package:openim/core/controller/client_config_controller.dart';
+import 'package:openim/widgets/custom_bottom_sheet.dart';
 import 'package:openim/widgets/font_size_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:synchronized/synchronized.dart';
@@ -422,251 +423,101 @@ class GroupSetupLogic extends GetxController {
   void _showEditGroupNameBottomSheet() {
     final nameController = TextEditingController();
     nameController.text = groupInfo.value.groupName ?? '';
-    final canSubmit = false.obs; // Reactive variable for button state
+    final canSubmit = false.obs;
 
-    // Listen to text changes
     nameController.addListener(() {
       final newName = nameController.text.trim();
       canSubmit.value =
           newName.isNotEmpty && newName != groupInfo.value.groupName;
     });
 
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(
-                color: Colors.transparent,
+    CustomBottomSheet.show(
+      title: StrRes.groupName,
+      icon: CupertinoIcons.pencil,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
+            ),
+          ],
+          border: Border.all(color: const Color(0xFFF3F4F6), width: 1),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                StrRes.enterNewGroupName,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF6B7280),
+                ),
               ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
+              12.verticalSpace,
+              TextField(
+                controller: nameController,
+                autofocus: true,
+                maxLength: 30,
+                decoration: InputDecoration(
+                  hintText: StrRes.enterGroupName,
+                  hintStyle: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF4F42FF), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide:
+                        const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF9FAFB),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  counterText: '',
+                ),
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF374151),
+                ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.pencil,
-                        size: 24.w,
-                        color: const Color(0xFF374151),
-                      ),
-                      12.horizontalSpace,
-                      Text(
-                        StrRes.groupName,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF374151),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Input Container
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                        offset: const Offset(0, 2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                    border: Border.all(
-                      color: const Color(0xFFF3F4F6),
-                      width: 1,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          StrRes.enterNewGroupName,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF6B7280),
-                          ),
-                        ),
-                        12.verticalSpace,
-                        TextField(
-                          controller: nameController,
-                          autofocus: true,
-                          maxLength: 30,
-                          decoration: InputDecoration(
-                            hintText: StrRes.enterGroupName,
-                            hintStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF4F42FF),
-                                width: 2,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xFFF9FAFB),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 12.h,
-                            ),
-                            counterText: '',
-                          ),
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF374151),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // Action Buttons
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => Get.back(),
-                            borderRadius: BorderRadius.circular(12.r),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 12.h),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: Text(
-                                StrRes.cancel,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Expanded(
-                        child: Obx(
-                          () => Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: canSubmit.value
-                                  ? () {
-                                      final newName =
-                                          nameController.text.trim();
-                                      Get.back();
-                                      _updateGroupName(newName);
-                                    }
-                                  : null,
-                              borderRadius: BorderRadius.circular(12.r),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                decoration: BoxDecoration(
-                                  color: canSubmit.value
-                                      ? const Color(0xFF3B82F6)
-                                      : const Color(0xFF9CA3AF),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: Text(
-                                  StrRes.confirm,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 30.h),
-              ],
-            ),
+            ],
           ),
-        ],
+        ),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      onConfirm: () {
+        if (canSubmit.value) {
+          final newName = nameController.text.trim();
+          Get.back();
+          _updateGroupName(newName);
+        }
+      },
+      confirmText: StrRes.confirm,
+      showCancelButton: true,
+      isDismissible: true,
     );
   }
 
@@ -706,217 +557,40 @@ class GroupSetupLogic extends GetxController {
   void _showEditGroupNicknameBottomSheet() {
     final nameController = TextEditingController();
     nameController.text = myGroupMembersInfo.value.nickname ?? '';
-    final canSubmit = false.obs; // Reactive variable for button state
+    final canSubmit = false.obs;
 
-    // Listen to text changes
     nameController.addListener(() {
       final newName = nameController.text.trim();
       canSubmit.value =
           newName.isNotEmpty && newName != myGroupMembersInfo.value.nickname;
     });
 
-    Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                Container(
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Get.theme.primaryColor.withOpacity(0.1),
-                              Get.theme.primaryColor.withOpacity(0.05),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.person_crop_circle,
-                          size: 24.w,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Text(
-                        StrRes.groupNickname,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Get.theme.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Input Container
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: AppTextFormField(
-                    focusNode: FocusNode()..requestFocus(),
-                    controller: nameController,
-                    label: StrRes.enterYourNicknameInGroup,
-                    hint: StrRes.enterYourGroupNickname,
-                    keyboardType: TextInputType.text,
-                    maxLength: 20,
-                    onChanged: (value) {
-                      // Listener already set up above
-                    },
-                    validator: (value) => null,
-                  ),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // Action Buttons
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => Get.back(),
-                            borderRadius: BorderRadius.circular(12.r),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 12.h),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: Text(
-                                StrRes.cancel,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'FilsonPro',
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      12.horizontalSpace,
-                      Expanded(
-                        child: Obx(
-                          () => Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: canSubmit.value
-                                  ? () {
-                                      final newName =
-                                          nameController.text.trim();
-                                      Get.back();
-                                      _updateMyGroupNickname(newName);
-                                    }
-                                  : null,
-                              borderRadius: BorderRadius.circular(12.r),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                decoration: BoxDecoration(
-                                  gradient: canSubmit.value
-                                      ? LinearGradient(
-                                          colors: [
-                                            Get.theme.primaryColor,
-                                            Get.theme.primaryColor
-                                                .withOpacity(0.8),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        )
-                                      : null,
-                                  color: canSubmit.value
-                                      ? null
-                                      : const Color(0xFF9CA3AF),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  boxShadow: canSubmit.value
-                                      ? [
-                                          BoxShadow(
-                                            color: Get.theme.primaryColor
-                                                .withOpacity(0.3),
-                                            offset: const Offset(0, 2),
-                                            blurRadius: 6,
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: Text(
-                                  StrRes.confirm,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 30.h),
-              ],
-            ),
-          ),
-        ],
+    CustomBottomSheet.show(
+      title: StrRes.groupNickname,
+      icon: CupertinoIcons.person_crop_circle,
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        child: AppTextFormField(
+          focusNode: FocusNode()..requestFocus(),
+          controller: nameController,
+          label: StrRes.enterYourNicknameInGroup,
+          hint: StrRes.enterYourGroupNickname,
+          keyboardType: TextInputType.text,
+          maxLength: 20,
+          onChanged: (value) {},
+          validator: (value) => null,
+        ),
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      onConfirm: () {
+        if (canSubmit.value) {
+          final newName = nameController.text.trim();
+          Get.back();
+          _updateMyGroupNickname(newName);
+        }
+      },
+      confirmText: StrRes.confirm,
+      showCancelButton: true,
+      isDismissible: true,
     );
   }
 

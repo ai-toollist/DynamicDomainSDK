@@ -800,6 +800,9 @@ class StrRes {
   static String get reset => 'reset'.tr;
 
   static String get oldPwd => 'oldPwd'.tr;
+  static String get newNotification => 'newNotification'.tr;
+  static String get friendConnection => 'friendConnection'.tr;
+  static String get groupConnection => 'groupConnection'.tr;
 
   static String get newPwd => 'newPwd'.tr;
 
@@ -1354,6 +1357,7 @@ class StrRes {
   static String get welcomeToJianXin => 'welcomeToJianXin'.tr;
   static String get registerSubtitle => 'registerSubtitle'.tr;
   static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr;
+  static String get dontHaveAccount => 'dontHaveAccount'.tr;
   static String get loginLink => 'loginLink'.tr;
 
   // Additional hardcoded text translations
@@ -1676,4 +1680,17 @@ class StrRes {
   // QR Scan error messages
   static String get invalidQRCode => 'invalidQRCode'.tr;
   static String get invalidQRImage => 'invalidQRImage'.tr;
+
+  // Permission explanation strings
+  static String get permStoragePhotoTitle => 'permStoragePhotoTitle'.tr;
+  static String get permStoragePhotoMessage => 'permStoragePhotoMessage'.tr;
+  static String get permCameraTitle => 'permCameraTitle'.tr;
+  static String get permCameraMessage => 'permCameraMessage'.tr;
+  static String get permMicrophoneTitle => 'permMicrophoneTitle'.tr;
+  static String get permMicrophoneMessage => 'permMicrophoneMessage'.tr;
+  static String get permDefaultTitle => 'permDefaultTitle'.tr;
+  static String get permDefaultMessage => 'permDefaultMessage'.tr;
+
+  // Friend status messages
+  static String get notFriendHint => 'notFriendHint'.tr;
 }

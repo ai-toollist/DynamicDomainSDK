@@ -324,7 +324,7 @@ const Map<String, String> en_US = {
   "addFriend": "Add Friend",
   "addFriendHint": "Add by ID/phone number",
   "createGroup": "Create Group",
-  "createGroupHint": "Create a group, fully utilize CNL",
+  "createGroupHint": "Create a group, fully utilize NCK",
   "addGroup": "Add Group",
   "addGroupHint": "Ask the admin or members for the ID",
   "searchIDAddFriend": "Search ID to Add Friend",
@@ -782,7 +782,7 @@ const Map<String, String> en_US = {
   "onlineLast7Days": "7 Days Online",
 
   // Login and registration screen translations
-  "loginTitle": "Welcome to CNL",
+  "loginTitle": "Welcome to NCK",
   "loginSubtitle": "Log in to stay connected",
   "noAccountYetQuestion": "Don't have an account?",
   "goToRegister": " Go register",
@@ -799,6 +799,9 @@ const Map<String, String> en_US = {
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "pleaseEnterValidPhoneNumber": "Please enter a valid phone number",
   "pleaseEnterValidName": "Please enter a valid nickname",
+  "newNotification": "Notifications",
+  "friendConnection": "Friend Requests",
+  "groupConnection": "Group Requests",
   "nicknameIsLimited": "Nickname is limited to twenty characters.",
   "pleaseEnterValidPassword": "Please enter a valid password",
   "pleaseEnterVerificationCode": "Please enter verification code",
@@ -812,6 +815,7 @@ const Map<String, String> en_US = {
   "registerSubtitle":
       "Register now to start exploring all the features our app offers.",
   "alreadyHaveAccount": "Already have an account?",
+  "dontHaveAccount": "Don't have an account?",
   "loginLink": " Login",
 
   // Additional hardcoded text translations
@@ -914,7 +918,7 @@ const Map<String, String> en_US = {
 
   // New translations for untranslated strings
   "appDescription":
-      "CNL is a lightweight and efficient instant messaging app, designed for both enterprises and individuals, offering a secure, seamless, and reliable communication experience.",
+      "NCK is a lightweight and efficient instant messaging app, designed for both enterprises and individuals, offering a secure, seamless, and reliable communication experience.",
   "restrictedUseReason": "Restricted use due to: %s",
   "enterAppealDetails": "Please enter detailed appeal content",
   "phoneLabel": "Phone",
@@ -1107,5 +1111,23 @@ const Map<String, String> en_US = {
 
   // QR Scan error messages
   "invalidQRCode": "Invalid QR code. Please try again.",
-  "invalidQRImage": "Invalid QR code. Please try another image."
+  "invalidQRImage": "Invalid QR code. Please try another image.",
+
+  // Permission explanation strings
+  "permStoragePhotoTitle": "Storage/Photo Access Request",
+  "permStoragePhotoMessage":
+      "We need access to upload images/videos, change your avatar, share files, save attachments, and provide feedback.",
+  "permCameraTitle": "Camera Access Request",
+  "permCameraMessage":
+      "We need camera access for taking photos/videos, changing avatar, QR code scanning, video calls, and providing feedback.",
+  "permMicrophoneTitle": "Microphone Access Request",
+  "permMicrophoneMessage":
+      "We need microphone access for voice calls, recording voice messages, and participating in voice meetings.",
+  "permDefaultTitle": "Permission Request",
+  "permDefaultMessage":
+      "We need relevant permissions to provide better services.",
+
+  // Friend status messages
+  "notFriendHint":
+      "You are no longer friends. Please add them as a friend first to send messages."
 };

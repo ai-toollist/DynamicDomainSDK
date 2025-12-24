@@ -18,7 +18,6 @@ class EditGroupAnnouncementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
 
     return Obx(() => GradientScaffold(
           title: StrRes.groupAc,
@@ -27,7 +26,7 @@ class EditGroupAnnouncementPage extends StatelessWidget {
           trailing: logic.hasEditPermissions.value
               ? CustomButton(
                   title: logic.onlyRead.value ? StrRes.edit : StrRes.publish,
-                  color: primaryColor,
+                  color: Colors.white,
                   onTap: () {
                     if (logic.onlyRead.value) {
                       logic.editing();

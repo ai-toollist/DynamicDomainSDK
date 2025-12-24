@@ -777,6 +777,7 @@ const Map<String, String> zh_CN = {
   "welcomeToJianXin": "欢迎使用CNL",
   "registerSubtitle": "立即注册，开始探索我们应用提供的一切功能。",
   "alreadyHaveAccount": "已有账号？",
+  "dontHaveAccount": "还没有账号？",
   "loginLink": " 登录",
 
   // Additional hardcoded text translations
@@ -798,6 +799,9 @@ const Map<String, String> zh_CN = {
   "unauthenticated": "未认证",
   "basicAuthentication": "普通认证",
   "advancedAuthentication": "高级认证",
+  "newNotification": "通知",
+  "friendConnection": "好友申请",
+  "groupConnection": "群组申请",
   "todayLabel": "今天",
   "yesterdayLabel": "昨天",
   "weekdayPrefix": "星期",
@@ -1061,5 +1065,20 @@ const Map<String, String> zh_CN = {
 
   // QR Scan error messages
   "invalidQRCode": "二维码无效，请重新尝试。",
-  "invalidQRImage": "二维码无效，请选择其他图片。"
+  "invalidQRImage": "二维码无效，请选择其他图片。",
+
+  // Permission explanation strings
+  "permStoragePhotoTitle": "对存储空间/照片权限申请说明",
+  "permStoragePhotoMessage":
+      "便于您在该功能中上传图片/视频及用于更换头像、分享文件、保存附件、意见反馈等操作时读取和写入相册和文件内容。",
+  "permCameraTitle": "对相机/摄像头权限申请说明",
+  "permCameraMessage":
+      "便于您使用该功能中拍照上传您的照片/视频及用于更换头像、意见反馈、保存相册、扫描二维码、进行视频通话等场景中使用。",
+  "permMicrophoneTitle": "对麦克风权限申请说明",
+  "permMicrophoneMessage": "便于您进行语音通话、录制语音消息、参与语音会议等操作，我们需要获取麦克风权限。",
+  "permDefaultTitle": "权限申请说明",
+  "permDefaultMessage": "需要获取相关权限以便提供更好的服务。",
+
+  // Friend status messages
+  "notFriendHint": "您已不是好友。请先添加对方为好友后再发送消息。"
 };

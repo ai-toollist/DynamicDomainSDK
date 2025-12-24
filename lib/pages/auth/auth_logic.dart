@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,9 +9,13 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:openim/core/controller/auth_controller.dart';
 import 'package:openim/core/controller/gateway_config_controller.dart';
+import 'package:openim/tracking_service.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
+
+/// Authentication phase: invite code first, then login/register
+enum AuthPhase { inviteCode, auth }
 
 enum AuthFormMode { login, register }
 
@@ -67,6 +73,31 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
 
   final rememberPassword = true.obs;
 
+  // ================== INVITE CODE SECTION ==================
+  // Invite Code Form
+  final inviteCodeFormKey = GlobalKey<FormState>();
+  final inviteCodeController = TextEditingController();
+  final inviteCodeFocusNode = FocusNode();
+
+  // Current auth phase
+  final currentPhase = AuthPhase.inviteCode.obs;
+
+  // Invite code button state
+  final isInviteCodeButtonEnabled = false.obs;
+
+  // Cache for validated invite codes
+  final Set<String> _validInviteCodesCache = {};
+
+  // Rate limiting
+  final List<DateTime> _requestTimestamps = [];
+  DateTime? _blockedUntil;
+  static const int _maxRequests = 5;
+  static const Duration _timeWindow = Duration(seconds: 30);
+  static const Duration _blockDuration = Duration(minutes: 2);
+
+  bool get enableInviteCodeRequired =>
+      gatewayConfigController.enableInviteCodeRequired;
+
   @override
   void onInit() {
     super.onInit();
@@ -74,6 +105,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
     merchantController.currentIMServerInfo.value.merchantID = 100000;
     _initLoginData();
     _initFormValidation();
+    _initInviteCodeValidation();
 
     // Check for initial tab from arguments
     if (Get.arguments != null && Get.arguments['tab'] != null) {
@@ -90,10 +122,15 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
   @override
   void onReady() {
     super.onReady();
-    loginPhoneFocusNode.requestFocus();
+    // Focus on invite code field first since we start in invite code phase
+    inviteCodeFocusNode.requestFocus();
     initPackageInfo();
     // Start gradient animation
     _startGradientAnimation();
+    // Request tracking authorization on iOS
+    if (Platform.isIOS) {
+      TrackingService.requestTrackingAuthorization();
+    }
   }
 
   void _startGradientAnimation() {
@@ -104,6 +141,10 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
 
   @override
   void onClose() {
+    // Dispose invite code resources
+    inviteCodeController.dispose();
+    inviteCodeFocusNode.dispose();
+
     // Dispose controllers
     loginPhoneController.dispose();
     loginPasswordController.dispose();
@@ -166,19 +207,142 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
   }
 
   void _validateRegisterForm() {
-    final phoneValid = registerPhoneController.text.trim().isNotEmpty;
-    final nameValid = registerNameController.text.trim().isNotEmpty;
-    final passwordValid = registerPasswordController.text.trim().isNotEmpty;
+    final phone = registerPhoneController.text.trim();
+    final name = registerNameController.text.trim();
+    final password = registerPasswordController.text;
+    final passwordConfirm = registerPasswordConfirmationController.text;
+    final verificationCode = registerVerificationCodeController.text.trim();
+
+    // Clean phone number for validation
+    String cleanPhone = phone.replaceAll(RegExp(r'[\s\-]'), '');
+    if (cleanPhone.startsWith('+86')) {
+      cleanPhone = cleanPhone.substring(3);
+    } else if (cleanPhone.startsWith('86')) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+
+    // Validation rules
+    final phoneValid = phone.isNotEmpty && IMUtils.isChinaMobile(cleanPhone);
+    final nameValid = name.length >= 2;
+    final passwordValid = password.length >= 8 &&
+        password.length <= 20 &&
+        RegExp(r'[a-zA-Z]').hasMatch(password) &&
+        RegExp(r'[0-9]').hasMatch(password);
     final passwordConfirmValid =
-        registerPasswordConfirmationController.text.trim().isNotEmpty;
-    final verificationCodeValid =
-        registerVerificationCodeController.text.trim().isNotEmpty;
+        passwordConfirm == password && passwordConfirm.isNotEmpty;
+    final verificationCodeValid = verificationCode.length >= 4 &&
+        RegExp(r'^[0-9]+$').hasMatch(verificationCode);
 
     isRegisterFormValid.value = phoneValid &&
         nameValid &&
         passwordValid &&
         passwordConfirmValid &&
         verificationCodeValid;
+  }
+
+  // ================== INVITE CODE METHODS ==================
+  void _initInviteCodeValidation() {
+    // Listen to text changes to validate and enable/disable submit button
+    inviteCodeController.addListener(() {
+      final value = inviteCodeController.text;
+      final isEmpty = value.isEmpty;
+      final isInvalid = !isEmpty && !IMUtils.isValidInviteCode(value);
+
+      // Button is enabled only when:
+      // 1. If invite code is required: not empty AND valid format
+      // 2. If invite code is optional: empty OR valid format
+      if (enableInviteCodeRequired) {
+        isInviteCodeButtonEnabled.value = !isEmpty && !isInvalid;
+      } else {
+        isInviteCodeButtonEnabled.value = isEmpty || !isInvalid;
+      }
+    });
+
+    // Restore saved invite code
+    final savedInviteCode = DataSp.getSavedInviteCode();
+    if (savedInviteCode != null && savedInviteCode.isNotEmpty) {
+      inviteCodeController.text = savedInviteCode;
+    }
+  }
+
+  bool _checkRateLimit() {
+    final now = DateTime.now();
+
+    // Check if currently blocked
+    if (_blockedUntil != null && now.isBefore(_blockedUntil!)) {
+      IMViews.showToast(StrRes.tooMuchRequestValidationCode);
+      return false;
+    }
+
+    // Clear block if expired
+    if (_blockedUntil != null && now.isAfter(_blockedUntil!)) {
+      _blockedUntil = null;
+      _requestTimestamps.clear();
+    }
+
+    // Remove old timestamps outside the time window
+    _requestTimestamps.removeWhere(
+      (timestamp) => now.difference(timestamp) > _timeWindow,
+    );
+
+    // Check if too many requests
+    if (_requestTimestamps.length >= _maxRequests) {
+      _blockedUntil = now.add(_blockDuration);
+      IMViews.showToast(StrRes.tooMuchRequestValidationCode);
+      return false;
+    }
+
+    // Add current request timestamp
+    _requestTimestamps.add(now);
+    return true;
+  }
+
+  void onInviteCodeSubmit() async {
+    if (!inviteCodeFormKey.currentState!.validate()) {
+      return;
+    }
+
+    final inviteCode = inviteCodeController.text;
+    if (!_validInviteCodesCache.contains(inviteCode) && inviteCode.isNotEmpty) {
+      // Check rate limit before making API call
+      if (!_checkRateLimit()) {
+        return;
+      }
+
+      try {
+        final valid = await LoadingView.singleton.wrap(
+          asyncFunction: () => GatewayApi.checkInvitationCode(
+            inviteCode: inviteCode,
+          ),
+        );
+        if (valid == false) {
+          IMViews.showToast(StrRes.enterpriseCodeNotExist);
+          return;
+        }
+        _validInviteCodesCache.add(inviteCode);
+      } catch (_) {
+        return;
+      }
+    }
+
+    // Save invite code and transition to auth phase
+    DataSp.putSavedInviteCode(inviteCode);
+    authController.inviteCode = inviteCode;
+    currentPhase.value = AuthPhase.auth;
+    IMViews.showToast(StrRes.savedInviteCode, type: 1);
+
+    // Focus on login phone field after animation
+    Future.delayed(const Duration(milliseconds: 600), () {
+      loginPhoneFocusNode.requestFocus();
+    });
+  }
+
+  /// Edit invite code - transitions back to invite code phase
+  void editInviteCode() {
+    currentPhase.value = AuthPhase.inviteCode;
+    Future.delayed(const Duration(milliseconds: 100), () {
+      inviteCodeFocusNode.requestFocus();
+    });
   }
 
   void initPackageInfo() async {
@@ -295,7 +459,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       //   },
       // );
       ///Custom dialog has some issues on Android, temporarily use toast
-     await Get.dialog( CustomDialog(
+      await Get.dialog(CustomDialog(
         title: StrRes.yourVerificationCodeIs.trArgs([smsCode]),
         showCancel: false,
         rightText: StrRes.confirm,

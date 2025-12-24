@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:openim_common/src/res/styles/app_colors.dart';
 
 double kInputBoxMinHeight = 56.h;
 
@@ -47,6 +46,7 @@ class ChatInputBox extends StatefulWidget {
     this.onTapCamera,
     this.onTapFile,
     this.onTapCard,
+    this.onSendVoice,
     this.stateKey,
   });
   final AtTextCallback? atCallback;
@@ -73,6 +73,7 @@ class ChatInputBox extends StatefulWidget {
   final Function()? onTapCamera;
   final Function()? onTapFile;
   final Function()? onTapCard;
+  final Function(int sec, String path)? onSendVoice;
   final GlobalKey<_ChatInputBoxState>? stateKey;
 
   final void Function(double) callbackKeyboardHeight;
@@ -88,6 +89,7 @@ class _ChatInputBoxState extends State<ChatInputBox>
   bool _leftKeyboardButton = false;
   bool _rightKeyboardButton = false;
   bool _sendButtonVisible = false;
+  bool _isTextFieldFocused = false;
   bool _actionButtonsExpanded =
       true; // New state for expanded/collapsed buttons
 
@@ -101,9 +103,13 @@ class _ChatInputBoxState extends State<ChatInputBox>
 
   final panelController = ChatBottomPanelContainerController<PanelType>();
   PanelType currentPanelType = PanelType.none;
-  
+
   // GlobalKey for More button to get its position
   final GlobalKey _moreButtonKey = GlobalKey();
+
+  // GlobalKey for voice record bar to call cancel/send
+  final GlobalKey<ChatTapToRecordBarState> _voiceRecordBarKey =
+      GlobalKey<ChatTapToRecordBarState>();
 
   @override
   void initState() {
@@ -141,14 +147,15 @@ class _ChatInputBoxState extends State<ChatInputBox>
           _emojiVisible = false;
           _leftKeyboardButton = false;
           _rightKeyboardButton = false;
+          _isTextFieldFocused = true;
         });
         // Force close any open panels when text field is focused
         // forceCloseAllPanels();
         _expandController.forward();
       } else {
-        // setState(() {
-        //   _isTextFieldFocused = false;
-        // });
+        setState(() {
+          _isTextFieldFocused = false;
+        });
         // _expandController.reverse();
       }
     });
@@ -233,30 +240,46 @@ class _ChatInputBoxState extends State<ChatInputBox>
     );
   }
 
-  // Claymorphism send button
-  Widget _buildSendButton() {
+  // Right action button - shows Mic when empty/unfocused, Send when focused/has text
+  Widget _buildRightActionButton() {
+    // Logic:
+    // - Mic icon: not focused AND no text
+    // - Gray Send: focused but no text
+    // - Blue Send: has text (regardless of focus)
+    final hasText = _sendButtonVisible;
+    final showMic = !_isTextFieldFocused && !hasText;
+
     return GestureDetector(
-      onTap: _sendButtonVisible ? send : null,
+      onTap: showMic ? onTapSpeak : (hasText ? send : null),
       child: Container(
         width: 30.w,
         height: 30.h,
         decoration: BoxDecoration(
-          color: _sendButtonVisible
-              ? const Color(0xFF4F42FF)
-              : const Color(0xFFF9FAFB),
+          color: hasText
+              ? const Color(0xFF4F42FF) // Blue when has text
+              : const Color(0xFFF9FAFB), // Gray background otherwise
           borderRadius: BorderRadius.circular(8.r),
-          border: _sendButtonVisible
+          border: hasText
               ? null
               : Border.all(
                   color: const Color(0xFFF3F4F6),
                   width: 1,
                 ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
+            ),
+          ],
         ),
         alignment: Alignment.center,
         child: Icon(
-          CupertinoIcons.paperplane,
+          showMic ? CupertinoIcons.mic : CupertinoIcons.paperplane,
           size: 20.w,
-          color: _sendButtonVisible ? Colors.white : AppColors.iconColor,
+          color: hasText
+              ? Colors.white // White icon when blue background
+              : const Color(0xFF6B7280), // Gray icon otherwise
         ),
       ),
     );
@@ -287,9 +310,69 @@ class _ChatInputBoxState extends State<ChatInputBox>
           ),
         ),
         child: Icon(
-          CupertinoIcons.ellipsis,
-          size: 25.w,
+          Icons.attach_file,
+          size: 24.w,
           color: const Color(0xFF6B7280),
+        ),
+      ),
+    );
+  }
+
+  // Cancel button for voice mode
+  Widget _buildCancelVoiceButton() {
+    return GestureDetector(
+      onTap: () => _voiceRecordBarKey.currentState?.cancelVoice(),
+      child: Container(
+        width: 30.w,
+        height: 30.h,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF87171).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
+            ),
+          ],
+          border: Border.all(
+            color: const Color(0xFFF3F4F6),
+            width: 1,
+          ),
+        ),
+        child: Icon(
+          CupertinoIcons.xmark,
+          size: 18.w,
+          color: const Color(0xFFF87171),
+        ),
+      ),
+    );
+  }
+
+  // Send button for voice mode
+  Widget _buildSendVoiceButton() {
+    return GestureDetector(
+      onTap: () => _voiceRecordBarKey.currentState?.sendVoice(),
+      child: Container(
+        width: 30.w,
+        height: 30.h,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xFF4F42FF),
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.06),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Icon(
+          CupertinoIcons.paperplane_fill,
+          size: 18.w,
+          color: Colors.white,
         ),
       ),
     );
@@ -421,26 +504,30 @@ class _ChatInputBoxState extends State<ChatInputBox>
                           ),
                           child: Row(
                             children: [
-                              // _buildActionButtons(),
-                              // 8.horizontalSpace,
-                              _buildMoreButton(),
+                              // Cancel button when in voice mode OR More button when not
+                              if (_leftKeyboardButton)
+                                _buildCancelVoiceButton()
+                              else
+                                _buildMoreButton(),
                               8.horizontalSpace,
                               Expanded(
-                                child: Stack(
-                                  children: [
-                                    Offstage(
-                                      offstage: _leftKeyboardButton,
-                                      child: _textFiled,
-                                    ),
-                                    Offstage(
-                                      offstage: !_leftKeyboardButton,
-                                      child: widget.voiceRecordBar,
-                                    ),
-                                  ],
-                                ),
+                                child: _leftKeyboardButton
+                                    ? ChatTapToRecordBar(
+                                        key: _voiceRecordBarKey,
+                                        onCancel: onTapLeftKeyboard,
+                                        onSend: (sec, path) {
+                                          widget.onSendVoice?.call(sec, path);
+                                          onTapLeftKeyboard();
+                                        },
+                                      )
+                                    : _textFiled,
                               ),
                               8.horizontalSpace,
-                              _buildSendButton(),
+                              // Send button when in voice mode OR Right action button when not
+                              if (_leftKeyboardButton)
+                                _buildSendVoiceButton()
+                              else
+                                _buildRightActionButton(),
                             ],
                           ),
                         );
@@ -539,7 +626,7 @@ class _ChatInputBoxState extends State<ChatInputBox>
     if (widget.focusNode.hasFocus) {
       widget.focusNode.unfocus();
     }
-    
+
     // Dismiss keyboard and wait for it to close completely
     FocusScope.of(context).unfocus();
 
@@ -551,7 +638,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
     // Wait for keyboard to close completely before showing popup
     Future.delayed(const Duration(milliseconds: 300), () {
       // Get the position of the More button
-      final renderBox = _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
+      final renderBox =
+          _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null) return;
 
       final Offset offset = renderBox.localToGlobal(Offset.zero);
@@ -565,11 +653,6 @@ class _ChatInputBoxState extends State<ChatInputBox>
 
       final items = [
         {
-          'label': StrRes.voice,
-          'icon': Icons.mic_outlined,
-          'onTap': onTapSpeak,
-        },
-        {
           'label': StrRes.toolboxAlbum,
           'icon': Icons.photo_library_outlined,
           'onTap': () => Permissions.photos(albumCallback),
@@ -577,7 +660,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
         {
           'label': StrRes.toolboxCamera,
           'icon': Icons.camera_alt_outlined,
-          'onTap': () => Permissions.cameraAndMicrophoneAndPhotos(cameraCallback),
+          'onTap': () =>
+              Permissions.cameraAndMicrophoneAndPhotos(cameraCallback),
         },
         {
           'label': StrRes.toolboxCard,
@@ -598,7 +682,7 @@ class _ChatInputBoxState extends State<ChatInputBox>
       ];
 
       if (!mounted) return; // Check if widget is still mounted
-      
+
       showDialog(
         context: context,
         barrierColor: Colors.black.withOpacity(0.3),
@@ -637,7 +721,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
                             return InkWell(
                               onTap: () {
                                 Navigator.pop(context);
-                                Future.delayed(const Duration(milliseconds: 100), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 100), () {
                                   final callback = item['onTap'] as Function?;
                                   callback?.call();
                                 });
@@ -664,8 +749,10 @@ class _ChatInputBoxState extends State<ChatInputBox>
                                       width: 32.w,
                                       height: 32.h,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF4F42FF).withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(8.r),
+                                        color: const Color(0xFF4F42FF)
+                                            .withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
                                       ),
                                       child: Icon(
                                         item['icon'] as IconData,
@@ -754,7 +841,6 @@ class _ChatInputBoxState extends State<ChatInputBox>
           enabled: widget.enabled,
           hintText: widget.hintText,
           textAlign: widget.enabled ? TextAlign.start : TextAlign.center,
-        
         ),
       );
 
@@ -813,7 +899,6 @@ class _ChatInputBoxState extends State<ChatInputBox>
       _leftKeyboardButton = false;
       _toolsVisible = false;
       _emojiVisible = false;
-      focus();
     });
   }
 

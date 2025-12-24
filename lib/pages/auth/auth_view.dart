@@ -202,7 +202,7 @@ class AuthView extends StatelessWidget {
             left: 0,
             top: 10,
             child: GestureDetector(
-              onTap: () => Get.back(),
+              onTap: () => AppNavigator.startInviteCode(),
               child: Container(
                 width: 40.w,
                 height: 40.h,
@@ -614,7 +614,7 @@ class AuthView extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'FilsonPro',
                       fontSize: 11.sp,
-                      color:  Colors.red,
+                      color: Colors.red,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

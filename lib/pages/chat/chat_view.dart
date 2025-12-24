@@ -347,11 +347,11 @@ class ChatPage extends StatelessWidget {
                 CustomButton(
                   onTap: logic.chatSetup,
                   icon: Icons.more_horiz,
-                    color: Colors.white,
-                  ),
+                  color: Colors.white,
+                ),
               ],
             ),
-            
+
             body: WaterMarkBgView(
               text: '',
               path: logic.background.value,
@@ -379,6 +379,7 @@ class ChatPage extends StatelessWidget {
                       onTapCamera: logic.onTapCamera,
                       onTapFile: logic.onTapFile,
                       onTapCard: logic.onTapCarte,
+                      onSendVoice: logic.sendVoice,
                       toolbox: ChatToolBox(
                         onTapAlbum: logic.onTapAlbum,
                         onTapCamera: logic.onTapCamera,
@@ -404,6 +405,7 @@ class ChatPage extends StatelessWidget {
                       multiOpToolbox: ChatMultiSelToolbox(
                         onDelete: logic.mergeDelete,
                         onMergeForward: () => logic.forward(null),
+                        onCancel: logic.closeMultiSelMode,
                       ),
                       callbackKeyboardHeight: (double height) =>
                           logic.keyboardHeight.value = height,

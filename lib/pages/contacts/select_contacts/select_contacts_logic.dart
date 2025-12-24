@@ -1,7 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +8,7 @@ import 'package:openim/core/controller/client_config_controller.dart';
 import 'package:openim/pages/conversation/conversation_logic.dart';
 import 'package:openim/routes/app_navigator.dart';
 import 'package:openim/routes/app_pages.dart';
+import 'package:openim/widgets/custom_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -335,55 +334,12 @@ class SelectContactsLogic
     }
   }
 
-  viewSelectedContactsList() => Get.bottomSheet(
-        barrierColor: Colors.transparent,
-        Stack(
-          children: [
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-                child: Container(
-                  color: Colors.transparent,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32.r),
-                  topRight: Radius.circular(32.r),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                    offset: const Offset(0, -3),
-                    blurRadius: 12,
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Content
-                  Container(
-                    constraints: BoxConstraints(maxHeight: 548.h),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(32.r),
-                        topRight: Radius.circular(32.r),
-                      ),
-                      child: SelectedContactsListView(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+  viewSelectedContactsList() => CustomBottomSheet.show(
+        body: Container(
+          constraints: BoxConstraints(maxHeight: 548.h),
+          child: SelectedContactsListView(),
         ),
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
+        isDismissible: true,
       );
 
   selectFromMyFriend() async {

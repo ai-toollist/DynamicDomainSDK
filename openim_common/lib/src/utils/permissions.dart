@@ -30,27 +30,27 @@ class Permissions {
 
     switch (permission) {
       case Permission.photos:
-        title = '对存储空间/照片权限申请说明';
-        message = '便于您在该功能中上传图片/视频及用于更换头像、分享文件、保存附件、意见反馈等操作时读取和写入相册和文件内容。';
+        title = StrRes.permStoragePhotoTitle;
+        message = StrRes.permStoragePhotoMessage;
         break;
 
       case Permission.storage:
       case Permission.manageExternalStorage:
-        title = '对存储空间/照片权限申请说明';
-        message = '便于您在该功能中上传图片/视频及用于更换头像、分享文件、保存附件、意见反馈等操作时读取和写入相册和文件内容。';
+        title = StrRes.permStoragePhotoTitle;
+        message = StrRes.permStoragePhotoMessage;
         break;
 
       case Permission.camera:
-        title = '对相机/摄像头权限申请说明';
-        message = '便于您使用该功能中拍照上传您的照片/视频及用于更换头像、意见反馈、保存相册、扫描二维码、进行视频通话等场景中使用';
+        title = StrRes.permCameraTitle;
+        message = StrRes.permCameraMessage;
         break;
       case Permission.microphone:
-        title = '对麦克风权限申请说明';
-        message = '便于您进行语音通话、录制语音消息、参与语音会议等操作，我们需要获取麦克风权限。';
+        title = StrRes.permMicrophoneTitle;
+        message = StrRes.permMicrophoneMessage;
         break;
       default:
-        title = '权限申请说明';
-        message = '需要获取相关权限以便提供更好的服务。';
+        title = StrRes.permDefaultTitle;
+        message = StrRes.permDefaultMessage;
         break;
     }
 

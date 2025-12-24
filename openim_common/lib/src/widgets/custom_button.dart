@@ -10,7 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 /// - Badge count indicator
 class CustomButton extends StatelessWidget {
   final Function()? onTap;
-  final String title;
+  final String text;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final IconData? icon;
@@ -26,16 +26,10 @@ class CustomButton extends StatelessWidget {
   /// Color for the label text. Defaults to Color(0xFF374151).
   final Color? labelColor;
 
-  /// Whether the button should expand to fill available width.
-  /// When true, text will be centered within the full button width.
-  final bool expand;
-
-  /// Whether to use primary color from theme for button and icon colors.
-
   const CustomButton({
     super.key,
     this.onTap,
-    this.title = "",
+    this.text = "",
     this.margin,
     this.padding,
     this.icon,
@@ -45,7 +39,6 @@ class CustomButton extends StatelessWidget {
     this.fontSize = 14,
     this.label,
     this.labelColor,
-    this.expand = false,
   });
 
   @override
@@ -55,7 +48,7 @@ class CustomButton extends StatelessWidget {
             ? EdgeInsets.all(16.w)
             : EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h));
 
-    final isIconOnly = icon != null;
+    final isIconOnly = icon != null && text.isEmpty;
     final borderRadius = BorderRadius.circular(isIconOnly ? 100.r : 16.r);
 
     final button = Container(
@@ -65,10 +58,7 @@ class CustomButton extends StatelessWidget {
         color: color.withOpacity(0.15),
       ),
       child: Material(
-        color: Colors
-            .transparent, // Let Container decoration show? No, Ink needs material
-        // We put decoration on Material or Container?
-        // To clip splash correctly, put Color inside Material or Ink
+        color: Colors.transparent,
         borderRadius: borderRadius,
         child: Ink(
           decoration: BoxDecoration(
@@ -98,43 +88,24 @@ class CustomButton extends StatelessWidget {
                 clipBehavior: Clip.none,
                 alignment: Alignment.center,
                 children: [
-                  expand
-                      ? Center(
-                          child: icon != null
-                              ? Icon(
-                                  icon,
-                                  color: color,
-                                  size: iconSize.w,
-                                )
-                              : Text(
-                                  title,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    color: color,
-                                    fontSize: fontSize,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        )
-                      : IntrinsicWidth(
-                          child: icon != null
-                              ? Icon(
-                                  icon,
-                                  color: color,
-                                  size: iconSize.w,
-                                )
-                              : Text(
-                                  title,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    color: color,
-                                    fontSize: fontSize,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        ),
+                  IntrinsicWidth(
+                    child: icon != null
+                        ? Icon(
+                            icon,
+                            color: color,
+                            size: iconSize.w,
+                          )
+                        : Text(
+                            text,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              color: color,
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                  ),
                   if (badgeCount != null && badgeCount! > 0)
                     Positioned(
                       top: -8.h,

@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:openim/constants/app_color.dart';
 import 'package:openim/pages/chat/group_setup/group_setup_logic.dart';
+import 'package:openim/widgets/custom_bottom_sheet.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../../routes/app_navigator.dart';
@@ -58,54 +59,34 @@ class GroupManageLogic extends GetxController {
   }
 
   void modifyJoinGroupSet() async {
-    final index = await Get.bottomSheet(
-      barrierColor: Colors.transparent,
-      Stack(
+    final index = await CustomBottomSheet.show<int>(
+      title: StrRes.joinGroupSet,
+      icon: CupertinoIcons.person_2,
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
+          _buildJoinOptionItem(
+            icon: CupertinoIcons.person_add,
+            title: StrRes.allowAnyoneJoinGroup,
+            subtitle: StrRes.anyoneCanJoinWithoutApproval,
+            onTap: () => Get.back(result: 0),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32.r),
-                topRight: Radius.circular(32.r),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF9CA3AF).withOpacity(0.08),
-                  offset: const Offset(0, -3),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  constraints: BoxConstraints(maxHeight: 400.h),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(32.r),
-                      topRight: Radius.circular(32.r),
-                    ),
-                    child: const _JoinGroupSettingView(),
-                  ),
-                ),
-              ],
-            ),
+          _buildJoinOptionItem(
+            icon: CupertinoIcons.person_crop_circle_badge_checkmark,
+            title: StrRes.inviteNotVerification,
+            subtitle: StrRes.membersCanInviteAdminApprovalRequired,
+            onTap: () => Get.back(result: 1),
+          ),
+          _buildJoinOptionItem(
+            icon: CupertinoIcons.lock,
+            title: StrRes.needVerification,
+            subtitle: StrRes.allRequestsRequireAdminApproval,
+            onTap: () => Get.back(result: 2),
+            isLast: true,
           ),
         ],
       ),
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      isDismissible: true,
     );
 
     if (null != index) {
@@ -124,6 +105,67 @@ class GroupManageLogic extends GetxController {
         val?.needVerification = value;
       });
     }
+  }
+
+  Widget _buildJoinOptionItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool isLast = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isLast ? Colors.transparent : const Color(0xFFF3F4F6),
+                width: 1,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 20.w, color: AppColor.iconColor),
+              16.horizontalSpace,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1F2937),
+                      ),
+                    ),
+                    4.verticalSpace,
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontFamily: 'FilsonPro',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF6B7280),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              8.horizontalSpace,
+              const Icon(CupertinoIcons.chevron_right,
+                  size: 16, color: Color(0xFF6B7280)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   String get joinGroupOption {
@@ -154,184 +196,5 @@ class GroupManageLogic extends GetxController {
       });
       Get.back();
     }
-  }
-}
-
-class _JoinGroupSettingView extends StatelessWidget {
-  const _JoinGroupSettingView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(32),
-          topRight: Radius.circular(32),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Container(
-            width: 36.w,
-            height: 4.h,
-            margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE2E8F0),
-              borderRadius: BorderRadius.circular(2.r),
-            ),
-          ),
-
-          // Header
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFFFFF),
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xFFF3F4F6),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  StrRes.joinGroupSet,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF374151),
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF3F4F6),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      CupertinoIcons.xmark,
-                      size: 16,
-                      color: Color(0xFF6B7280),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Options
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 0.h),
-            child: Column(
-              children: [
-                _buildOptionItem(
-                  icon: CupertinoIcons.person_add,
-                  title: StrRes.allowAnyoneJoinGroup,
-                  subtitle: StrRes.anyoneCanJoinWithoutApproval,
-                  onTap: () => Get.back(result: 0),
-                ),
-                _buildOptionItem(
-                  icon: CupertinoIcons.person_crop_circle_badge_checkmark,
-                  title: StrRes.inviteNotVerification,
-                  subtitle: StrRes.membersCanInviteAdminApprovalRequired,
-                  onTap: () => Get.back(result: 1),
-                ),
-                _buildOptionItem(
-                  icon: CupertinoIcons.lock,
-                  title: StrRes.needVerification,
-                  subtitle: StrRes.allRequestsRequireAdminApproval,
-                  onTap: () => Get.back(result: 2),
-                  isLast: true,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOptionItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    bool isLast = false,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isLast ? Colors.transparent : const Color(0xFFF3F4F6),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Row(
-            children: [
-              // Icon
-              Icon(
-                icon,
-                size: 20.w,
-                color: AppColor.iconColor,
-              ),
-
-              16.horizontalSpace,
-
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1F2937),
-                      ),
-                    ),
-                    4.verticalSpace,
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6B7280),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              8.horizontalSpace,
-
-              // Arrow
-              Icon(
-                CupertinoIcons.chevron_right,
-                size: 16,
-                color: Color(0xFF6B7280),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

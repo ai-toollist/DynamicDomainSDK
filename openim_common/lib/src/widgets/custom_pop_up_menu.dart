@@ -101,9 +101,7 @@ class _CustomPopupMenuState extends State<CopyCustomPopupMenu> {
 
     var keyboardHeight = viewInsets.bottom;
 
-    // Calculate child position for highlighting
-    final Offset childOffset = _childBox!.localToGlobal(Offset.zero);
-    final Size childSize = _childBox!.size;
+    // Note: childOffset and childSize removed as no longer needed after layout simplification
 
     _overlayEntry = OverlayEntry(
       builder: (context) {
@@ -171,39 +169,8 @@ class _CustomPopupMenuState extends State<CopyCustomPopupMenu> {
                 ),
               ),
             ),
-            // 2. Highlighted Child
-            Positioned(
-              left: childOffset.dx,
-              top: childOffset.dy,
-              width: childSize.width,
-              height: childSize.height,
-              child: Transform.scale(
-                scale: 0.95,
-                child: IgnorePointer(
-                  child: widget.child,
-                ),
-              ),
-            ),
-            // 3. Menu
-            Positioned.fill(
-              child: Listener(
-                behavior: widget.enablePassEvent
-                    ? HitTestBehavior.translucent
-                    : HitTestBehavior.opaque,
-                onPointerDown: (PointerDownEvent event) {
-                  Offset offset = event.localPosition;
-                  if (_menuRect.contains(
-                      Offset(offset.dx - widget.horizontalMargin, offset.dy))) {
-                    return;
-                  }
-                  _controller?.hideMenu();
-                  _canResponse = false;
-                  Future.delayed(const Duration(milliseconds: 300))
-                      .then((_) => _canResponse = true);
-                },
-                child: menu,
-              ),
-            ),
+            // 2. Positioned menu below anchor
+            menu,
           ],
         );
       },
@@ -361,6 +328,10 @@ class _MenuLayoutDelegate extends MultiChildLayoutDelegate {
 
     bool isTop = false;
 
+    // Safe area for header (status bar + app bar + some padding)
+    // Typically around 120-140px on most devices
+    const double headerSafeArea = 140.0;
+
     if (position == null) {
       // auto calculate position
       // Prefer bottom, only switch to top if there is not enough space at the bottom
@@ -371,7 +342,14 @@ class _MenuLayoutDelegate extends MultiChildLayoutDelegate {
       if (bottomSpace >= requiredHeight) {
         isTop = false;
       } else {
-        isTop = true;
+        // Check if there's enough space at top (above header safe area)
+        double topSpace = anchorTopY - headerSafeArea;
+        if (topSpace >= requiredHeight) {
+          isTop = true;
+        } else {
+          // Not enough space at top either, prefer bottom anyway
+          isTop = false;
+        }
       }
     } else {
       isTop = position == PreferredPosition.top;
@@ -387,6 +365,15 @@ class _MenuLayoutDelegate extends MultiChildLayoutDelegate {
         }
       } else {
         anchorTopY = touchY;
+      }
+    }
+
+    // Additional check: if popup would go into header area, force bottom position
+    if (isTop) {
+      double topContentY =
+          anchorTopY - verticalMargin - arrowSize.height - contentSize.height;
+      if (topContentY < headerSafeArea) {
+        isTop = false;
       }
     }
 

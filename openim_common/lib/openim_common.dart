@@ -89,6 +89,7 @@ export 'src/widgets/chat/chat_video_player_view.dart';
 export 'src/widgets/chat/chat_video_view.dart';
 export 'src/widgets/chat/chat_voice_read_status_view.dart';
 export 'src/widgets/chat/chat_voice_record_bar.dart';
+export 'src/widgets/chat/chat_tap_to_record_bar.dart';
 export 'src/widgets/chat/chat_voice_record_layout.dart';
 export 'src/widgets/chat/chat_voice_record_view.dart';
 export 'src/widgets/chat/chat_voice_view.dart';

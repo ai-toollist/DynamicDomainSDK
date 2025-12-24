@@ -1,11 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
+import 'custom_button.dart';
 
 class ClaymorphismDatePicker extends StatefulWidget {
   const ClaymorphismDatePicker({
@@ -61,123 +63,78 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(20.r),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF9CA3AF).withOpacity(0.08),
-            offset: const Offset(0, -2),
-            blurRadius: 12.r,
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(32.r),
+            topRight: Radius.circular(32.r),
           ),
-        ],
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: EdgeInsets.only(top: 12.h),
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE5E7EB),
-                borderRadius: BorderRadius.circular(2.r),
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF9CA3AF).withOpacity(0.08),
+              offset: const Offset(0, -3),
+              blurRadius: 12,
             ),
-
-            20.verticalSpace,
-
-            // Header with icon and title
-            AnimationConfiguration.staggeredList(
-              position: 0,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                curve: Curves.easeOutCubic,
-                verticalOffset: 30.0,
-                child: FadeInAnimation(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (widget.icon != null) ...[
-                        Container(
-                          width: 32.w,
-                          height: 32.w,
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Icon(
-                            widget.icon!,
-                            size: 18.w,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        12.horizontalSpace,
-                      ],
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF374151),
-                        ),
-                      ),
-                    ],
-                  ),
+          ],
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: 12.h),
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
-            ),
 
-            24.verticalSpace,
+              24.verticalSpace,
 
-            // Calendar Section
-            Expanded(
-              child: AnimationConfiguration.staggeredList(
-                position: 1,
+              // Header with icon and title
+              AnimationConfiguration.staggeredList(
+                position: 0,
                 duration: const Duration(milliseconds: 400),
                 child: SlideAnimation(
                   curve: Curves.easeOutCubic,
                   verticalOffset: 30.0,
                   child: FadeInAnimation(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                            offset: const Offset(0, 2),
-                            blurRadius: 6.r,
-                          ),
-                        ],
-                        border: Border.all(
-                          color: const Color(0xFFF3F4F6),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          // Month/Year Header
-                          _buildMonthYearHeader(),
-
-                          // Calendar
-                          Expanded(
-                            child: PageView.builder(
-                              controller: pageController,
-                              onPageChanged: _onPageChanged,
-                              itemBuilder: (context, index) {
-                                final date = _getDateForPage(index);
-                                return _buildCalendarPage(date);
-                              },
+                          if (widget.icon != null) ...[
+                            Container(
+                              width: 36.w,
+                              height: 36.w,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: Icon(
+                                widget.icon!,
+                                size: 20.w,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            12.horizontalSpace,
+                          ],
+                          Text(
+                            widget.title,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                         ],
@@ -186,15 +143,67 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
                   ),
                 ),
               ),
-            ),
 
-            24.verticalSpace,
+              24.verticalSpace,
 
-            // Action Buttons
-            _buildActionButtons(),
+              // Calendar Section
+              Expanded(
+                child: AnimationConfiguration.staggeredList(
+                  position: 1,
+                  duration: const Duration(milliseconds: 400),
+                  child: SlideAnimation(
+                    curve: Curves.easeOutCubic,
+                    verticalOffset: 30.0,
+                    child: FadeInAnimation(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20.w),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFAFAFA),
+                          borderRadius: BorderRadius.circular(20.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF9CA3AF).withOpacity(0.08),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8.r,
+                            ),
+                          ],
+                          border: Border.all(
+                            color: const Color(0xFFE5E7EB),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Month/Year Header
+                            _buildMonthYearHeader(),
 
-            24.verticalSpace,
-          ],
+                            // Calendar
+                            Expanded(
+                              child: PageView.builder(
+                                controller: pageController,
+                                onPageChanged: _onPageChanged,
+                                itemBuilder: (context, index) {
+                                  final date = _getDateForPage(index);
+                                  return _buildCalendarPage(date);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              24.verticalSpace,
+
+              // Action Buttons
+              _buildActionButtons(),
+
+              20.verticalSpace,
+            ],
+          ),
         ),
       ),
     );
@@ -402,87 +411,24 @@ class _ClaymorphismDatePickerState extends State<ClaymorphismDatePicker> {
         // Cancel Button
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: 16.w, right: 8.w),
-            child: GestureDetector(
-              onTap: widget.onCancel ?? () => Get.back(),
-              child: Container(
-                height: 50.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF9CA3AF).withOpacity(0.06),
-                      offset: const Offset(0, 2),
-                      blurRadius: 6.r,
-                    ),
-                  ],
-                  border: Border.all(
-                    color: const Color(0xFFF3F4F6),
-                    width: 1,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    StrRes.cancel,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF6B7280),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+              margin: EdgeInsets.only(left: 20.w, right: 8.w),
+              child: CustomButton(
+                  onTap: widget.onCancel ?? () => Get.back(),
+                  text: StrRes.cancel,
+                  color: Colors.blueGrey)),
         ),
 
         // Confirm Button
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: 8.w, right: 16.w),
-            child: GestureDetector(
+            margin: EdgeInsets.only(left: 8.w, right: 20.w),
+            child: CustomButton(
               onTap: () {
                 Get.back();
                 widget.onConfirm(selectedDate);
               },
-              child: Container(
-                height: 50.h,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF9CA3AF).withOpacity(0.1),
-                      offset: const Offset(0, 2),
-                      blurRadius: 6.r,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CupertinoIcons.checkmark_circle_fill,
-                        size: 20.w,
-                        color: Colors.white,
-                      ),
-                      8.horizontalSpace,
-                      Text(
-                        StrRes.confirm,
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              text: StrRes.confirm,
+              color: Theme.of(context).primaryColor,
             ),
           ),
         ),

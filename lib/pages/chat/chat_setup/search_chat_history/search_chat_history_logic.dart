@@ -64,11 +64,12 @@ class SearchChatHistoryLogic extends GetxController {
 
   void searchByTime() async {
     try {
-      dateTime.value = dateTime.value.add(const Duration(days: 1));
+      // Use a local variable for search calculation, don't modify the stored date
+      final searchDate = dateTime.value.add(const Duration(days: 1));
       // 获取0时的时间戳
-      var dateZeroTime = DateTime(
-              dateTime.value.year, dateTime.value.month, dateTime.value.day)
-          .secondsSinceEpoch;
+      var dateZeroTime =
+          DateTime(searchDate.year, searchDate.month, searchDate.day)
+              .secondsSinceEpoch;
       var timeDiff = DateTime.now().secondsSinceEpoch - dateZeroTime;
       var result = await OpenIM.iMManager.messageManager.searchLocalMessages(
         conversationID: conversationInfo.conversationID,
@@ -161,7 +162,9 @@ class SearchChatHistoryLogic extends GetxController {
 
     // Filter out quote results that only match the quoted/original text.
     if (lowerQuery.isNotEmpty) {
-      sdkMessages = sdkMessages.where((msg) => _messageMatchesQuery(msg, lowerQuery)).toList();
+      sdkMessages = sdkMessages
+          .where((msg) => _messageMatchesQuery(msg, lowerQuery))
+          .toList();
     }
 
     // SDK currently doesn't index quote message text for keyword search.
@@ -178,7 +181,8 @@ class SearchChatHistoryLogic extends GetxController {
 
     final merged = _mergeAndSortMessages(sdkMessages, quoteResult.messages);
     final pageMessages = merged.take(pageSize).toList();
-    final hasMore = sdkHasMore || quoteResult.hasMore || merged.length > pageSize;
+    final hasMore =
+        sdkHasMore || quoteResult.hasMore || merged.length > pageSize;
 
     return _SearchPageResult(messages: pageMessages, hasMore: hasMore);
   }
@@ -205,11 +209,11 @@ class SearchChatHistoryLogic extends GetxController {
         pageIndex: fetchPage,
         count: pageSize,
       );
-      
+
       final quotes = (result.searchResultItems?.isNotEmpty == true)
           ? (result.searchResultItems!.first.messageList ?? [])
           : <Message>[];
-      
+
       if (quotes.isEmpty) {
         hasMoreSource = false;
         break;
@@ -230,7 +234,7 @@ class SearchChatHistoryLogic extends GetxController {
           break;
         }
       }
-      
+
       hasMoreSource = quotes.length >= pageSize;
       fetchPage++;
     }
@@ -240,7 +244,8 @@ class SearchChatHistoryLogic extends GetxController {
     return _QuoteSearchResult(messages: matches, hasMore: hasMore);
   }
 
-  List<Message> _mergeAndSortMessages(List<Message> first, List<Message> second) {
+  List<Message> _mergeAndSortMessages(
+      List<Message> first, List<Message> second) {
     final merged = <Message>[];
     final seenIds = <String>{};
 
@@ -273,7 +278,8 @@ class SearchChatHistoryLogic extends GetxController {
     return ids;
   }
 
-  String? _messageId(Message message) => message.clientMsgID ?? message.serverMsgID;
+  String? _messageId(Message message) =>
+      message.clientMsgID ?? message.serverMsgID;
 
   bool _messageMatchesQuery(Message message, String lowerQuery) {
     String? ownText;

@@ -61,23 +61,32 @@ class MineLogic extends GetxController {
   void serviceAgreement() => AppNavigator.startServiceAgreement();
   void startChatAnalytics() => AppNavigator.startChatAnalytics();
 
+  // Best-effort server logout. Local logout is mandatory.
   void logout() async {
-    var confirm = await Get.dialog(
-        barrierColor: Colors.transparent,
-        CustomDialog(title: StrRes.logoutHint));
-    if (confirm == true) {
+    final confirm = await Get.dialog(
+      barrierColor: Colors.transparent,
+      CustomDialog(title: StrRes.logoutHint),
+    );
+    if (confirm != true) return;
+
+    await LoadingView.singleton.wrap(asyncFunction: () async {
       try {
-        await LoadingView.singleton.wrap(asyncFunction: () async {
-          await imLogic.logout();
-          await DataSp.removeLoginCertificate();
-          pushLogic.logout();
-          trtcLogic.logout();
-        });
-        AppNavigator.startInviteCode();
-      } catch (e) {
-        IMViews.showToast('e:$e');
+        await imLogic.logout();
+      } catch (_) {
+        // ignore
+      } finally {
+        _forceLocalLogout();
       }
-    }
+    });
+
+    AppNavigator.startAuth();
+  }
+
+  // Force clear all local auth/session state.
+  Future<void> _forceLocalLogout() async {
+    await DataSp.removeLoginCertificate();
+    pushLogic.logout();
+    trtcLogic.logout();
   }
 
   // 清除缓存时同时清除邀请码和登录信息

@@ -152,22 +152,34 @@ class ResetPasswordLogic extends GetxController {
       return;
     }
 
-    // Call API to reset password
-    final result = await LoadingView.singleton.wrap(
-      asyncFunction: () => GatewayApi.resetPassword(
-        password: passwordCtrl.text,
-        phoneNumber: phoneNumberCtrl.text,
-        smsCode: smsCodeCtrl.text,
-      ),
-    );
+    try {
+      // Call API to reset password
+      final result = await LoadingView.singleton.wrap(
+        asyncFunction: () => GatewayApi.resetPassword(
+          password: passwordCtrl.text,
+          phoneNumber: phoneNumberCtrl.text,
+          smsCode: smsCodeCtrl.text,
+        ),
+      );
 
-    if (result) {
-      IMViews.showToast(StrRes.resetSuccessful, type: 1);
-      // Navigate back to login screen after successful password reset
-      AppNavigator.startLogin();
-    } else {
-      // Show failure message
-      IMViews.showToast(StrRes.saveFailed);
+      if (result) {
+        IMViews.showToast(StrRes.resetSuccessful, type: 1);
+        // Navigate back to login screen after successful password reset
+        AppNavigator.startLogin();
+      } else {
+        // Show failure message
+        IMViews.showToast(StrRes.saveFailed);
+      }
+    } catch (e) {
+      // Handle API errors and show SDK message if available
+      if (e is (int, String?, dynamic)) {
+        final errMsg = e.$2;
+        final msg =
+            (errMsg != null && errMsg.isNotEmpty) ? errMsg : StrRes.saveFailed;
+        IMViews.showToast(msg);
+      } else {
+        IMViews.showToast(StrRes.saveFailed);
+      }
     }
   }
 }

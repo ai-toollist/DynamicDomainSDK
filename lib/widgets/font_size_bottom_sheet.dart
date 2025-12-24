@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim_common/openim_common.dart';
 
 /// A reusable bottom sheet for adjusting chat font size.
@@ -318,65 +319,23 @@ class FontSizeBottomSheet {
                 child: Row(
                   children: [
                     Expanded(
-                      child: GestureDetector(
+                      child: CustomButton(
                         onTap: () => Get.back(),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF3F4F6),
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Text(
-                            StrRes.cancel,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF6B7280),
-                            ),
-                          ),
-                        ),
+                        title: StrRes.cancel,
+                        color: Colors.blueGrey,
+                        expand: true,
                       ),
                     ),
-                    12.horizontalSpace,
+                    16.horizontalSpace,
                     Expanded(
-                      child: GestureDetector(
+                      child: CustomButton(
                         onTap: () {
                           Get.back();
                           onSave(factor.value);
                         },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                primaryColor,
-                                primaryColor.withOpacity(0.85),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            StrRes.save,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        title: StrRes.save,
+                        color: primaryColor,
+                        expand: true,
                       ),
                     ),
                   ],

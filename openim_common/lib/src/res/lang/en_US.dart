@@ -202,6 +202,8 @@ const Map<String, String> en_US = {
   "upgradeIgnore": "Ignore",
   "upgradeLater": "Later",
   "upgradeNow": "Update Now",
+  "updateContent": "What's New",
+  "startDownloadNotice": "Starting download, please check notification bar",
   'upgradePermissionTips': 'Please allow notification permission',
   'inviteYouCall': '%s invited you to %s',
   'rejectCall': 'Reject',

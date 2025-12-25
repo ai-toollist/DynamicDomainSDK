@@ -346,6 +346,10 @@ class StrRes {
 
   static String get upgradeNow => 'upgradeNow'.tr;
 
+  static String get updateContent => 'updateContent'.tr;
+
+  static String get startDownloadNotice => 'startDownloadNotice'.tr;
+
   static String get upgradePermissionTips => 'upgradePermissionTips'.tr;
 
   static String get inviteYouCall => 'inviteYouCall'.tr;

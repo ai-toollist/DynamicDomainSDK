@@ -191,6 +191,8 @@ const Map<String, String> zh_CN = {
   "upgradeIgnore": "忽略",
   "upgradeLater": "稍后更新",
   "upgradeNow": "立即更新",
+  "updateContent": "更新内容",
+  "startDownloadNotice": "开始下载更新，请留意通知栏",
   'upgradePermissionTips': '请打开通知权限，否则无法显示升级进度。',
   'inviteYouCall': '%s邀请你进行%s',
   'rejectCall': '拒绝',

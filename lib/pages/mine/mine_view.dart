@@ -74,7 +74,7 @@ class MinePage extends StatelessWidget {
                       Icon(
                         CupertinoIcons.doc_on_doc,
                         size: 14.sp,
-                        color: const Color(0xFF9CA3AF),
+                        color: primaryColor,
                       ),
                     ],
                   ),

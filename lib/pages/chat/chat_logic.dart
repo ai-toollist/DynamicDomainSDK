@@ -103,7 +103,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   final memberCount = 0.obs;
   final privateMessageList = <Message>[];
   final isInBlacklist = false.obs;
-  final isFriend = true.obs;
   final _audioPlayer = AudioPlayer();
   final _currentPlayClientMsgID = "".obs;
   final isShowPopMenu = false.obs;
@@ -119,7 +118,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   late StreamSubscription memberInfoChangedSub;
   late StreamSubscription groupInfoUpdatedSub;
   late StreamSubscription friendInfoChangedSub;
-  StreamSubscription? friendDelSub;
   StreamSubscription? userStatusChangedSub;
   StreamSubscription? selfInfoUpdatedSub;
 
@@ -218,7 +216,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     _getInputState();
     _clearUnreadCount();
     _loadFavoriteEmojis();
-    _checkIsFriend();
 
     if (isSingleChat && userID != null) {
       final cachedStatus = conversationLogic.userOnlineStatusMap[userID!];
@@ -421,14 +418,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         }
 
         messageList.refresh();
-      }
-    });
-
-    // 好友删除监听 - Listen for friendship deletion
-    friendDelSub = imLogic.friendDelSubject.listen((value) {
-      if (userID == value.userID) {
-        isFriend.value = false;
-        Logger.print('Friendship deleted with user: ${value.userID}');
       }
     });
 
@@ -1603,7 +1592,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     memberInfoChangedSub.cancel();
     groupInfoUpdatedSub.cancel();
     friendInfoChangedSub.cancel();
-    friendDelSub?.cancel();
     userStatusChangedSub?.cancel();
     selfInfoUpdatedSub?.cancel();
     // signalingMessageSub?.cancel();
@@ -2365,15 +2353,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       var list = await OpenIM.iMManager.friendshipManager.getBlacklist();
       var user = list.firstWhereOrNull((e) => e.userID == userID);
       isInBlacklist.value = user != null;
-    }
-  }
-
-  /// Check if user is still a friend (for single chat only)
-  void _checkIsFriend() {
-    if (isSingleChat && userID != null) {
-      isFriend.value = imLogic.friendIDMap.containsKey(userID);
-      Logger.print(
-          '_checkIsFriend: userID=$userID, isFriend=${isFriend.value}');
     }
   }
 

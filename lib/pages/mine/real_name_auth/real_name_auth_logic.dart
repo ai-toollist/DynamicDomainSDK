@@ -106,7 +106,7 @@ class RealNameAuthLogic extends GetxController {
       authStatus.value = result['status'] ?? 0;
 
       if ((authStatus.value == 1 || authStatus.value == 3) && checkSubmit) {
-        IMViews.showToast(StrRes.submitSuccess);
+        IMViews.showToast(StrRes.submitSuccess, type: 1);
       }
 
       // 如果已认证，填充显示信息

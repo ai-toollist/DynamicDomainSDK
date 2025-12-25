@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_this
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:openim_common/openim_common.dart';
 
@@ -107,7 +108,9 @@ class ChatItemContainer extends StatelessWidget {
                     child: ChatRadio(checked: this.isChecked),
                   ),
                 Expanded(
-                    child: this.isISend ? _buildRightView() : _buildLeftView()),
+                    child: this.isISend
+                        ? _buildRightView(context)
+                        : _buildLeftView(context)),
               ],
             ),
           ],
@@ -116,29 +119,37 @@ class ChatItemContainer extends StatelessWidget {
     );
   }
 
-  Widget _buildChildView(BubbleType type) {
-    // If menus is null or empty, just show the child without popup menu
-    if (this.menus == null || this.menus!.isEmpty) {
-      return this.isBubbleBg
-          ? ChatBubble(bubbleType: type, child: this.child)
-          : this.child;
-    }
+  Widget _buildChildView(BuildContext context, BubbleType type) {
+    final bubbleChild = this.isBubbleBg
+        ? ChatBubble(bubbleType: type, child: this.child)
+        : this.child;
 
-    // Show popup menu with child
-    return CopyCustomPopupMenu(
-      controller: this.popupMenuController,
-      menuBuilder: () => ChatLongPressMenu(
-        popupMenuController: this.popupMenuController,
-        menus: this.menus ?? allMenus,
+    return RepaintBoundary(
+      child: Builder(
+        builder: (ctx) {
+          // If menus is null or empty, just show the child without popup menu
+          if (this.menus == null || this.menus!.isEmpty) {
+            return bubbleChild;
+          }
+
+          // Show message overlay on long press
+          return GestureDetector(
+            onLongPress: () async {
+              final boundary =
+                  ctx.findAncestorRenderObjectOfType<RenderRepaintBoundary>();
+              if (boundary != null) {
+                await MessageOverlayHelper.show(
+                  context: context,
+                  captureBoundary: boundary,
+                  isISend: this.isISend,
+                  menus: this.menus ?? allMenus,
+                );
+              }
+            },
+            child: bubbleChild,
+          );
+        },
       ),
-      pressType: PressType.longPress,
-      arrowColor: const Color(0xFFF2F2F7),
-      barrierColor: Colors.transparent,
-      verticalMargin: 0,
-      showArrow: false,
-      child: this.isBubbleBg
-          ? ChatBubble(bubbleType: type, child: this.child)
-          : this.child,
     );
   }
 
@@ -180,7 +191,7 @@ class ChatItemContainer extends StatelessWidget {
         ),
       ];
 
-  Widget _buildLeftView() => Padding(
+  Widget _buildLeftView(BuildContext context) => Padding(
         padding: EdgeInsets.only(bottom: 10.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -226,7 +237,7 @@ class ChatItemContainer extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildChildView(BubbleType.receiver),
+                    _buildChildView(context, BubbleType.receiver),
                     //  / 4.horizontalSpace,
                     if (!this.isMultiSelModel)
                       ChatDestroyAfterReadingView(
@@ -266,7 +277,7 @@ class ChatItemContainer extends StatelessWidget {
         ),
       );
 
-  Widget _buildRightView() => Padding(
+  Widget _buildRightView(BuildContext context) => Padding(
         padding: EdgeInsets.only(bottom: 10.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -318,7 +329,7 @@ class ChatItemContainer extends StatelessWidget {
                     if (!this.isMultiSelModel && this.isSending)
                       ChatDelayedStatusView(isSending: this.isSending),
                     4.horizontalSpace,
-                    _buildChildView(BubbleType.send),
+                    _buildChildView(context, BubbleType.send),
                   ],
                 ),
                 AnimatedSwitcher(

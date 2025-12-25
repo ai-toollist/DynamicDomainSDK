@@ -117,7 +117,7 @@ class GroupSetupPage extends StatelessWidget {
                       color: primaryColor,
                     ),
                     CustomButton(
-                      icon: CupertinoIcons.video_camera,
+                      icon: CupertinoIcons.play,
                       label: StrRes.video,
                       onTap: logic.searchChatHistoryVideo,
                       color: primaryColor,
@@ -288,7 +288,7 @@ class GroupSetupPage extends StatelessWidget {
                       ],
                     ),
                     child: Icon(
-                      CupertinoIcons.camera_fill,
+                      CupertinoIcons.play,
                       size: 16.w,
                       color: Colors.white,
                     ),

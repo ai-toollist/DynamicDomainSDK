@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:openim_common/src/widgets/chat/chat_quote_view.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sprintf/sprintf.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 double maxWidth = 247.w;
@@ -234,6 +233,7 @@ class ChatItemView extends StatefulWidget {
 class _ChatItemViewState extends State<ChatItemView> {
   final _popupCtrl = CustomPopupMenuController();
   bool _showBottomTime = false;
+  final GlobalKey _bubbleKey = GlobalKey();
 
   Message get _message => widget.message;
 
@@ -254,19 +254,7 @@ class _ChatItemViewState extends State<ChatItemView> {
   @override
   void initState() {
     final keyboardVisibilityCtrl = KeyboardVisibilityController();
-    // Query
-    // Logger.print(
-    //     'Keyboard visibility direct query: ${keyboardVisibilityCtrl.isVisible}');
-
-    // Subscribe
-    _keyboardSubs = keyboardVisibilityCtrl.onChange.listen((bool visible) {
-      // Logger.print('Keyboard visibility update. Is visible: $visible');
-      _popupCtrl.hideMenu();
-    });
-
-    _popupCtrl.addListener(() {
-      widget.onPopMenuShowChanged?.call(_popupCtrl.menuIsShowing);
-    });
+   
 
     _closeMenuSubs = widget.closePopMenuSubject?.listen((value) {
       if (value == true) {
@@ -506,13 +494,10 @@ class _ChatItemViewState extends State<ChatItemView> {
       shouldShowNickname: _shouldShowLeftNickname(),
       bottomInfoView: _buildBottomInfoView(),
       child: GestureDetector(
+        key: _bubbleKey,
         behavior: HitTestBehavior.translucent,
         onTap: () {
           widget.onClickItemView?.call();
-          // Toggle time below bubble on tap for any message (left or right)
-          setState(() {
-            _showBottomTime = !_showBottomTime;
-          });
         },
         child: child ?? ChatText(text: StrRes.unsupportedMessage),
       ),

@@ -89,7 +89,7 @@ class ChatSetupPage extends StatelessWidget {
                       color: primaryColor,
                     ),
                     CustomButton(
-                      icon: CupertinoIcons.video_camera,
+                      icon: CupertinoIcons.play,
                       label: StrRes.video,
                       onTap: logic.searchChatHistoryVideo,
                       color: primaryColor,

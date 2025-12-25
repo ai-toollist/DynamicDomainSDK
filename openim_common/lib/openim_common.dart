@@ -75,6 +75,7 @@ export 'src/widgets/chat/chat_notice_view.dart';
 export 'src/widgets/chat/chat_picture_preview.dart';
 export 'src/widgets/chat/chat_picture_view.dart';
 export 'src/widgets/chat/chat_pop_menu.dart';
+export 'src/widgets/chat/chat_message_overlay.dart';
 export 'src/widgets/chat/chat_progress_view.dart';
 export 'src/widgets/chat/chat_radio.dart';
 export 'src/widgets/chat/chat_read_destroy_view.dart';

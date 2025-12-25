@@ -22,6 +22,9 @@ class AppTextFormField extends StatefulWidget {
   final bool isRequired;
   final int? maxLength;
 
+  /// Optional external key to access FormFieldState for external validation trigger
+  final GlobalKey<FormFieldState>? formFieldKey;
+
   const AppTextFormField({
     super.key,
     this.hint,
@@ -40,6 +43,7 @@ class AppTextFormField extends StatefulWidget {
     required this.validator,
     this.isRequired = false,
     this.maxLength,
+    this.formFieldKey,
   });
 
   @override
@@ -48,12 +52,13 @@ class AppTextFormField extends StatefulWidget {
 
 class _AppTextFormFieldState extends State<AppTextFormField> {
   late FocusNode _internalFocusNode;
-  final _formFieldKey = GlobalKey<FormFieldState>();
+  late GlobalKey<FormFieldState> _formFieldKey;
   bool _hasFocusedOnce = false;
 
   @override
   void initState() {
     super.initState();
+    _formFieldKey = widget.formFieldKey ?? GlobalKey<FormFieldState>();
     _internalFocusNode = widget.focusNode ?? FocusNode();
     _internalFocusNode.addListener(_onFocusChange);
   }

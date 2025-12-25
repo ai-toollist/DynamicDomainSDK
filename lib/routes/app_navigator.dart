@@ -30,6 +30,11 @@ class AppNavigator {
     Get.toNamed(AppRoutes.auth, arguments: {'tab': initialTab});
   }
 
+  /// Navigate to auth screen and clear entire navigation stack (for logout)
+  static void startAuthAfterLogout({int initialTab = 0}) {
+    Get.offAllNamed(AppRoutes.auth, arguments: {'tab': initialTab});
+  }
+
   static Future? startGatewaySwitcher({Function()? onSwitch}) {
     return Get.toNamed(AppRoutes.gatewaySwitcher,
         arguments: {'onSwitch': onSwitch});

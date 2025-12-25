@@ -62,6 +62,13 @@ class ResetPasswordPage extends StatelessWidget {
                           controller: logic.passwordCtrl,
                           validateFormat: true,
                           isRequired: true,
+                          onPasswordChange: () {
+                            // Only re-validate confirm password if it already has a value
+                            if (logic.confirmPasswordCtrl.text.isNotEmpty) {
+                              logic.passwordConfirmationFieldKey.currentState
+                                  ?.validate();
+                            }
+                          },
                         ),
                         20.verticalSpace,
 
@@ -70,11 +77,14 @@ class ResetPasswordPage extends StatelessWidget {
                           focusNode: logic.passwordConfirmationFocusNode,
                           controller: logic.confirmPasswordCtrl,
                           compareController: logic.passwordCtrl,
+                          formFieldKey: logic.passwordConfirmationFieldKey,
                           isRequired: true,
                           onFieldSubmitted: (_) {
                             // Smoothly transition to SMS code field with a small delay
-                            Future.delayed(const Duration(milliseconds: 100), () {
-                              FocusScope.of(context).requestFocus(logic.smsCodeFocusNode);
+                            Future.delayed(const Duration(milliseconds: 100),
+                                () {
+                              FocusScope.of(context)
+                                  .requestFocus(logic.smsCodeFocusNode);
                             });
                           },
                         ),
@@ -82,12 +92,12 @@ class ResetPasswordPage extends StatelessWidget {
 
                         // Verification code field
                         PhoneCodeField(
-              controller: logic.smsCodeCtrl,
-              phoneController: logic.phoneNumberCtrl,
-              validatePhone: logic.phoneNumberCtrl.text,
-              onSendCode: logic.onSendVerificationCode,
-              isRequired: true,
-            ),
+                          controller: logic.smsCodeCtrl,
+                          phoneController: logic.phoneNumberCtrl,
+                          validatePhone: logic.phoneNumberCtrl.text,
+                          onSendCode: logic.onSendVerificationCode,
+                          isRequired: true,
+                        ),
 
                         30.verticalSpace,
 

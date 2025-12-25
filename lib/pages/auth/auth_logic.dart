@@ -45,6 +45,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
   final registerNameFocusNode = FocusNode();
   final registerPasswordFocusNode = FocusNode();
   final registerPasswordConfirmationFocusNode = FocusNode();
+  final registerPasswordConfirmationFieldKey = GlobalKey<FormFieldState>();
   final registerInviteCodeFocusNode = FocusNode();
 
   // Observable states

@@ -12,6 +12,12 @@ class PasswordField extends StatefulWidget {
   final bool isRequired;
   final Function(String)? onFieldSubmitted;
 
+  /// Key to access this field's FormFieldState for external validation trigger
+  final GlobalKey<FormFieldState>? formFieldKey;
+
+  /// Callback when password text changes - used to re-validate confirm password field
+  final VoidCallback? onPasswordChange;
+
   const PasswordField({
     super.key,
     required this.focusNode,
@@ -20,6 +26,8 @@ class PasswordField extends StatefulWidget {
     this.validateFormat = false,
     this.isRequired = false,
     this.onFieldSubmitted,
+    this.formFieldKey,
+    this.onPasswordChange,
   });
 
   @override
@@ -33,15 +41,17 @@ class _PasswordFieldState extends State<PasswordField> {
   Widget build(BuildContext context) {
     final isConfirmPassword = widget.compareController != null;
     return AppTextFormField(
+        formFieldKey: widget.formFieldKey,
         label: isConfirmPassword ? StrRes.confirmPassword : StrRes.password,
         focusNode: widget.focusNode,
         controller: widget.controller,
-        textInputAction: isConfirmPassword ? TextInputAction.next : TextInputAction.done,
-        // helperText: widget.validateFormat ? StrRes.wrongPasswordFormat : null,
+        textInputAction:
+            isConfirmPassword ? TextInputAction.next : TextInputAction.done,
         isObscureText: isObscureText,
         isRequired: widget.isRequired,
         onChanged: (value) {
-          // Field validation handled by validator
+          // Trigger callback when password changes (for re-validating confirm password)
+          widget.onPasswordChange?.call();
         },
         onFieldSubmitted: widget.onFieldSubmitted,
         suffixIcon: GestureDetector(
@@ -71,7 +81,6 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
         ),
         validator: (value) {
-          print('PasswordField validator called with value: $value');
           if (value == null || value.isEmpty) {
             return StrRes.plsEnterPwd;
           }
@@ -82,9 +91,6 @@ class _PasswordFieldState extends State<PasswordField> {
           }
 
           if (widget.validateFormat == true) {
-            // if (!IMUtils.isValidPassword(value)) {
-            //   return StrRes.wrongPasswordFormat;
-            // }
             if (value.length < 8 || value.length > 20) {
               return StrRes.passwordMustLength;
             }

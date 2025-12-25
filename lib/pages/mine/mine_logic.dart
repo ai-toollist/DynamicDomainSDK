@@ -79,7 +79,7 @@ class MineLogic extends GetxController {
       }
     });
 
-    AppNavigator.startAuth();
+    AppNavigator.startAuthAfterLogout();
   }
 
   // Force clear all local auth/session state.

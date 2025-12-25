@@ -25,33 +25,42 @@ class AuthView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    return TouchCloseSoftKeyboard(
-      isGradientBg: false,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Animated radial gradient background (same as invite_code_view)
-            _buildAnimatedGradientBackground(primaryColor),
-            // Main content với form nổi lên ở giữa
-            SafeArea(
-              child: Column(
-                children: [
-                  // Floating form với chiều cao giới hạn
-                  Expanded(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        child: AnimationLimiter(
-                          child: _buildFloatingForm(context, primaryColor),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          // Navigate to invite code screen when back is pressed
+          AppNavigator.startInviteCode();
+        }
+      },
+      child: TouchCloseSoftKeyboard(
+        isGradientBg: false,
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Animated radial gradient background (same as invite_code_view)
+              _buildAnimatedGradientBackground(primaryColor),
+              // Main content với form nổi lên ở giữa
+              SafeArea(
+                child: Column(
+                  children: [
+                    // Floating form với chiều cao giới hạn
+                    Expanded(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: AnimationLimiter(
+                            child: _buildFloatingForm(context, primaryColor),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Gap(20.h),
-                ],
+                    Gap(20.h),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -520,12 +529,21 @@ class AuthView extends StatelessWidget {
               controller: logic.registerPasswordController,
               validateFormat: true,
               isRequired: true,
+              onPasswordChange: () {
+                // Only re-validate confirm password if it already has a value
+                if (logic
+                    .registerPasswordConfirmationController.text.isNotEmpty) {
+                  logic.registerPasswordConfirmationFieldKey.currentState
+                      ?.validate();
+                }
+              },
             ),
             Gap(20.h),
             PasswordField(
               focusNode: logic.registerPasswordConfirmationFocusNode,
               controller: logic.registerPasswordConfirmationController,
               compareController: logic.registerPasswordController,
+              formFieldKey: logic.registerPasswordConfirmationFieldKey,
               isRequired: true,
             ),
             Gap(20.h),

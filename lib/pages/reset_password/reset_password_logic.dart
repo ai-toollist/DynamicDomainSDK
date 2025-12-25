@@ -18,6 +18,7 @@ class ResetPasswordLogic extends GetxController {
   final phoneFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
   final passwordConfirmationFocusNode = FocusNode();
+  final passwordConfirmationFieldKey = GlobalKey<FormFieldState>();
   final smsCodeFocusNode = FocusNode();
 
   // Observable state for button

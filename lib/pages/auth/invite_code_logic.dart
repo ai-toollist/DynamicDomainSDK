@@ -34,16 +34,24 @@ class InviteCodeLogic extends GetxController {
   bool _checkRateLimit() {
     final now = DateTime.now();
 
-    // Check if currently blocked
+    print(
+        '[RateLimit] Checking... blockedUntil=$_blockedUntil, timestamps=${_requestTimestamps.length}');
+
+    // Check if currently blocked - show toast and block SDK call
     if (_blockedUntil != null && now.isBefore(_blockedUntil!)) {
-      IMViews.showToast(StrRes.tooMuchRequestValidationCode);
-      return false;
+      final remainingSeconds = _blockedUntil!.difference(now).inSeconds;
+      print(
+          '[RateLimit] BLOCKED! Remaining: ${remainingSeconds}s - Showing toast');
+      IMViews.showToast(
+          '${StrRes.tooMuchRequestValidationCode} (${remainingSeconds}s)');
+      return false; // Block SDK call
     }
 
     // Clear block if expired
     if (_blockedUntil != null && now.isAfter(_blockedUntil!)) {
       _blockedUntil = null;
       _requestTimestamps.clear();
+      print('[RateLimit] Block expired, cleared');
     }
 
     // Remove old timestamps outside the time window
@@ -51,15 +59,19 @@ class InviteCodeLogic extends GetxController {
       (timestamp) => now.difference(timestamp) > _timeWindow,
     );
 
-    // Check if too many requests
+    // Check if too many requests - start blocking
     if (_requestTimestamps.length >= _maxRequests) {
       _blockedUntil = now.add(_blockDuration);
+      print(
+          '[RateLimit] Too many requests! Starting block for ${_blockDuration.inMinutes} minutes');
       IMViews.showToast(StrRes.tooMuchRequestValidationCode);
       return false;
     }
 
     // Add current request timestamp
     _requestTimestamps.add(now);
+    print(
+        '[RateLimit] OK - Request ${_requestTimestamps.length}/$_maxRequests');
     return true;
   }
 

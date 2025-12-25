@@ -16,126 +16,131 @@ class InviteCodeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor= Theme.of(context).primaryColor;
-    return TouchCloseSoftKeyboard(
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Obx(
-              () => TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: logic.gradientOpacity.value),
-                duration: const Duration(seconds: 2),
-                builder: (context, value, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0.0, -1.0),
-                        radius: 1.8,
-                        colors: [
-                          primaryColor.withOpacity(value * 0.9),
-                          const Color(0xFFB3D4F5).withOpacity(value * 0.5),
-                          Colors.white.withOpacity(0.0),
-                        ],
-                        stops: const [0.0, 0.4, 1.0],
-                        tileMode: TileMode.clamp, 
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // LOGO
-                   Container(
-                    width: 80.w,
-                    height: 80.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).primaryColor.withOpacity(0.2),
-                          blurRadius: 15,
-                          spreadRadius: 2,
+    final primaryColor = Theme.of(context).primaryColor;
+    return PopScope(
+      canPop: false,
+      child: TouchCloseSoftKeyboard(
+        child: Scaffold(
+          body: Stack(
+            children: [
+              Obx(
+                () => TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: logic.gradientOpacity.value),
+                  duration: const Duration(seconds: 2),
+                  builder: (context, value, child) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: const Alignment(0.0, -1.0),
+                          radius: 1.8,
+                          colors: [
+                            primaryColor.withOpacity(value * 0.9),
+                            const Color(0xFFB3D4F5).withOpacity(value * 0.5),
+                            Colors.white.withOpacity(0.0),
+                          ],
+                          stops: const [0.0, 0.4, 1.0],
+                          tileMode: TileMode.clamp,
                         ),
-                      ],
-                    ),
-                    child:  ClipRRect(
-                      borderRadius: BorderRadius.circular(90),
-                      child: Image.asset(
-                        "assets/images/app-icon.png",
-                        width: 74.w,
                       ),
-                    ),
-                  ),
-                
-                    30.verticalSpace,
-
-                    // 标题
-                    Text(
-                      StrRes.welcome,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-
-                    // 副标题
-                    Text(
-                      StrRes.pleaseEnterEnterpriseCodeToContinue,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 24.h),
-
-                    // 输入框
-                    Form(
-                      key: logic.formKey,
-                      child: InviteCodeField(
-                        controller: logic.inviteCodeController,
-                        focusNode: logic.inviteCodeFocusNode,
-                        required: logic.enableInviteCodeRequired,
-              isRequired: true,
-                      ),
-                    ),
-                    SizedBox(height: 18.h),
-                    Obx(
-                      () => Align(
-                          alignment: Alignment.center,
-                          child: AppTextButton(
-                            buttonText: StrRes.enter,
-                            buttonWidth: 100.w,
-                            backgroundColor: logic.isButtonEnabled.value
-                                ? primaryColor
-                                : const Color(0xFF9CA3AF),
-                            textStyle: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                            onPressed: logic.onSubmit,
-                          )),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // LOGO
+                      Container(
+                        width: 80.w,
+                        height: 80.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(90),
+                          child: Image.asset(
+                            "assets/images/app-icon.png",
+                            width: 74.w,
+                          ),
+                        ),
+                      ),
+
+                      30.verticalSpace,
+
+                      // 标题
+                      Text(
+                        StrRes.welcome,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+
+                      // 副标题
+                      Text(
+                        StrRes.pleaseEnterEnterpriseCodeToContinue,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 24.h),
+
+                      // 输入框
+                      Form(
+                        key: logic.formKey,
+                        child: InviteCodeField(
+                          controller: logic.inviteCodeController,
+                          focusNode: logic.inviteCodeFocusNode,
+                          required: logic.enableInviteCodeRequired,
+                          isRequired: true,
+                        ),
+                      ),
+                      SizedBox(height: 18.h),
+                      Obx(
+                        () => Align(
+                            alignment: Alignment.center,
+                            child: AppTextButton(
+                              buttonText: StrRes.enter,
+                              buttonWidth: 100.w,
+                              backgroundColor: logic.isButtonEnabled.value
+                                  ? primaryColor
+                                  : const Color(0xFF9CA3AF),
+                              textStyle: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                              onPressed: logic.onSubmit,
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

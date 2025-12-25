@@ -5,6 +5,10 @@ import 'invite_code_logic.dart';
 class InviteCodeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => InviteCodeLogic());
+    // Delete old instance if exists to avoid disposed controller issue
+    if (Get.isRegistered<InviteCodeLogic>()) {
+      Get.delete<InviteCodeLogic>();
+    }
+    Get.put(InviteCodeLogic());
   }
 }

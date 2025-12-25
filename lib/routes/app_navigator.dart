@@ -23,7 +23,7 @@ class AppNavigator {
   }
 
   static void startInviteCode() {
-    Get.offNamed(AppRoutes.inviteCode);
+    Get.offAllNamed(AppRoutes.inviteCode);
   }
 
   static void startAuth({int initialTab = 0}) {

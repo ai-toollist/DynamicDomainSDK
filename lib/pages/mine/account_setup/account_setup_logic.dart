@@ -104,7 +104,7 @@ class AccountSetupLogic extends GetxController {
 
   void toggleBeep() async {
     final allowBeep = !isAllowBeep ? 1 : 2;
-    // 1关闭 2开启
+    // 1 = enabled, 2 = disabled
     await LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
         allowBeep: allowBeep,
@@ -114,11 +114,19 @@ class AccountSetupLogic extends GetxController {
     imLogic.userInfo.update((val) {
       val?.allowBeep = allowBeep;
     });
+
+    // When enabling sound, automatically disable DND mode
+    if (allowBeep == 1 && isGlobalNotDisturb) {
+      await OpenIM.iMManager.userManager.setSelfInfo(globalRecvMsgOpt: 0);
+      imLogic.userInfo.update((val) {
+        val?.globalRecvMsgOpt = 0;
+      });
+    }
   }
 
   void toggleVibration() async {
     final allowVibration = !isAllowVibration ? 1 : 2;
-    // 1关闭 2开启
+    // 1 = enabled, 2 = disabled
     await LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
         allowVibration: allowVibration,
@@ -128,6 +136,14 @@ class AccountSetupLogic extends GetxController {
     imLogic.userInfo.update((val) {
       val?.allowVibration = allowVibration;
     });
+
+    // When enabling vibration, automatically disable DND mode
+    if (allowVibration == 1 && isGlobalNotDisturb) {
+      await OpenIM.iMManager.userManager.setSelfInfo(globalRecvMsgOpt: 0);
+      imLogic.userInfo.update((val) {
+        val?.globalRecvMsgOpt = 0;
+      });
+    }
   }
 
   void toggleForbidAddMeToFriend() async {

@@ -12,6 +12,8 @@ import 'package:openim/pages/auth/widget/phone_field.dart';
 import 'package:openim/pages/auth/widget/phone_code_field.dart';
 import 'package:openim/pages/auth/widget/nickname_field.dart';
 import 'package:openim/pages/auth/widget/terms_and_conditions_text.dart';
+import 'package:openim/pages/auth/invite_code_binding.dart';
+import 'package:openim/pages/auth/invite_code_view.dart';
 import 'package:openim/routes/app_navigator.dart';
 import 'package:openim_common/openim_common.dart';
 
@@ -202,7 +204,11 @@ class AuthView extends StatelessWidget {
             left: 0,
             top: 10,
             child: GestureDetector(
-              onTap: () => AppNavigator.startInviteCode(),
+              onTap: () => Get.offAll(
+                () => InviteCodeView(),
+                binding: InviteCodeBinding(),
+                transition: Transition.leftToRight,
+              ),
               child: Container(
                 width: 40.w,
                 height: 40.h,

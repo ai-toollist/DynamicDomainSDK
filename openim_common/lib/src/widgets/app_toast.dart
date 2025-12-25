@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 enum ToastType { success, warning, error, info }
 
@@ -88,18 +89,31 @@ class AppToast {
 
   static OverlayState? _getOverlay() {
     try {
+      // Try Get.overlayContext first (most reliable with GetX)
+      if (Get.overlayContext != null) {
+        return Overlay.of(Get.overlayContext!);
+      }
+
+      // Try Get.context
+      if (Get.context != null) {
+        return Overlay.of(Get.context!);
+      }
+
+      // Fallback to focus context
       final context =
           WidgetsBinding.instance.focusManager.primaryFocus?.context;
       if (context != null) {
         return Overlay.of(context);
       }
+
+      // Last resort: use renderViewElement
       final navigatorState = Navigator.of(
-        WidgetsBinding.instance.focusManager.primaryFocus?.context ??
-            WidgetsBinding.instance.renderViewElement!,
+        WidgetsBinding.instance.renderViewElement!,
         rootNavigator: true,
       );
       return navigatorState.overlay;
     } catch (e) {
+      print('[AppToast] Failed to get overlay: $e');
       return null;
     }
   }

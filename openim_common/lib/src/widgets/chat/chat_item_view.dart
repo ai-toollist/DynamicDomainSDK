@@ -496,6 +496,9 @@ class _ChatItemViewState extends State<ChatItemView> {
         key: _bubbleKey,
         behavior: HitTestBehavior.translucent,
         onTap: () {
+          setState(() {
+            _showBottomTime = !_showBottomTime;
+          });
           widget.onClickItemView?.call();
         },
         child: child ?? ChatText(text: StrRes.unsupportedMessage),

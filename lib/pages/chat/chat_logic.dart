@@ -1744,8 +1744,15 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   }
 
   bool get showGroupOnlineInfo {
-    return isGroupChat &&
+    final result = isGroupChat &&
         clientConfigLogic.shouldShowGroupOnlineInfo(groupMemberRoleLevel.value);
+    print('=== DEBUG showGroupOnlineInfo ===');
+    print('isGroupChat: $isGroupChat');
+    print('groupMemberRoleLevel: ${groupMemberRoleLevel.value}');
+    print('onlineInfoVisibility: ${clientConfigLogic.onlineInfoVisibility}');
+    print('onlineUserId count: ${onlineInfoLogic.onlineUserId.length}');
+    print('result: $result');
+    return result;
   }
 
   /// 处理输入框输入@字符
@@ -2353,14 +2360,9 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   void _configUserStatusChanged(UserStatusInfo? status) {
     if (status != null) {
-      final showOnlineDevices = clientConfigLogic.showOnlineDevices;
       final isOnline = status.status == 1;
       onlineStatus.value = isOnline;
-      onlineStatusDesc.value = status.status == 0
-          ? StrRes.offline
-          : showOnlineDevices
-              ? '${_onlineStatusDes(status.platformIDs!)} ${StrRes.online}'
-              : StrRes.online;
+      onlineStatusDesc.value = isOnline ? StrRes.online : StrRes.offline;
 
       if (userID != null) {
         conversationLogic.userOnlineStatusMap[userID!] = isOnline;
@@ -2769,7 +2771,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         message.isQuoteType ||
         message.isCardType ||
         message.isAtTextType ||
-        message.isTagTextType;
+        message.isTagTextType ||
+        message.isVoiceType;
   }
 
   /// 是否显示撤回消息菜单

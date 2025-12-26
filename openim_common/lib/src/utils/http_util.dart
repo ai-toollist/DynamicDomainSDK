@@ -267,6 +267,7 @@ class HttpUtil {
                 await ImageGallerySaverPlus.saveFile(cachePath);
                 IMViews.showToast(
                   "${StrRes.saveSuccessfully}($cachePath)",
+                  type:1
                 );
               },
               milliseconds: 1500);
@@ -280,7 +281,7 @@ class HttpUtil {
               final filePath = result['filePath'].split('//').last;
               tips = '${StrRes.saveSuccessfully}:$filePath';
             }
-            IMViews.showToast(tips);
+            IMViews.showToast(tips,type:1);
           }
         }
       },
@@ -299,7 +300,7 @@ class HttpUtil {
           final filePath = result['filePath'].split('//').last;
           tips = '${StrRes.saveSuccessfully}:$filePath';
         }
-        IMViews.showToast(tips);
+        IMViews.showToast(tips,type:1);
       }
     }
   }
@@ -323,7 +324,7 @@ class HttpUtil {
             final filePath = result['filePath'].split('//').last;
             tips = '${StrRes.saveSuccessfully}:$filePath';
           }
-          IMViews.showToast(tips);
+          IMViews.showToast(tips,type:1);
         }
         onCompletion?.call();
         return;
@@ -345,7 +346,7 @@ class HttpUtil {
                   final filePath = result['filePath'].split('//').last;
                   tips = '${StrRes.saveSuccessfully}:$filePath';
                 }
-                IMViews.showToast(tips);
+                IMViews.showToast(tips,type:1);
               } else {
                 IMViews.showToast(StrRes.saveFailed);
               }
@@ -380,7 +381,7 @@ class HttpUtil {
           final filePath = result['filePath'].split('//').last;
           tips = '${StrRes.saveSuccessfully}:$filePath';
         }
-        IMViews.showToast(tips);
+        IMViews.showToast(tips,type:1);
       } else if (showToast) {
         IMViews.showToast(StrRes.saveFailed);
       }

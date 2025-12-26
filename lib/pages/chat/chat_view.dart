@@ -351,7 +351,7 @@ class ChatPage extends StatelessWidget {
                 ),
               ],
             ),
-
+showTopBodyPadding:false,
             body: WaterMarkBgView(
               text: '',
               path: logic.background.value,
@@ -526,6 +526,36 @@ class ChatPage extends StatelessWidget {
                 ),
               ),
             ),
+            // Online indicator at bottom-right of avatar
+            Obx(() {
+              // For single chat: show if user is online OR typing (typing = online)
+              // For group chat: show if there are online members
+              final showOnlineIndicator = logic.isSingleChat
+                  ? (logic.subTitle
+                          .toLowerCase()
+                          .contains(StrRes.online.toLowerCase()) ||
+                      logic.subTitle
+                          .toLowerCase()
+                          .contains(StrRes.typing.toLowerCase()))
+                  : (logic.isGroupChat &&
+                      logic.onlineInfoLogic.onlineUserId.isNotEmpty);
+
+              return showOnlineIndicator
+                  ? Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 12.w,
+                        height: 12.w,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF34D399),
+                          border: Border.all(color: Colors.white, width: 2.w),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink();
+            }),
           ],
         ),
         12.horizontalSpace,
@@ -571,35 +601,16 @@ class ChatPage extends StatelessWidget {
                       onTap: logic.showGroupOnlineInfo
                           ? logic.viewGroupOnlineInfo
                           : null,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 6.w,
-                            height: 6.h,
-                            margin: EdgeInsets.only(right: 4.w),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: logic.subTitle
-                                      .toLowerCase()
-                                      .contains(StrRes.online.toLowerCase())
-                                  ? const Color(0xFF34D399)
-                                  : Colors.white.withOpacity(0.6),
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              logic.subTitle,
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white.withOpacity(0.8),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        logic.subTitle,
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),

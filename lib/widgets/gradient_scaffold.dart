@@ -41,6 +41,9 @@ class GradientScaffold extends StatelessWidget {
   /// Search box widget (overlapping between header and body)
   final Widget? searchBox;
 
+  /// Whether to show top body padding (optional)
+  final bool showTopBodyPadding;
+
   /// Font sizes
   static const double titleFontSize = 24;
   static const double subtitleFontSize = 14;
@@ -58,6 +61,7 @@ class GradientScaffold extends StatelessWidget {
     this.bodyColor = Colors.white,
     this.avatar,
     this.searchBox,
+    this.showTopBodyPadding = true,
   }) : assert(title != null || titleWidget != null,
             'Either title or titleWidget must be provided');
 
@@ -71,9 +75,9 @@ class GradientScaffold extends StatelessWidget {
     double contentEnd = topPadding + 30.h; // Base: StatusBar + Title + Padding
     if (subtitle != null && subtitle!.isNotEmpty) {
       contentEnd += 24.h; // Add space for subtitle
-    }else if(showBackButton && (avatar == null && searchBox == null)){
+    } else if (showBackButton && (avatar == null && searchBox == null)) {
       contentEnd += 16.h; // Add space for subtitle
-    }else if(showBackButton && (avatar == null && searchBox != null)){
+    } else if (showBackButton && (avatar == null && searchBox != null)) {
       contentEnd += 16.h; // Add space for subtitle
     }
 
@@ -118,11 +122,14 @@ class GradientScaffold extends StatelessWidget {
     }
 
     // 5. Body Padding
-    double bodyTopPadding = 15.h; // Default
-    if (searchBox != null) {
-      bodyTopPadding = 30.h; // Space for the bottom half of searchbox + gap
-    } else if (avatar != null) {
-      bodyTopPadding = 75.h; // Space for bottom half of avatar + gap
+    double bodyTopPadding =
+        showTopBodyPadding ? 15.h : 0; // Use 0 if showTopBodyPadding is false
+    if (showTopBodyPadding) {
+      if (searchBox != null) {
+        bodyTopPadding = 30.h; // Space for the bottom half of searchbox + gap
+      } else if (avatar != null) {
+        bodyTopPadding = 75.h; // Space for bottom half of avatar + gap
+      }
     }
 
     // Build Body Content
@@ -184,10 +191,13 @@ class GradientScaffold extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: topPadding),
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                Container(
+                  padding: EdgeInsets.only(
+                    top: topPadding + 10.h,
+                    bottom: 12.h, // Consistent bottom padding
+                    left: 20.w,
+                    right: 20.w,
+                  ),
                   child: Row(
                     crossAxisAlignment:
                         CrossAxisAlignment.center, // Align to top
@@ -294,4 +304,3 @@ class GradientScaffold extends StatelessWidget {
     );
   }
 }
-

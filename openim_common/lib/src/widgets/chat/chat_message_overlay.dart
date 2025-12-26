@@ -36,6 +36,15 @@ class MessageOverlayHelper {
     // Check if context is valid before capturing
     if (!context.mounted) return;
 
+    // Dismiss keyboard before showing overlay
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    // Wait a bit for keyboard to dismiss
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    // Check if context is still valid after delay
+    if (!context.mounted) return;
+
     // Get overlay reference BEFORE any async operations
     final OverlayState? overlay;
     try {

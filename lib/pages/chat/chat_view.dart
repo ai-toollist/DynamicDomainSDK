@@ -323,8 +323,8 @@ class ChatPage extends StatelessWidget {
           return GradientScaffold(
             titleWidget: _userInfo(),
             showBackButton: true,
-            // Override back behavior if multi-select mode is active
-            onBack: logic.multiSelMode.value ? logic.closeMultiSelMode : null,
+            // Custom back handler to properly handle navigation
+            onBack: logic.onBackPressed,
             scrollable: false,
             // Header trailing buttons (Call, More)
             trailing: Row(

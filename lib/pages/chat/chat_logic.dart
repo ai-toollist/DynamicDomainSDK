@@ -33,6 +33,7 @@ import '../../core/im_callback.dart';
 import 'dart:math' as math;
 import '../../core/controller/trtc_controller.dart';
 import '../../routes/app_navigator.dart';
+import '../../routes/app_pages.dart';
 import '../contacts/select_contacts/select_contacts_logic.dart';
 import '../conversation/conversation_logic.dart';
 import 'group_setup/group_member_list/group_member_list_logic.dart';
@@ -1542,6 +1543,39 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     }
     Get.back(result: createDraftText());
     return true;
+  }
+
+  /// Handle back button press from GradientScaffold
+  /// Always navigates back to conversation list
+  void onBackPressed() {
+    print('=== onBackPressed called ===');
+
+    // Close multi-select mode if active (but still navigate)
+    if (multiSelMode.value) {
+      closeMultiSelMode();
+    }
+
+    // Close pop menu if showing (but still navigate)
+    if (isShowPopMenu.value) {
+      forceCloseMenuSub.add(true);
+    }
+
+    // Always navigate back to conversation list (home screen)
+    final draftText = createDraftText();
+    print('Navigating back to home...');
+    Get.until((route) {
+      print('Checking route: ${route.settings.name}');
+      return route.settings.name == AppRoutes.home;
+    });
+    print('Navigation completed');
+
+    // Save draft text after navigation
+    if (draftText.isNotEmpty) {
+      conversationLogic.setConversationDraft(
+        cid: conversationInfo.conversationID,
+        draftText: draftText,
+      );
+    }
   }
 
   void _updateDartText(String text) {

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
@@ -114,13 +113,18 @@ class CreateGroupLogic extends GetxController {
         ),
       );
 
-      conversationLogic.toChat(
-        offUntilHome: false, // Use Get.toNamed to avoid controller reuse issues
-        groupID: info.groupID,
-        nickname: groupName,
-        faceURL: faceURL.value,
-        sessionType:
-            ConversationType.superGroup, // Work groups are super groups
+      // Create conversation first to ensure it exists
+      final conversationInfo =
+          await OpenIM.iMManager.conversationManager.getOneConversation(
+        sourceID: info.groupID,
+        sessionType: ConversationType.superGroup,
+      );
+
+      // Navigate to chat - the custom onBackPressed in chat_logic.dart
+      // will handle going back to home screen
+      await AppNavigator.startChat(
+        conversationInfo: conversationInfo,
+        offUntilHome: false, // Use normal navigation
       );
     } catch (e) {
       if (e is PlatformException) {

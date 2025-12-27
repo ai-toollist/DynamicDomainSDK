@@ -150,7 +150,7 @@ class InviteCodeLogic extends GetxController {
 
   @override
   void onClose() {
-    inviteCodeController.dispose();
+    // inviteCodeController.dispose();
     inviteCodeFocusNode.dispose();
     super.onClose();
   }

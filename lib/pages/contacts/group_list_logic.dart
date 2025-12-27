@@ -95,7 +95,17 @@ class GroupListLogic extends GetxController {
         count: count,
       );
 
-      allGroups.addAll(list);
+      // Avoid duplicates by checking if group already exists
+      for (final group in list) {
+        final existingIndex =
+            allGroups.indexWhere((g) => g.groupID == group.groupID);
+        if (existingIndex == -1) {
+          allGroups.add(group);
+        } else {
+          // Update existing group info
+          allGroups[existingIndex] = group;
+        }
+      }
       return list.length;
     } catch (e) {
       print('Error loading groups: $e');

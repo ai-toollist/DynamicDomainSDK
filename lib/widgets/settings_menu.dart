@@ -158,13 +158,18 @@ class SettingsMenuItem extends StatelessWidget {
           _buildSwitch()
         else ...[
           if (value != null)
-            Text(
-              value!,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontWeight: FontWeight.w400,
-                fontSize: 14.sp,
-                color: const Color(0xFF9CA3AF),
+            Flexible(
+              child: Text(
+                value!,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14.sp,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
               ),
             ),
           if (valueWidget != null) valueWidget!,

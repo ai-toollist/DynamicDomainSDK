@@ -100,16 +100,11 @@ class SearchChatHistoryPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
+      padding: EdgeInsets.only(top: 16.h),
       // decoration removed as it is handled by the parent container
       child: Builder(
         builder: (context) => Obx(() => logic.isNotKey && logic.isNotDate
-            ?
-            //  SingleChildScrollView(
-            //     physics: const BouncingScrollPhysics(),
-            //     padding: EdgeInsets.only(bottom: 20.h),
-            //     child: _defaultView(context),
-            //   )
-            EmptyView(
+            ? EmptyView(
                 message: StrRes.pleaseEnterToSearch,
                 icon: Ionicons.search,
               )
@@ -246,7 +241,6 @@ class SearchChatHistoryPage extends StatelessWidget {
   }
 
   Widget _resultView(BuildContext ctx) => Container(
-        padding: EdgeInsets.only(top: 16.h),
         height: double.infinity,
         child: SmartRefresher(
           controller: logic.refreshController,

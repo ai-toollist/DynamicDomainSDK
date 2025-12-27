@@ -9,6 +9,8 @@ import '../pages/contacts/contacts_logic.dart';
 import '../pages/contacts/group_profile_panel/group_profile_panel_logic.dart';
 import '../pages/contacts/select_contacts/select_contacts_logic.dart';
 import '../pages/mine/edit_my_info/edit_my_info_logic.dart';
+import '../pages/auth/invite_code_binding.dart';
+import '../pages/auth/invite_code_view.dart';
 import 'app_pages.dart';
 
 class AppNavigator {
@@ -23,7 +25,11 @@ class AppNavigator {
   }
 
   static void startInviteCode() {
-    Get.offAllNamed(AppRoutes.inviteCode);
+    // Clear entire navigation stack to prevent back navigation
+    Get.offAll(
+      () => InviteCodeView(),
+      binding: InviteCodeBinding(),
+    );
   }
 
   static void startAuth({int initialTab = 0}) {
@@ -32,7 +38,10 @@ class AppNavigator {
 
   /// Navigate to auth screen and clear entire navigation stack (for logout)
   static void startAuthAfterLogout({int initialTab = 0}) {
-    Get.offAllNamed(AppRoutes.auth, arguments: {'tab': initialTab});
+    Get.offAll(
+      () => InviteCodeView(),
+      binding: InviteCodeBinding(),
+    );
   }
 
   static Future? startGatewaySwitcher({Function()? onSwitch}) {
@@ -460,13 +469,27 @@ class AppNavigator {
       defaultCheckedIDList: excludeIDs,
       excludeIDList: excludeIDs, // Hide already-selected users from the list
     );
+
+    // Convert UserInfo to Map for proper serialization
+    final defaultCheckedMaps = defaultCheckedList
+        .map((u) => {
+              'userID': u.userID,
+              'nickname': u.nickname,
+              'faceURL': u.faceURL,
+            })
+        .toList();
+
+    // Get newly selected members (may be empty)
     final list = IMUtils.convertSelectContactsResultToUserInfo(result);
-    if (list is List<UserInfo>) {
+    final checkedList = (list is List<UserInfo>) ? list : <UserInfo>[];
+
+    // Navigate to create group even if no new members selected
+    if (checkedList.isNotEmpty || defaultCheckedList.isNotEmpty) {
       return Get.toNamed(
         AppRoutes.createGroup,
         arguments: {
-          'checkedList': list,
-          'defaultCheckedList': defaultCheckedList
+          'checkedList': checkedList,
+          'defaultCheckedMaps': defaultCheckedMaps,
         },
       );
     }

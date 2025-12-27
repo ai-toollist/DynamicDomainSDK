@@ -123,8 +123,10 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
   @override
   void onReady() {
     super.onReady();
-    // Focus on invite code field first since we start in invite code phase
-    inviteCodeFocusNode.requestFocus();
+    // Unfocus to close keyboard from invite code screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
     initPackageInfo();
     // Start gradient animation
     _startGradientAnimation();
@@ -147,13 +149,13 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
     inviteCodeFocusNode.dispose();
 
     // Dispose controllers
-    loginPhoneController.dispose();
-    loginPasswordController.dispose();
-    registerPhoneController.dispose();
-    registerNameController.dispose();
-    registerPasswordController.dispose();
-    registerPasswordConfirmationController.dispose();
-    registerVerificationCodeController.dispose();
+    // loginPhoneController.dispose();
+    // loginPasswordController.dispose();
+    // registerPhoneController.dispose();
+    // registerNameController.dispose();
+    // registerPasswordController.dispose();
+    // registerPasswordConfirmationController.dispose();
+    // registerVerificationCodeController.dispose();
 
     // Dispose focus nodes
     loginPhoneFocusNode.dispose();
@@ -224,7 +226,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
 
     // Validation rules
     final phoneValid = phone.isNotEmpty && IMUtils.isChinaMobile(cleanPhone);
-    final nameValid = name.length >= 2;
+    final nameValid = name.isNotEmpty;
     final passwordValid = password.length >= 8 &&
         password.length <= 20 &&
         RegExp(r'[a-zA-Z]').hasMatch(password) &&
@@ -333,9 +335,9 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
     IMViews.showToast(StrRes.savedInviteCode, type: 1);
 
     // Focus on login phone field after animation
-    Future.delayed(const Duration(milliseconds: 600), () {
-      loginPhoneFocusNode.requestFocus();
-    });
+    // Future.delayed(const Duration(milliseconds: 600), () {
+    //   loginPhoneFocusNode.requestFocus();
+    // });
   }
 
   /// Edit invite code - transitions back to invite code phase

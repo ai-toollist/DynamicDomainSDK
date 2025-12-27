@@ -197,13 +197,40 @@ class SearchGroupMemberPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 157.verticalSpace,
-            // ImageRes.blacklistEmpty.toImage
-            //   ..width = 120.w
-            //   ..height = 120.h,
-            // 22.verticalSpace,
-            44.verticalSpace,
-            StrRes.searchNotFound.toText..style = Styles.ts_8E9AB0_17sp,
+            80.verticalSpace,
+            Container(
+              width: 80.w,
+              height: 80.w,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Ionicons.search_outline,
+                size: 36.w,
+                color: const Color(0xFF9CA3AF),
+              ),
+            ),
+            20.verticalSpace,
+            Text(
+              StrRes.searchNotFound,
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+            8.verticalSpace,
+            Text(
+              'Try a different keyword',
+              style: TextStyle(
+                fontFamily: 'FilsonPro',
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF9CA3AF),
+              ),
+            ),
           ],
         ),
       );

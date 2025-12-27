@@ -183,15 +183,46 @@ class GroupMemberListPage extends StatelessWidget {
         final memberListRef = logic.memberList;
 
         if (isSearching && isSearchNotResult) {
-          return Center(
-            child: Text(
-              StrRes.searchNotFound,
-              style: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF9CA3AF),
-              ),
+          return SizedBox(
+            width: 1.sw,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                80.verticalSpace,
+                Container(
+                  width: 80.w,
+                  height: 80.w,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF3F4F6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Ionicons.search_outline,
+                    size: 36.w,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                ),
+                20.verticalSpace,
+                Text(
+                  StrRes.searchNotFound,
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+                8.verticalSpace,
+                Text(
+                  'Try a different keyword',
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                ),
+              ],
             ),
           );
         }
@@ -283,6 +314,9 @@ class _MemberItemView extends StatelessWidget {
     this.isLast = false,
   });
 
+  /// Get display name: prioritize remark name, fallback to nickname
+  String get _displayName => logic.getDisplayName(member);
+
   @override
   Widget build(BuildContext context) {
     if (logic.hiddenMember(member)) return const SizedBox();
@@ -312,7 +346,7 @@ class _MemberItemView extends StatelessWidget {
                       ),
                     AvatarView(
                       url: member.faceURL,
-                      text: member.nickname,
+                      text: _displayName,
                       width: 42.w,
                       height: 42.w,
                       isCircle: true,
@@ -320,7 +354,7 @@ class _MemberItemView extends StatelessWidget {
                     16.horizontalSpace,
                     Expanded(
                       child: Text(
-                        member.nickname ?? '',
+                        _displayName,
                         style: TextStyle(
                           fontFamily: 'FilsonPro',
                           fontSize: 16.sp,
@@ -530,7 +564,7 @@ class _CheckedConfirmView extends StatelessWidget {
                             Text(
                               logic.checkedList.isNotEmpty
                                   ? logic.checkedList
-                                      .map((e) => e.nickname ?? '')
+                                      .map((e) => logic.getDisplayName(e))
                                       .join('、')
                                   : '',
                               style: TextStyle(
@@ -762,7 +796,7 @@ class SelectedMemberListView extends StatelessWidget {
                   width: 48.w,
                   height: 48.h,
                   url: membersInfo.faceURL,
-                  text: membersInfo.nickname,
+                  text: logic.getDisplayName(membersInfo),
                   textStyle: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -775,7 +809,7 @@ class SelectedMemberListView extends StatelessWidget {
                 // Member info
                 Expanded(
                   child: Text(
-                    membersInfo.nickname ?? '',
+                    logic.getDisplayName(membersInfo),
                     style: TextStyle(
                       fontFamily: 'FilsonPro',
                       fontSize: 16.sp,

@@ -262,6 +262,18 @@ class GroupSetupLogic extends GetxController {
   bool get showGroupManagement =>
       clientConfigLogic.adminHasManagementAccess ? isOwnerOrAdmin : isOwner;
 
+  /// Get display name for a member: prioritize remark name, fallback to nickname
+  String getDisplayName(GroupMembersInfo member) {
+    if (member.userID != null &&
+        imLogic.userRemarkMap.containsKey(member.userID)) {
+      final remark = imLogic.userRemarkMap[member.userID];
+      if (remark != null && remark.isNotEmpty) {
+        return remark;
+      }
+    }
+    return member.nickname ?? '';
+  }
+
   void _initMemberStatusListener() {
     // Listen to user status changes for group members
     imLogic.userStatusChangedSubject.listen((userStatus) {
@@ -509,8 +521,14 @@ class GroupSetupLogic extends GetxController {
         ),
       ),
       onConfirm: () {
+        final newName = nameController.text.trim();
+        // If empty or unchanged, show toast (type 2 warning)
+        if (newName.isEmpty || newName == groupInfo.value.groupName) {
+          IMViews.showToast("Group name cannot be empty or unchanged", type: 2);
+          return;
+        }
+
         if (canSubmit.value) {
-          final newName = nameController.text.trim();
           Get.back();
           _updateGroupName(newName);
         }
@@ -582,8 +600,15 @@ class GroupSetupLogic extends GetxController {
         ),
       ),
       onConfirm: () {
+        final newName = nameController.text.trim();
+        // If empty or unchanged, show toast (type 2 warning)
+        if (newName.isEmpty || newName == myGroupMembersInfo.value.nickname) {
+          IMViews.showToast("Nickname cannot be empty or unchanged", type: 2);
+          return;
+        }
+
+        // Otherwise proceed with update
         if (canSubmit.value) {
-          final newName = nameController.text.trim();
           Get.back();
           _updateMyGroupNickname(newName);
         }

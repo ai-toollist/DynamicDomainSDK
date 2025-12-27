@@ -34,7 +34,7 @@ class AuthView extends StatelessWidget {
         }
       },
       child: TouchCloseSoftKeyboard(
-        isGradientBg: false,
+        isGradientBg: true,
         child: Scaffold(
           body: Stack(
             children: [
@@ -133,7 +133,7 @@ class AuthView extends StatelessWidget {
                     MainAxisSize.max, // Chiếm toàn bộ chiều cao cố định
                 children: [
                   // Header với logo (fixed, không scroll)
-                  _buildFormHeader(primaryColor),
+                  _buildFormHeader(context, primaryColor),
                   // Form content với scroll bên trong - căn giữa nếu nội dung ngắn
                   Flexible(
                     child: _buildFormContent(primaryColor),
@@ -147,7 +147,7 @@ class AuthView extends StatelessWidget {
     );
   }
 
-  Widget _buildFormHeader(Color primaryColor) {
+  Widget _buildFormHeader(BuildContext context, Color primaryColor) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 10.h),
@@ -213,11 +213,32 @@ class AuthView extends StatelessWidget {
             left: 0,
             top: 10,
             child: GestureDetector(
-              onTap: () => Get.offAll(
-                () => InviteCodeView(),
-                binding: InviteCodeBinding(),
-                transition: Transition.leftToRight,
-              ),
+              onTap: () {
+                if (Navigator.canPop(context)) {
+                  Get.back();
+                } else {
+                  InviteCodeBinding().dependencies();
+                  Navigator.of(context).pushReplacement(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          InviteCodeView(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(-1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                      transitionDuration: const Duration(milliseconds: 300),
+                    ),
+                  );
+                }
+              },
               child: Container(
                 width: 40.w,
                 height: 40.h,

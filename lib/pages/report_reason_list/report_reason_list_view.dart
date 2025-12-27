@@ -83,19 +83,20 @@ class ReportReasonListPage extends StatelessWidget {
     return GradientScaffold(
       title: StrRes.report,
       showBackButton: true,
-      trailing: Container(
-        width: 44.w,
-        height: 44.w,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: Icon(
-          Icons.flag_outlined,
-          color: Colors.white,
-          size: 22.w,
-        ),
-      ),
+
+      // trailing: Container(
+      //   width: 44.w,
+      //   height: 44.w,
+      //   decoration: BoxDecoration(
+      //     color: Colors.white.withOpacity(0.2),
+      //     borderRadius: BorderRadius.circular(12.r),
+      //   ),
+      //   child: Icon(
+      //     Icons.flag_outlined,
+      //     color: Colors.white,
+      //     size: 22.w,
+      //   ),
+      // ),
       body: ClipRRect(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(30.r),

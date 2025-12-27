@@ -481,7 +481,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
         ? const ChatDisableInputBox()
         : widget.isMultiModel
             ? widget.multiOpToolbox
-            : Padding(
+            : Container(
+                color: Colors.white,
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: Column(
                   children: [

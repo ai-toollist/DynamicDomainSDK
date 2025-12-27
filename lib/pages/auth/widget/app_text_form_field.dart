@@ -59,33 +59,37 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   void initState() {
     super.initState();
     _formFieldKey = widget.formFieldKey ?? GlobalKey<FormFieldState>();
-    _internalFocusNode = widget.focusNode ?? FocusNode();
+    // Always create internal FocusNode to avoid disposed node issues
+    _internalFocusNode = FocusNode();
     _internalFocusNode.addListener(_onFocusChange);
   }
 
   void _onFocusChange() {
+    if (!mounted) return;
     if (_internalFocusNode.hasFocus) {
       _hasFocusedOnce = true;
     } else if (_hasFocusedOnce) {
-      // Validate when losing focus after having been focused
       _formFieldKey.currentState?.validate();
+    }
+  }
+
+  bool _hasTextContent() {
+    try {
+      return widget.controller?.text.isNotEmpty ?? false;
+    } catch (_) {
+      return false;
     }
   }
 
   @override
   void dispose() {
     _internalFocusNode.removeListener(_onFocusChange);
-    // Only dispose if we created the FocusNode (not passed from parent)
-    if (widget.focusNode == null) {
-      _internalFocusNode.dispose();
-    }
+    _internalFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final focusNode = widget.focusNode ?? _internalFocusNode;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -106,7 +110,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
         key: _formFieldKey,
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
-        focusNode: focusNode,
+        focusNode: _internalFocusNode,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) => widget.validator(value),
         onChanged: widget.onChanged,
@@ -116,11 +120,10 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
         decoration: InputDecoration(
           counterText: '',
           label: AnimatedBuilder(
-            animation:
-                Listenable.merge([focusNode, widget.controller ?? FocusNode()]),
+            animation: _internalFocusNode,
             builder: (context, _) {
-              final isFloating = focusNode.hasFocus == true ||
-                  (widget.controller?.text.isNotEmpty ?? false);
+              final isFloating =
+                  _internalFocusNode.hasFocus || _hasTextContent();
 
               return RichText(
                 text: TextSpan(

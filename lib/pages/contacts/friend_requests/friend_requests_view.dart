@@ -189,6 +189,7 @@ class FriendRequestsPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AvatarView(
                 width: 52.w,
@@ -224,15 +225,15 @@ class FriendRequestsPage extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                           color: const Color(0xFF6B7280),
                         ),
-                        maxLines: 1,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
+                    12.verticalSpace,
+                    _buildActionWidget(info, isISendRequest, primaryColor),
                   ],
                 ),
               ),
-              16.horizontalSpace,
-              _buildActionWidget(info, isISendRequest, primaryColor),
             ],
           ),
         ),
@@ -282,61 +283,66 @@ class FriendRequestsPage extends StatelessWidget {
     } else {
       if (info.isWaitingHandle) {
         return Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () => logic.refuseFriendApplication(info),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                    color: const Color(0xFFDC2626).withOpacity(0.3),
-                    width: 1,
+            Expanded(
+              child: GestureDetector(
+                onTap: () => logic.refuseFriendApplication(info),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEE2E2),
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: const Color(0xFFDC2626).withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: Text(
-                  StrRes.reject,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFFDC2626),
+                  alignment: Alignment.center,
+                  child: Text(
+                    StrRes.reject,
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFDC2626),
+                    ),
                   ),
                 ),
               ),
             ),
-            8.horizontalSpace,
-            GestureDetector(
-              onTap: () => logic.acceptFriendApplication(info),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      primaryColor,
-                      primaryColor.withOpacity(0.8),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withOpacity(0.3),
-                      offset: const Offset(0, 2),
-                      blurRadius: 6,
+            12.horizontalSpace,
+            Expanded(
+              child: GestureDetector(
+                onTap: () => logic.acceptFriendApplication(info),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor,
+                        primaryColor.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: Text(
-                  StrRes.accept,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryColor.withOpacity(0.3),
+                        offset: const Offset(0, 2),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    StrRes.accept,
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

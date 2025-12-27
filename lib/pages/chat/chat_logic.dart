@@ -1284,7 +1284,14 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   void _handleAssets(AssetEntity? asset) async {
     if (null != asset) {
       Logger.print('--------assets type-----${asset.type}');
-      var path = (await asset.file)!.path;
+      // Use originFile first, fallback to file for limited photo access compatibility
+      final file = await asset.originFile ?? await asset.file;
+      if (file == null) {
+        Logger.print('--------assets file is null, cannot process');
+        IMViews.showToast(StrRes.sendFailed);
+        return;
+      }
+      final path = file.path;
       Logger.print('--------assets path-----$path');
       switch (asset.type) {
         case AssetType.image:
@@ -1293,11 +1300,12 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         case AssetType.video:
           var thumbnailFile = await IMUtils.getVideoThumbnail(File(path));
           LoadingView.singleton.show();
-          final file = await IMUtils.compressVideoAndGetFile(File(path));
+          final compressedFile =
+              await IMUtils.compressVideoAndGetFile(File(path));
           LoadingView.singleton.dismiss();
 
           sendVideo(
-            videoPath: file!.path,
+            videoPath: compressedFile!.path,
             mimeType: asset.mimeType ?? IMUtils.getMediaType(path) ?? '',
             duration: asset.duration,
             // duration: mediaInfo.duration?.toInt() ?? 0,
@@ -1575,6 +1583,13 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   @override
   void onClose() {
+    // Force hide message overlay if it's showing
+    try {
+      MessageOverlayHelper.hide();
+    } catch (e) {
+      Logger.print('Error hiding message overlay: $e');
+    }
+
     sendTypingMsg();
     _clearUnreadCount();
     // ChatGetTags.caches.removeLast();
@@ -1845,23 +1860,35 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         if (hasAtAll) curMsgAtUser.add(imLogic.atAllTag);
         curMsgAtUser.addAll(finalSelectedIDs);
 
-        // Remove all existing mention tokens (naive removal by @userID patterns)
-        var remainingText = inputCtrl.text;
-        // remove any @<id> tokens and surrounding whitespace
-        remainingText = remainingText.replaceAll(RegExp(r'@\w+\s*'), '');
-        // remove any leftover leading '@' characters (user may have typed the trigger)
-        remainingText = remainingText.replaceFirst(RegExp(r'^@+\s*'), '');
-        remainingText = remainingText.trimLeft();
+        // Get current text and remove the trigger '@' at cursor position
+        var text = inputCtrl.text;
+        var insertPos = cursor;
 
-        // Build mention prefix from finalSelectedIDs
-        var mentionPrefix = '';
-        if (finalSelectedIDs.isNotEmpty) {
-          mentionPrefix = finalSelectedIDs.map((id) => '@$id').join(' ') + ' ';
+        // Remove the '@' that triggered the selection
+        // Check at cursor position first (cursor captured before '@' was added by formatter)
+        // Then check at cursor-1 (cursor captured after '@' was typed)
+        if (cursor >= 0 && cursor < text.length && text[cursor] == '@') {
+          text = text.substring(0, cursor) + text.substring(cursor + 1);
+          insertPos = cursor;
+        } else if (cursor > 0 &&
+            cursor <= text.length &&
+            text[cursor - 1] == '@') {
+          text = text.substring(0, cursor - 1) + text.substring(cursor);
+          insertPos = cursor - 1;
         }
 
-        inputCtrl.text = '$mentionPrefix$remainingText';
+        // Build mention string for newly selected members only
+        var mentionStr = '';
+        if (finalSelectedIDs.isNotEmpty) {
+          mentionStr = finalSelectedIDs.map((id) => '@$id').join(' ') + ' ';
+        }
+
+        // Insert mention at cursor position (preserving text before and after)
+        var before = text.substring(0, insertPos);
+        var after = text.substring(insertPos);
+        inputCtrl.text = '$before$mentionStr$after';
         inputCtrl.selection = TextSelection.fromPosition(TextPosition(
-          offset: mentionPrefix.length,
+          offset: before.length + mentionStr.length,
         ));
         _lastCursorIndex = inputCtrl.selection.start;
       });
@@ -2069,7 +2096,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     if (isSingleChat) {
       return clientConfigLogic.showAudioAndVideoCall;
     }
-    return clientConfigLogic.showAudioAndVideoCall && isAdminOrOwner;
+    // Temporarily hide call buttons in group chat
+    return false;
   }
 
   /// 音频通话
@@ -2362,7 +2390,17 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     if (status != null) {
       final isOnline = status.status == 1;
       onlineStatus.value = isOnline;
-      onlineStatusDesc.value = isOnline ? StrRes.online : StrRes.offline;
+
+      if (isOnline &&
+          status.platformIDs != null &&
+          status.platformIDs!.isNotEmpty) {
+        // Show platform names when online
+        final platformDesc = _onlineStatusDes(status.platformIDs!);
+        onlineStatusDesc.value =
+            platformDesc.isNotEmpty ? platformDesc : StrRes.online;
+      } else {
+        onlineStatusDesc.value = StrRes.offline;
+      }
 
       if (userID != null) {
         conversationLogic.userOnlineStatusMap[userID!] = isOnline;

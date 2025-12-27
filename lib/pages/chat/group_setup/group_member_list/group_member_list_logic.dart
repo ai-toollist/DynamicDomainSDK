@@ -64,6 +64,15 @@ class GroupMemberListLogic extends GetxController {
 
   bool get isOwnerOrAdmin => isAdmin || isOwner;
 
+  /// Get display name for a member: prioritize remark name, fallback to nickname
+  String getDisplayName(GroupMembersInfo member) {
+    final remark = imLogic.userRemarkMap[member.userID];
+    if (remark != null && remark.isNotEmpty) {
+      return remark;
+    }
+    return member.nickname ?? '';
+  }
+
   // int get maxLength => maxSelectCount ?? min(groupInfo.memberCount!, 10);
   int get maxLength => min(groupInfo.memberCount!, 10);
 
@@ -307,6 +316,32 @@ class GroupMemberListLogic extends GetxController {
           count: 100,
         ),
       );
+
+      // Also search by friend remark name
+      final keyLower = key.toLowerCase();
+      final remarkMatches = <String>[];
+      for (var entry in imLogic.userRemarkMap.entries) {
+        final userId = entry.key;
+        final remark = entry.value.toLowerCase();
+        if (remark.contains(keyLower) && !list.any((m) => m.userID == userId)) {
+          remarkMatches.add(userId);
+        }
+      }
+
+      // Fetch member info for remark matches
+      if (remarkMatches.isNotEmpty) {
+        try {
+          final memberInfos =
+              await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+            groupID: groupInfo.groupID,
+            userIDList: remarkMatches,
+          );
+          list.addAll(memberInfos);
+        } catch (e) {
+          // User might not be a member of this group, ignore
+        }
+      }
+
       searchResults.assignAll(list);
       isSearching.value = true;
     }

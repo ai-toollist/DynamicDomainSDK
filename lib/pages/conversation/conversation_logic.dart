@@ -1014,57 +1014,74 @@ class ConversationLogic extends SuperController {
     ConversationInfo? conversationInfo,
     Message? searchMessage,
   }) async {
-    // 获取会话信息，若不存在则创建
-    conversationInfo ??= await _createConversation(
-      sourceID: userID ?? groupID!,
-      sessionType: userID == null ? sessionType! : ConversationType.single,
-    );
+    try {
+      print('=== toChat called ===');
+      print('groupID: $groupID, userID: $userID, sessionType: $sessionType');
 
-    // 标记已读
-    // _markMessageHasRead(conversationID: conversationInfo.conversationID);
+      // 获取会话信息，若不存在则创建
+      if (conversationInfo == null) {
+        print('Creating conversation...');
+        conversationInfo = await _createConversation(
+          sourceID: userID ?? groupID!,
+          sessionType: userID == null ? sessionType! : ConversationType.single,
+        );
+        print('Conversation created: ${conversationInfo.conversationID}');
+      }
 
-    // 如果是系统通知
-    if (await _jumpOANtf(conversationInfo)) return;
+      // 标记已读
+      // _markMessageHasRead(conversationID: conversationInfo.conversationID);
 
-    // 保存旧草稿
-    updateDartText(
-      conversationID: conversationInfo.conversationID,
-      text: conversationInfo.draftText ?? '',
-    );
+      // 如果是系统通知
+      if (await _jumpOANtf(conversationInfo)) return;
 
-    // 打开聊天窗口，关闭返回草稿
-    /*var newDraftText = */
-    await AppNavigator.startChat(
-      offUntilHome: offUntilHome,
-      draftText: conversationInfo.draftText,
-      conversationInfo: conversationInfo,
-      searchMessage: searchMessage,
-    );
-
-    // 读取草稿
-    var newDraftText = tempDraftText[conversationInfo.conversationID];
-
-    // 标记已读
-    _markMessageHasRead(conversationInfo);
-
-    // 记录草稿
-    _setupDraftText(
-      conversationID: conversationInfo.conversationID,
-      oldDraftText: conversationInfo.draftText ?? '',
-      newDraftText: newDraftText!,
-    );
-
-    // 回到会话列表
-    // homeLogic.switchTab(0);
-
-    bool equal(e) => e.conversationID == conversationInfo?.conversationID;
-    // 删除所有@标识/公告标识
-    var groupAtType = list.firstWhereOrNull(equal)?.groupAtType;
-    if (groupAtType != GroupAtType.atNormal) {
-      // ignore: deprecated_member_use
-      OpenIM.iMManager.conversationManager.resetConversationGroupAtType(
+      // 保存旧草稿
+      updateDartText(
         conversationID: conversationInfo.conversationID,
+        text: conversationInfo.draftText ?? '',
       );
+
+      print('Starting chat navigation...');
+      // 打开聊天窗口，关闭返回草稿
+      /*var newDraftText = */
+      await AppNavigator.startChat(
+        offUntilHome: offUntilHome,
+        draftText: conversationInfo.draftText,
+        conversationInfo: conversationInfo,
+        searchMessage: searchMessage,
+      );
+
+      // 读取草稿
+      var newDraftText = tempDraftText[conversationInfo.conversationID];
+
+      // 标记已读
+      _markMessageHasRead(conversationInfo);
+
+      // 记录草稿
+      if (newDraftText != null) {
+        _setupDraftText(
+          conversationID: conversationInfo.conversationID,
+          oldDraftText: conversationInfo.draftText ?? '',
+          newDraftText: newDraftText,
+        );
+      }
+
+      // 回到会话列表
+      // homeLogic.switchTab(0);
+
+      bool equal(e) => e.conversationID == conversationInfo?.conversationID;
+      // 删除所有@标识/公告标识
+      var groupAtType = list.firstWhereOrNull(equal)?.groupAtType;
+      if (groupAtType != GroupAtType.atNormal) {
+        // ignore: deprecated_member_use
+        OpenIM.iMManager.conversationManager.resetConversationGroupAtType(
+          conversationID: conversationInfo.conversationID,
+        );
+      }
+    } catch (e, s) {
+      print('=== toChat ERROR ===');
+      print('Error: $e');
+      print('Stack: $s');
+      IMViews.showToast('Failed to open chat: $e');
     }
   }
 

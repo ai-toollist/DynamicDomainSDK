@@ -328,7 +328,7 @@ class GroupSetupPage extends StatelessWidget {
                           width: 48.w,
                           height: 48.h,
                           url: info.faceURL,
-                          text: info.nickname,
+                          text: logic.getDisplayName(info),
                           textStyle: TextStyle(
                             fontFamily: 'FilsonPro',
                             fontSize: 14.sp,
@@ -370,7 +370,7 @@ class GroupSetupPage extends StatelessWidget {
                     ),
                     4.verticalSpace,
                     Text(
-                      info.nickname ?? '',
+                      logic.getDisplayName(info),
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
                         fontSize: 10.sp,

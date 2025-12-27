@@ -120,6 +120,7 @@ const Map<String, String> en_US = {
   "wrongPasswordFormat": "8-20 chars, include letters & numbers",
   "passwordMustLength": "Password must be 8-20 characters long",
   "plsCompleteInfo": "Please complete your personal information",
+  "nameLengthError": "Nickname must be at least 2 characters",
   "plsEnterYourNickname": "Please enter your nickname",
   "setInfo": "Set Information",
   "loginPwdFormat":

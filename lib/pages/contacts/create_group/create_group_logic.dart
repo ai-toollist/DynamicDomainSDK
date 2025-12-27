@@ -21,12 +21,62 @@ class CreateGroupLogic extends GetxController {
 
   @override
   void onInit() {
-    final argDefault = Get.arguments?['defaultCheckedList'];
-    if (argDefault is List) defaultCheckedList.addAll(argDefault.cast<UserInfo>());
+    print('=== CreateGroupLogic onInit ===');
+    print('Get.arguments: ${Get.arguments}');
+
+    // Always add current user first
+    final currentUser = OpenIM.iMManager.userInfo;
+    allList.add(UserInfo(
+      userID: currentUser.userID,
+      nickname: currentUser.nickname,
+      faceURL: currentUser.faceURL,
+    ));
+    print(
+        'Added current user: ${currentUser.nickname} (${currentUser.userID})');
+
+    // Read defaultCheckedMaps (List of Maps) - contains chat partner info
+    final argDefaultMaps = Get.arguments?['defaultCheckedMaps'];
+    print('argDefaultMaps: $argDefaultMaps');
+
+    if (argDefaultMaps is List) {
+      for (var map in argDefaultMaps) {
+        if (map is Map) {
+          final userID = map['userID'] as String?;
+          // Skip if it's the current user (already added)
+          if (userID != null && userID != currentUser.userID) {
+            final user = UserInfo(
+              userID: userID,
+              nickname: map['nickname'] as String?,
+              faceURL: map['faceURL'] as String?,
+            );
+            defaultCheckedList.add(user);
+            allList.add(user);
+            print(
+                '  Added from defaultCheckedMaps: ${user.nickname} (${user.userID})');
+          }
+        }
+      }
+    }
+
+    // Read checkedList (List of UserInfo) - newly selected members
     final argChecked = Get.arguments?['checkedList'];
-    if (argChecked is List) checkedList.addAll(argChecked.cast<UserInfo>());
-    allList.addAll(defaultCheckedList);
-    allList.addAll(checkedList);
+    print('argChecked: $argChecked');
+
+    if (argChecked is List) {
+      for (var item in argChecked) {
+        if (item is UserInfo) {
+          // Skip if already exists in allList
+          if (!allList.any((u) => u.userID == item.userID)) {
+            checkedList.add(item);
+            allList.add(item);
+            print(
+                '  Added from checkedList: ${item.nickname} (${item.userID})');
+          }
+        }
+      }
+    }
+
+    print('allList total count: ${allList.length}');
     super.onInit();
   }
 
@@ -41,46 +91,38 @@ class CreateGroupLogic extends GetxController {
 
   completeCreation() async {
     try {
-      if(allList.length < 2){
+      // allList contains other users (not current user)
+      // API requires at least 1 other member to create a group (current user is added automatically)
+      if (allList.isEmpty) {
         IMViews.showToast(StrRes.createGroupMinMemberHint);
         return;
       }
-      if (allList.length >= 2) {
-        // convertMemberRole(UserInfo u) => GroupMemberRole(userID: u.userID);
 
-        var info = await LoadingView.singleton.wrap(
-          asyncFunction: () => OpenIM.iMManager.groupManager.createGroup(
-            groupInfo: GroupInfo(
-              groupID: '',
-              groupName: groupName,
-              faceURL: faceURL.value,
-              groupType: GroupType.work,
-            ),
-            memberUserIDs: allList
-                .where((e) => e.userID != OpenIM.iMManager.userID)
-                .map((e) => e.userID!)
-                .toList(),
+      // Create group with all members
+      var info = await LoadingView.singleton.wrap(
+        asyncFunction: () => OpenIM.iMManager.groupManager.createGroup(
+          groupInfo: GroupInfo(
+            groupID: '',
+            groupName: groupName,
+            faceURL: faceURL.value,
+            groupType: GroupType.work,
           ),
-        );
-        conversationLogic.toChat(
-          offUntilHome: true,
-          groupID: info.groupID,
-          nickname: groupName,
-          faceURL: faceURL.value,
-          sessionType: info.sessionType,
-        );
-      } else {
-        conversationLogic.toChat(
-          offUntilHome: true,
-          userID: checkedList.firstOrNull?.userID,
-          nickname: checkedList.firstOrNull?.nickname,
-          faceURL: checkedList.firstOrNull?.faceURL,
-          sessionType: ConversationType.single,
-        );
-      }
-    } catch (e) {
-      print(e.runtimeType);
+          memberUserIDs: allList
+              .where((e) => e.userID != OpenIM.iMManager.userID)
+              .map((e) => e.userID!)
+              .toList(),
+        ),
+      );
 
+      conversationLogic.toChat(
+        offUntilHome: false, // Use Get.toNamed to avoid controller reuse issues
+        groupID: info.groupID,
+        nickname: groupName,
+        faceURL: faceURL.value,
+        sessionType:
+            ConversationType.superGroup, // Work groups are super groups
+      );
+    } catch (e) {
       if (e is PlatformException) {
         print(e.message);
         if (e.code == '1805') {

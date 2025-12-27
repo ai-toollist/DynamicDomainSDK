@@ -114,6 +114,7 @@ const Map<String, String> zh_CN = {
   "wrongPasswordFormat": "8-20位，必须包含字母和数字",
   "passwordMustLength": "密码长度必须在8到20位之间",
   "plsCompleteInfo": "请完善个人信息",
+  "nameLengthError": "昵称长度必须至少2个字符",
   "plsEnterYourNickname": "请输入您的昵称",
   "setInfo": "设置信息",
   "loginPwdFormat": "6～20位，至少包含数字、字母",

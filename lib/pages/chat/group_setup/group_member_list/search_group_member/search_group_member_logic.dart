@@ -77,6 +77,32 @@ class SearchGroupMemberLogic extends GetxController {
     final key = searchCtrl.text.trim();
     if (key.isNotEmpty) {
       final list = await _request(0);
+
+      // Also search by friend remark name
+      final keyLower = key.toLowerCase();
+      final remarkMatches = <String>[];
+      for (var entry in imLogic.userRemarkMap.entries) {
+        final userId = entry.key;
+        final remark = entry.value.toLowerCase();
+        if (remark.contains(keyLower) && !list.any((m) => m.userID == userId)) {
+          remarkMatches.add(userId);
+        }
+      }
+
+      // Fetch member info for remark matches
+      if (remarkMatches.isNotEmpty) {
+        try {
+          final memberInfos =
+              await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+            groupID: groupInfo.groupID,
+            userIDList: remarkMatches,
+          );
+          list.addAll(memberInfos);
+        } catch (e) {
+          // User might not be a member of this group, ignore
+        }
+      }
+
       memberList.assignAll(list);
       if (list.length < count) {
         controller.loadNoData();

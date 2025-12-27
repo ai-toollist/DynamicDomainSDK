@@ -10,7 +10,6 @@ import 'package:openim/widgets/custom_buttom.dart';
 import 'package:openim/widgets/empty_view.dart';
 import 'package:openim/widgets/friend_item_view.dart';
 import 'package:openim/widgets/gradient_scaffold.dart';
-import 'package:openim/pages/auth/widget/app_text_form_field.dart';
 import 'package:openim/widgets/overlay_new_contact.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:azlistview/azlistview.dart';
@@ -266,50 +265,41 @@ class _ContactsPageState extends State<ContactsPage>
               ),
             ),
             secondChild: Container(
-              height: 48.h,
-              margin: EdgeInsets.only(top: 12.h,bottom:4),
-              color: const Color(0xFFFFFFFF),
+              margin: EdgeInsets.symmetric(vertical: 8.h),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () {
+                  GestureDetector(
+                    onTap: () {
                       setState(() {
                         _isFriendSearchActive = false;
                         _friendSearchController.clear();
                         _friendSearchFocusNode.unfocus();
                       });
                     },
-                    icon: Icon(
-                      Icons.arrow_back_ios_new,
-                      color: const Color(0xFF424242),
-                      size: 20.w,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: const Color(0xFF6B7280),
+                        size: 20.w,
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: AppTextFormField(
+                    child: WechatStyleSearchBox(
                       focusNode: _friendSearchFocusNode,
                       controller: _friendSearchController,
-                      label: StrRes.search,
-                      keyboardType: TextInputType.text,
+                      hintText: StrRes.search,
+                      enabled: true,
+                      autofocus: true,
+                      margin: EdgeInsets.only(right: 16.w),
                       onChanged: (value) => setState(() {}),
-                      validator: (value) => null,
-                      prefixIcon: Icon(CupertinoIcons.search),
-                      suffixIcon: _friendSearchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _friendSearchController.clear();
-                                setState(() {});
-                              },
-                              child: Icon(
-                                CupertinoIcons.xmark_circle_fill,
-                                size: 22.w,
-                                color: const Color(0xFF9CA3AF),
-                              ),
-                            )
-                          : null,
+                      onCleared: () {
+                        _friendSearchController.clear();
+                        setState(() {});
+                      },
                     ),
                   ),
-                  16.horizontalSpace,
                 ],
               ),
             ),
@@ -390,50 +380,41 @@ class _ContactsPageState extends State<ContactsPage>
             ),
           ),
           secondChild: Container(
-            height: 48.h,
-            margin: EdgeInsets.symmetric(vertical: 6.h),
-            color: const Color(0xFFFFFFFF),
+            margin: EdgeInsets.symmetric(vertical: 8.h),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     setState(() {
                       _isGroupSearchActive = false;
                       _groupSearchController.clear();
                       _groupSearchFocusNode.unfocus();
                     });
                   },
-                  icon: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: const Color(0xFF424242),
-                    size: 20.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: const Color(0xFF6B7280),
+                      size: 20.w,
+                    ),
                   ),
                 ),
                 Expanded(
-                  child: AppTextFormField(
+                  child: WechatStyleSearchBox(
                     focusNode: _groupSearchFocusNode,
                     controller: _groupSearchController,
-                    label: StrRes.search,
-                    keyboardType: TextInputType.text,
+                    hintText: StrRes.search,
+                    enabled: true,
+                    autofocus: true,
+                    margin: EdgeInsets.only(right: 16.w),
                     onChanged: (value) => setState(() {}),
-                    validator: (value) => null,
-                    prefixIcon: Icon(CupertinoIcons.search),
-                    suffixIcon: _groupSearchController.text.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              _groupSearchController.clear();
-                              setState(() {});
-                            },
-                            child: Icon(
-                              CupertinoIcons.xmark_circle_fill,
-                              size: 22.w,
-                              color: const Color(0xFF9CA3AF),
-                            ),
-                          )
-                        : null,
+                    onCleared: () {
+                      _groupSearchController.clear();
+                      setState(() {});
+                    },
                   ),
                 ),
-                16.horizontalSpace,
               ],
             ),
           ),

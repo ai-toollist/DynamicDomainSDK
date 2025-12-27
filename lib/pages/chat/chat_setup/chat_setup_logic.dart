@@ -236,11 +236,15 @@ class ChatSetupLogic extends GetxController {
 
     AppNavigator.startCreateGroup(defaultCheckedList: [
       UserInfo(
+        userID: OpenIM.iMManager.userInfo.userID,
+        faceURL: OpenIM.iMManager.userInfo.faceURL,
+        nickname: OpenIM.iMManager.userInfo.nickname,
+      ),
+      UserInfo(
         userID: conversationInfo.value.userID,
         faceURL: conversationInfo.value.faceURL,
         nickname: conversationInfo.value.showName,
       ),
-      OpenIM.iMManager.userInfo,
     ]);
   }
 
@@ -400,6 +404,8 @@ class ChatSetupLogic extends GetxController {
       switch (asset.type) {
         case AssetType.image:
           chatLogic?.changeBackground(result);
+          Get.back();
+          IMViews.showToast(StrRes.setSuccessfully,type: 1);
           break;
         default:
           break;

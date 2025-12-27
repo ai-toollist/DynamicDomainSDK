@@ -351,7 +351,7 @@ class ChatPage extends StatelessWidget {
                 ),
               ],
             ),
-showTopBodyPadding:false,
+            showTopBodyPadding: false,
             body: WaterMarkBgView(
               text: '',
               path: logic.background.value,
@@ -528,15 +528,10 @@ showTopBodyPadding:false,
             ),
             // Online indicator at bottom-right of avatar
             Obx(() {
-              // For single chat: show if user is online OR typing (typing = online)
+              // For single chat: show if user is online (onlineStatus.value) OR typing
               // For group chat: show if there are online members
               final showOnlineIndicator = logic.isSingleChat
-                  ? (logic.subTitle
-                          .toLowerCase()
-                          .contains(StrRes.online.toLowerCase()) ||
-                      logic.subTitle
-                          .toLowerCase()
-                          .contains(StrRes.typing.toLowerCase()))
+                  ? (logic.onlineStatus.value || logic.typing.value)
                   : (logic.isGroupChat &&
                       logic.onlineInfoLogic.onlineUserId.isNotEmpty);
 

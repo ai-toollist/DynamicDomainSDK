@@ -193,6 +193,7 @@ class StrRes {
   static String get plsEnterYourNickname => 'plsEnterYourNickname'.tr;
 
   static String get setInfo => 'setInfo'.tr;
+  static String get nameLengthError => 'nameLengthError'.tr;
 
   static String get savedInviteCode => 'savedInviteCode'.tr;
 

@@ -92,7 +92,10 @@ class UserProfilePanelPage extends StatelessWidget {
                       ],
 
                       // Menu List
-                      if (logic.isGroupMemberPage && !logic.isMyself) ...[
+                      if (logic.isGroupMemberPage &&
+                          !logic.isMyself &&
+                          (logic.showJoinGroupTime ||
+                              logic.showJoinGroupMethod)) ...[
                         SectionTitle(title: StrRes.groupInformation),
                         _buildGroupInfoSection(),
                       ],
@@ -139,38 +142,89 @@ class UserProfilePanelPage extends StatelessWidget {
   }
 
   Widget _buildQuickActionsSection(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-    return _buildMenuSection([
-      SettingsMenuItem(
-        icon: CupertinoIcons.chat_bubble,
-        color: primaryColor,
-        label: StrRes.sendMessage,
-        onTap: logic.toChat,
-        showArrow: true,
-        showDivider: logic.showAudioAndVideoCall,
-        isRow: true,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildCircularActionButton(
+            context,
+            icon: CupertinoIcons.chat_bubble_fill,
+            label: StrRes.sendMessage,
+            onTap: logic.toChat,
+            color: const Color(0xFF3B82F6),
+          ),
+          if (logic.showAudioAndVideoCall) ...[
+            24.horizontalSpace,
+            _buildCircularActionButton(
+              context,
+              icon: CupertinoIcons.phone_fill,
+              label: StrRes.audioCall,
+              onTap: () =>
+                  logic.trtcLogic.callAudio(logic.userInfo.value.userID!),
+              color: const Color(0xFF10B981),
+            ),
+            24.horizontalSpace,
+            _buildCircularActionButton(
+              context,
+              icon: CupertinoIcons.videocam_fill,
+              label: StrRes.videoCall,
+              onTap: () =>
+                  logic.trtcLogic.callVideo(logic.userInfo.value.userID!),
+              color: const Color(0xFF8B5CF6),
+            ),
+          ],
+        ],
       ),
-      if (logic.showAudioAndVideoCall) ...[
-        SettingsMenuItem(
-          icon: CupertinoIcons.phone,
-          color: const Color(0xFF10B981),
-          label: StrRes.audioCall,
-          onTap: () => logic.trtcLogic.callAudio(logic.userInfo.value.userID!),
-          showArrow: true,
-          showDivider: true,
-          isRow: true,
+    );
+  }
+
+  Widget _buildCircularActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 56.w,
+            height: 56.w,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                color: color,
+                size: 24.w,
+              ),
+            ),
+          ),
         ),
-        SettingsMenuItem(
-          icon: CupertinoIcons.videocam,
-          color: const Color(0xFF3B82F6),
-          label: StrRes.videoCall,
-          onTap: () => logic.trtcLogic.callVideo(logic.userInfo.value.userID!),
-          showArrow: true,
-          showDivider: false,
-          isRow: true,
+        8.verticalSpace,
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'FilsonPro',
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF6B7280),
+          ),
         ),
       ],
-    ]);
+    );
   }
 
   Widget _buildAddFriendButton(BuildContext context) {
@@ -243,11 +297,15 @@ class UserProfilePanelPage extends StatelessWidget {
 
   Widget _buildActionsSection() => _buildMenuSection([
         if (logic.iAmOwner.value && logic.groupMembersInfo != null)
-          _buildMenuItem(
+          SettingsMenuItem(
             icon: CupertinoIcons.shield,
-            iconColor: const Color(0xFF3B82F6),
+            color: const Color(0xFF3B82F6),
             label: StrRes.setAsAdmin,
-            onTap: logic.toggleAdmin,
+            onSwitchChanged: (_) => logic.toggleAdmin(),
+            switchValue: logic.hasAdminPermission.value,
+            hasSwitch: true,
+            showArrow: false,
+            isRow: true,
           ),
         if (logic.iHasMutePermissions.value && logic.groupMembersInfo != null)
           _buildMenuItem(

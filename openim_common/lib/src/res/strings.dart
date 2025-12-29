@@ -1222,7 +1222,40 @@ class StrRes {
   // Conversation page
   static String get selectAction => 'selectAction'.tr;
   static String get networkUnavailable => 'networkUnavailable'.tr;
+  static String get networkTimeout => 'networkTimeout'.tr;
+  static String get networkConnectionFailed => 'networkConnectionFailed'.tr;
+  static String get serverError => 'serverError'.tr;
+  static String get requestCancelled => 'requestCancelled'.tr;
+  static String get requestFailed => 'requestFailed'.tr;
+  static String get noNetwork => 'noNetwork'.tr;
   static String get checkNetworkSettings => 'checkNetworkSettings'.tr;
+  static String get featureNotSupported => 'featureNotSupported'.tr;
+  static String get inputException => 'inputException'.tr;
+  static String get modificationNotAllowed => 'modificationNotAllowed'.tr;
+
+  // API Errors
+  static String get paramError => 'paramError'.tr;
+  static String get dbError => 'dbError'.tr;
+  static String get serverResultError => 'serverResultError'.tr;
+  static String get recordNotFoundError => 'recordNotFoundError'.tr;
+  static String get accountRegistered => 'accountRegistered'.tr;
+  static String get repeatSendCode => 'repeatSendCode'.tr;
+  static String get invitationCodeError => 'invitationCodeError'.tr;
+  static String get registerLimit => 'registerLimit'.tr;
+  static String get verifyCodeError => 'verifyCodeError'.tr;
+  static String get verifyCodeExpired => 'verifyCodeExpired'.tr;
+  static String get invitationCodeUsed => 'invitationCodeUsed'.tr;
+  static String get invitationCodeNotFound => 'invitationCodeNotFound'.tr;
+  static String get accountNotRegistered => 'accountNotRegistered'.tr;
+  static String get passwordError => 'passwordError'.tr;
+  static String get loginLimit => 'loginLimit'.tr;
+  static String get ipForbidden => 'ipForbidden'.tr;
+  static String get expired => 'expired'.tr;
+  static String get formatError => 'formatError'.tr;
+  static String get notEffective => 'notEffective'.tr;
+  static String get unknownError => 'unknownError'.tr;
+  static String get createError => 'createError'.tr;
+
   static String get notification => 'notification'.tr;
   static String get externalStorage => 'externalStorage'.tr;
   static String get monday => 'monday'.tr;

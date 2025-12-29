@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../res/strings.dart';
+
 class ApiResp {
   int errCode;
   String errMsg;
@@ -29,32 +31,51 @@ class ApiResp {
 
 class ApiError {
   static String? getMsg(int errorCode) {
-    return _errorZH['$errorCode'];
+    switch (errorCode) {
+      case 10001:
+        return StrRes.paramError;
+      case 10002:
+        return StrRes.dbError;
+      case 10003:
+        return StrRes.serverResultError;
+      case 10006:
+        return StrRes.recordNotFoundError;
+      case 20001:
+        return StrRes.accountRegistered;
+      case 20002:
+        return StrRes.repeatSendCode;
+      case 20003:
+        return StrRes.invitationCodeError;
+      case 20004:
+        return StrRes.registerLimit;
+      case 30001:
+        return StrRes.verifyCodeError;
+      case 30002:
+        return StrRes.verifyCodeExpired;
+      case 30003:
+        return StrRes.invitationCodeUsed;
+      case 30004:
+        return StrRes.invitationCodeNotFound;
+      case 40001:
+        return StrRes.accountNotRegistered;
+      case 40002:
+        return StrRes.passwordError;
+      case 40003:
+        return StrRes.loginLimit;
+      case 40004:
+        return StrRes.ipForbidden;
+      case 50001:
+        return StrRes.expired;
+      case 50002:
+        return StrRes.formatError;
+      case 50003:
+        return StrRes.notEffective;
+      case 50004:
+        return StrRes.unknownError;
+      case 50005:
+        return StrRes.createError;
+      default:
+        return null;
+    }
   }
-
-  static const _errorZH = {
-    '10001': '请求参数错误',
-    '10002': '数据库错误',
-    '10003': '服务器错误',
-    '10006': '记录不存在',
-    '20001': '账号已注册',
-    '20002': '重复发送验证码',
-    '20003': '邀请码错误',
-    '20004': '注册IP受限',
-    '30001': '验证码错误',
-    '30002': '验证码已过期',
-    '30003': '邀请码被使用',
-    '30004': '邀请码不存在',
-    '40001': '账号未注册',
-    '40002': '密码错误',
-    '40003': '登录受ip限制',
-    '40004': 'ip禁止注册登录',
-    '50001': '过期',
-    '50002': '格式错误',
-    '50003': '未生效',
-    '50004': '未知错误',
-    '50005': '创建错误',
-  };
-  // ignore: unused_field
-  static const _errorEN = {};
 }

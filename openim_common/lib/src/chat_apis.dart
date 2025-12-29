@@ -78,6 +78,7 @@ class ChatApis {
           'platform': IMUtils.getPlatform(),
           // 'operationID': operationID,
         },
+        showErrorToast: false,
       ).catchApiErrorCode();
     } catch (e) {
       if (e is int) {

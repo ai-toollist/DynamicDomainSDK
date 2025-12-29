@@ -181,7 +181,8 @@ class SettingsMenuItem extends StatelessWidget {
           _buildSwitch()
         else ...[
           if (value != null)
-            Flexible(
+            Container(
+              constraints: BoxConstraints(maxWidth: 0.5.sw),
               child: Text(
                 value!,
                 style: TextStyle(
@@ -190,7 +191,7 @@ class SettingsMenuItem extends StatelessWidget {
                   fontSize: 14.sp,
                   color: const Color(0xFF9CA3AF),
                 ),
-                maxLines: 3,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.right,
               ),

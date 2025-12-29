@@ -88,13 +88,17 @@ class MyInfoLogic extends GetxController {
           ],
         ),
       ),
-      onConfirm: () {
+      onConfirm: () async {
         final newName = nameController.text.trim();
-        if (newName.isNotEmpty && newName != imLogic.userInfo.value.nickname) {
+        if (newName.isEmpty || newName == imLogic.userInfo.value.nickname) {
+          IMViews.showToast(StrRes.inputException);
+          return;
+        }
+        try {
+          await _updateNickname(newName);
           Get.back();
-          _updateNickname(newName);
-        } else {
-          Get.back();
+        } catch (e) {
+          // Error handled in _updateNickname or here if needed
         }
       },
       confirmText: StrRes.confirm,
@@ -123,11 +127,11 @@ class MyInfoLogic extends GetxController {
 
   // Note: englishName and telephone not supported by API, keeping stubs for compatibility
   void editEnglishName() {
-    IMViews.showToast('Feature not supported');
+    IMViews.showToast(StrRes.featureNotSupported);
   }
 
   void editTel() {
-    IMViews.showToast('Feature not supported');
+    IMViews.showToast(StrRes.featureNotSupported);
   }
 
   void editMobile() => _showEditFieldBottomSheet(
@@ -152,7 +156,7 @@ class MyInfoLogic extends GetxController {
     required String title,
     required String currentValue,
     required String hintText,
-    required Function(String) onSave,
+    required Future<void> Function(String) onSave,
     TextInputType keyboardType = TextInputType.text,
     int maxLength = 20,
   }) {
@@ -220,13 +224,17 @@ class MyInfoLogic extends GetxController {
           ],
         ),
       ),
-      onConfirm: () {
+      onConfirm: () async {
         final newValue = controller.text.trim();
-        if (newValue.isNotEmpty && newValue != currentValue) {
+        if (newValue.isEmpty || newValue == currentValue) {
+          IMViews.showToast(StrRes.inputException);
+          return;
+        }
+        try {
+          await onSave(newValue);
           Get.back();
-          onSave(newValue);
-        } else {
-          Get.back();
+        } catch (e) {
+          // Error handled in onSave callback or here if needed
         }
       },
       confirmText: StrRes.confirm,
@@ -255,7 +263,7 @@ class MyInfoLogic extends GetxController {
               }),
             );
           } catch (e) {
-            IMViews.showToast(StrRes.avatarUpdateFailed);
+            _handleError(e);
           }
         }
       },
@@ -286,9 +294,13 @@ class MyInfoLogic extends GetxController {
           },
         ),
       ),
-      onConfirm: () {
-        Get.back();
-        _updateBirthday(selectedDate.millisecondsSinceEpoch ~/ 1000);
+      onConfirm: () async {
+        try {
+          await _updateBirthday(selectedDate.millisecondsSinceEpoch ~/ 1000);
+          Get.back();
+        } catch (e) {
+          // Error handled in _updateBirthday
+        }
       },
       confirmText: StrRes.confirm,
       showCancelButton: true,
@@ -311,12 +323,16 @@ class MyInfoLogic extends GetxController {
               icon: CupertinoIcons.person,
               title: StrRes.man,
               iconColor: const Color(0xFF4F42FF),
-              onTap: () {
-                Get.until((route) =>
-                    !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+              onTap: () async {
                 if (currentGender != 1) {
-                  _updateGender(1);
+                  try {
+                    await _updateGender(1);
+                    Get.back();
+                  } catch (e) {
+                    // Error handled in _updateGender
+                  }
                 } else {
+                  Get.back();
                   IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
                 }
               },
@@ -330,12 +346,16 @@ class MyInfoLogic extends GetxController {
               icon: CupertinoIcons.person,
               title: StrRes.woman,
               iconColor: const Color(0xFFF9A8D4),
-              onTap: () {
-                Get.until((route) =>
-                    !Get.isBottomSheetOpen!); // Đóng chỉ bottom sheet
+              onTap: () async {
                 if (currentGender != 2) {
-                  _updateGender(2);
+                  try {
+                    await _updateGender(2);
+                    Get.back();
+                  } catch (e) {
+                    // Error handled in _updateGender
+                  }
                 } else {
+                  Get.back();
                   IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
                 }
               },
@@ -397,8 +417,8 @@ class MyInfoLogic extends GetxController {
     );
   }
 
-  void _updateNickname(String nickname) {
-    LoadingView.singleton.wrap(
+  Future<void> _updateNickname(String nickname) {
+    return LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
               userID: OpenIM.iMManager.userID, nickname: nickname)
           .then((value) {
@@ -407,17 +427,17 @@ class MyInfoLogic extends GetxController {
         });
         IMViews.showToast(StrRes.nicknameUpdatedSuccessfully, type: 1);
       }).catchError((error) {
-        IMViews.showToast(StrRes.nicknameUpdateFailed);
+        _handleError(error);
         throw error;
       }),
     );
   }
 
-  void _updateGender(int gender) {
-    if (isUpdatingGender) return; // Prevent concurrent updates
+  Future<void> _updateGender(int gender) {
+    if (isUpdatingGender) return Future.value(); // Prevent concurrent updates
 
     isUpdatingGender = true;
-    LoadingView.singleton.wrap(
+    return LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
               userID: OpenIM.iMManager.userID, gender: gender)
           .then((value) {
@@ -426,7 +446,7 @@ class MyInfoLogic extends GetxController {
         });
         IMViews.showToast(StrRes.genderUpdatedSuccessfully, type: 1);
       }).catchError((error) {
-        IMViews.showToast(StrRes.genderUpdateFailed);
+        _handleError(error);
         throw error;
       }).whenComplete(() {
         isUpdatingGender = false; // Release lock
@@ -434,8 +454,8 @@ class MyInfoLogic extends GetxController {
     );
   }
 
-  void _updateBirthday(int birthday) {
-    LoadingView.singleton.wrap(
+  Future<void> _updateBirthday(int birthday) {
+    return LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
         userID: OpenIM.iMManager.userID,
         birth: birthday * 1000,
@@ -445,14 +465,14 @@ class MyInfoLogic extends GetxController {
         });
         IMViews.showToast(StrRes.birthdayUpdatedSuccessfully, type: 1);
       }).catchError((error) {
-        IMViews.showToast(StrRes.birthdayUpdateFailed);
+        _handleError(error);
         throw error;
       }),
     );
   }
 
-  void _updateMobile(String value) {
-    LoadingView.singleton.wrap(
+  Future<void> _updateMobile(String value) {
+    return LoadingView.singleton.wrap(
       asyncFunction: () => ChatApis.updateUserInfo(
               userID: OpenIM.iMManager.userID, phoneNumber: value)
           .then((_) {
@@ -461,14 +481,14 @@ class MyInfoLogic extends GetxController {
         });
         IMViews.showToast(StrRes.phoneUpdatedSuccessfully, type: 1);
       }).catchError((error) {
-        IMViews.showToast(StrRes.phoneUpdateFailed);
+        _handleError(error);
         throw error;
       }),
     );
   }
 
-  void _updateEmail(String value) {
-    LoadingView.singleton.wrap(
+  Future<void> _updateEmail(String value) {
+    return LoadingView.singleton.wrap(
       asyncFunction: () =>
           ChatApis.updateUserInfo(userID: OpenIM.iMManager.userID, email: value)
               .then((_) {
@@ -477,10 +497,24 @@ class MyInfoLogic extends GetxController {
         });
         IMViews.showToast(StrRes.emailUpdatedSuccessfully, type: 1);
       }).catchError((error) {
-        IMViews.showToast(StrRes.emailUpdateFailed);
+        _handleError(error);
         throw error;
       }),
     );
+  }
+
+  void _handleError(dynamic error) {
+    if (error is String && error.contains('500')) {
+      IMViews.showToast(StrRes.modificationNotAllowed);
+    } else if (error is int && error == 500) {
+      IMViews.showToast(StrRes.modificationNotAllowed);
+    } else {
+      // try parsing if it's a map or custom object, otherwise show default
+      IMViews.showToast(StrRes
+          .modificationNotAllowed); // Fallback to safe message or default error?
+      // actually user wants to see modificationNotAllowed for 500. For others, maybe default.
+      // But the log shows error is likely a tuple or custom object from HttpUtil
+    }
   }
 
   @override

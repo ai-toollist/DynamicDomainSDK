@@ -12,6 +12,7 @@ import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker_dio_logger/talker_dio_logger.dart';
+import 'package:sprintf/sprintf.dart';
 
 var dio = Dio();
 
@@ -170,23 +171,24 @@ class HttpUtil {
           case DioExceptionType.connectionTimeout:
           case DioExceptionType.receiveTimeout:
           case DioExceptionType.sendTimeout:
-            friendlyMessage = '网络请求超时，请检查您的网络连接';
+            friendlyMessage = StrRes.networkTimeout;
             break;
           case DioExceptionType.connectionError:
             if (notNetwork) {
-              friendlyMessage = '当前无网络';
+              friendlyMessage = StrRes.noNetwork;
             } else {
-              friendlyMessage = '网络连接失败，请检查您的网络状况';
+              friendlyMessage = StrRes.networkConnectionFailed;
             }
             break;
           case DioExceptionType.badResponse:
-            friendlyMessage = '服务器返回异常（${error.response?.statusCode}），请稍后再试';
+            friendlyMessage =
+                sprintf(StrRes.serverError, [error.response?.statusCode]);
             break;
           case DioExceptionType.cancel:
-            friendlyMessage = '请求已取消';
+            friendlyMessage = StrRes.requestCancelled;
             break;
           default:
-            friendlyMessage = '网络请求失败，请稍后再试';
+            friendlyMessage = StrRes.requestFailed;
             break;
         }
         if (showErrorToast) IMViews.showToast(friendlyMessage);
@@ -265,10 +267,8 @@ class HttpUtil {
           intervalDo.drop(
               fun: () async {
                 await ImageGallerySaverPlus.saveFile(cachePath);
-                IMViews.showToast(
-                  "${StrRes.saveSuccessfully}($cachePath)",
-                  type:1
-                );
+                IMViews.showToast("${StrRes.saveSuccessfully}($cachePath)",
+                    type: 1);
               },
               milliseconds: 1500);
         }
@@ -281,7 +281,7 @@ class HttpUtil {
               final filePath = result['filePath'].split('//').last;
               tips = '${StrRes.saveSuccessfully}:$filePath';
             }
-            IMViews.showToast(tips,type:1);
+            IMViews.showToast(tips, type: 1);
           }
         }
       },
@@ -300,7 +300,7 @@ class HttpUtil {
           final filePath = result['filePath'].split('//').last;
           tips = '${StrRes.saveSuccessfully}:$filePath';
         }
-        IMViews.showToast(tips,type:1);
+        IMViews.showToast(tips, type: 1);
       }
     }
   }
@@ -324,7 +324,7 @@ class HttpUtil {
             final filePath = result['filePath'].split('//').last;
             tips = '${StrRes.saveSuccessfully}:$filePath';
           }
-          IMViews.showToast(tips,type:1);
+          IMViews.showToast(tips, type: 1);
         }
         onCompletion?.call();
         return;
@@ -346,7 +346,7 @@ class HttpUtil {
                   final filePath = result['filePath'].split('//').last;
                   tips = '${StrRes.saveSuccessfully}:$filePath';
                 }
-                IMViews.showToast(tips,type:1);
+                IMViews.showToast(tips, type: 1);
               } else {
                 IMViews.showToast(StrRes.saveFailed);
               }
@@ -381,7 +381,7 @@ class HttpUtil {
           final filePath = result['filePath'].split('//').last;
           tips = '${StrRes.saveSuccessfully}:$filePath';
         }
-        IMViews.showToast(tips,type:1);
+        IMViews.showToast(tips, type: 1);
       } else if (showToast) {
         IMViews.showToast(StrRes.saveFailed);
       }

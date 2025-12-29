@@ -119,6 +119,8 @@ const Map<String, String> en_US = {
   "confirmPassword": "Confirm Password",
   "wrongPasswordFormat": "8-20 chars, include letters & numbers",
   "passwordMustLength": "Password must be 8-20 characters long",
+  "passwordMustContainLetterNumber":
+      "Password must contain at least one letter and one number",
   "plsCompleteInfo": "Please complete your personal information",
   "nameLengthError": "Nickname must be at least 2 characters",
   "plsEnterYourNickname": "Please enter your nickname",
@@ -231,6 +233,9 @@ const Map<String, String> en_US = {
   "releaseToSend": "Release to Send",
   "releaseToSendSwipeUpToCancel": "Release to Send, Swipe Up to Cancel",
   "liftFingerToCancel": "Lift Finger to Cancel",
+  "cancelVoiceRecordingHint":
+      "You are recording a voice message. Cancel recording?",
+  "continueRecording": "Continue Recording",
   "callDuration": "Call Duration: %s",
   "cancelled": "Cancelled",
   "cancelledByCaller": "Cancelled by Caller",

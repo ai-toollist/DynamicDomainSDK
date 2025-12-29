@@ -15,7 +15,6 @@ void showNewContactPopup(BuildContext context, GlobalKey buttonKey) {
   final menuWidth = 200.w;
   final double left = buttonPosition.dx + button.size.width - menuWidth;
   final double top = buttonPosition.dy + button.size.height + 4;
-  final primaryColor = Theme.of(context).primaryColor;
 
   showGeneralDialog(
     context: context,
@@ -54,7 +53,6 @@ void showNewContactPopup(BuildContext context, GlobalKey buttonKey) {
                       children: [
                         SettingsMenuItem(
                           icon: CupertinoIcons.qrcode_viewfinder,
-                          color: primaryColor,
                           label: StrRes.scan,
                           onTap: () {
                             Navigator.pop(context);
@@ -65,7 +63,6 @@ void showNewContactPopup(BuildContext context, GlobalKey buttonKey) {
                         SettingsMenuItem(
                           icon: CupertinoIcons.person_add,
                           label: StrRes.addFriend,
-                          color: primaryColor,
                           onTap: () {
                             Navigator.pop(context);
                             homeLogic.addFriend();
@@ -75,7 +72,6 @@ void showNewContactPopup(BuildContext context, GlobalKey buttonKey) {
                         SettingsMenuItem(
                           icon: CupertinoIcons.person_2,
                           label: StrRes.addGroup,
-                          color: primaryColor,
                           onTap: () {
                             Navigator.pop(context);
                             homeLogic.addGroup();
@@ -85,7 +81,6 @@ void showNewContactPopup(BuildContext context, GlobalKey buttonKey) {
                         SettingsMenuItem(
                           icon: CupertinoIcons.create,
                           label: StrRes.createGroup,
-                          color: primaryColor,
                           onTap: () {
                             Navigator.pop(context);
                             homeLogic.createGroup();

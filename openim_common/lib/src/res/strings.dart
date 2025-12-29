@@ -34,6 +34,9 @@ class StrRes {
 
   static String get passwordMustLength => 'passwordMustLength'.tr;
 
+  static String get passwordMustContainLetterNumber =>
+      'passwordMustContainLetterNumber'.tr;
+
   static String get account => 'account'.tr;
 
   static String get plsEnterAccount => 'plsEnterAccount'.tr;
@@ -404,6 +407,10 @@ class StrRes {
       'releaseToSendSwipeUpToCancel'.tr;
 
   static String get liftFingerToCancel => 'liftFingerToCancel'.tr;
+
+  static String get cancelVoiceRecordingHint => 'cancelVoiceRecordingHint'.tr;
+
+  static String get continueRecording => 'continueRecording'.tr;
 
   static String get callDuration => 'callDuration'.tr;
 

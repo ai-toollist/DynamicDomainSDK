@@ -98,6 +98,7 @@ class CreateGroupLogic extends GetxController {
       }
 
       // Create group with all members
+      print('=== Creating group ===');
       var info = await LoadingView.singleton.wrap(
         asyncFunction: () => OpenIM.iMManager.groupManager.createGroup(
           groupInfo: GroupInfo(
@@ -112,23 +113,34 @@ class CreateGroupLogic extends GetxController {
               .toList(),
         ),
       );
+      print('Group created successfully: ${info.groupID}');
 
       // Create conversation first to ensure it exists
+      print('=== Creating conversation ===');
       final conversationInfo =
           await OpenIM.iMManager.conversationManager.getOneConversation(
         sourceID: info.groupID,
         sessionType: ConversationType.superGroup,
       );
+      print('Conversation created: ${conversationInfo.conversationID}');
+      print('ConversationInfo: $conversationInfo');
 
-      // Navigate to chat - the custom onBackPressed in chat_logic.dart
-      // will handle going back to home screen
+      // Navigate to chat - use offUntilHome: true to clear all screens
+      // back to home screen first, then navigate to chat
+      print('=== Navigating to chat with offUntilHome: true ===');
       await AppNavigator.startChat(
         conversationInfo: conversationInfo,
-        offUntilHome: false, // Use normal navigation
+        offUntilHome: true, // Clear all routes until home, then push chat
       );
-    } catch (e) {
+      print('=== Navigation completed ===');
+    } catch (e, stackTrace) {
+      print('=== ERROR in completeCreation ===');
+      print('Error type: ${e.runtimeType}');
+      print('Error: $e');
+      print('Stack trace: $stackTrace');
       if (e is PlatformException) {
-        print(e.message);
+        print('PlatformException code: ${e.code}');
+        print('PlatformException message: ${e.message}');
         if (e.code == '1805') {
           IMViews.showToast(StrRes.systemMaintenance);
           return;

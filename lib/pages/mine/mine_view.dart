@@ -194,7 +194,7 @@ class _MinePageState extends State<MinePage> {
                           icon: Icons.logout,
                           label: StrRes.logout,
                           onTap: logic.logout,
-                          isWarning: true,
+                          isDestroy: true,
                           showDivider: false,
                         ),
                       ],

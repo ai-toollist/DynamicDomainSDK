@@ -168,6 +168,12 @@ class FriendRequestsPage extends StatelessWidget {
     String? faceURL = isISendRequest ? info.toFaceURL : info.fromFaceURL;
     String? reason = info.reqMsg;
 
+    // Format request time
+    String timeStr = '';
+    if (info.createTime != null) {
+      timeStr = IMUtils.getChatTimeline(info.createTime!);
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -188,52 +194,85 @@ class FriendRequestsPage extends StatelessWidget {
         color: Colors.transparent,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AvatarView(
-                width: 52.w,
-                height: 52.h,
-                url: faceURL,
-                text: name,
-                isCircle: true,
-              ),
-              16.horizontalSpace,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      name ?? '',
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1F2937),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (IMUtils.isNotNullEmptyStr(reason)) ...[
-                      6.verticalSpace,
-                      Text(
-                        reason ?? '',
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6B7280),
+              // Header row: avatar, name/time
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AvatarView(
+                    width: 52.w,
+                    height: 52.h,
+                    url: faceURL,
+                    text: name,
+                    isCircle: true,
+                  ),
+                  16.horizontalSpace,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          name ?? '',
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1F2937),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    12.verticalSpace,
-                    _buildActionWidget(info, isISendRequest, primaryColor),
-                  ],
-                ),
+                        if (timeStr.isNotEmpty) ...[
+                          4.verticalSpace,
+                          Text(
+                            timeStr,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
+              // Reason section (styled like group requests)
+              if (IMUtils.isNotNullEmptyStr(reason)) ...[
+                12.verticalSpace,
+                Container(
+                  width: double.infinity,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: primaryColor.withOpacity(0.15),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    '${StrRes.applyReason.replaceAll('%s', '')}: $reason',
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: primaryColor,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+              // Action buttons row at bottom
+              12.verticalSpace,
+              _buildActionWidget(info, isISendRequest, primaryColor),
             ],
           ),
         ),
@@ -352,13 +391,14 @@ class FriendRequestsPage extends StatelessWidget {
       }
     }
 
-    // Status indicators
+    // Status indicators - full width like reason section
     if (info.isRejected) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: const Color(0xFFFEE2E2),
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: const Color(0xFFDC2626).withOpacity(0.2),
             width: 1,
@@ -372,12 +412,12 @@ class FriendRequestsPage extends StatelessWidget {
               size: 16.sp,
               color: const Color(0xFFDC2626),
             ),
-            6.horizontalSpace,
+            8.horizontalSpace,
             Text(
               StrRes.rejected,
               style: TextStyle(
                 fontFamily: 'FilsonPro',
-                fontSize: 12.sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFFDC2626),
               ),
@@ -389,10 +429,11 @@ class FriendRequestsPage extends StatelessWidget {
 
     if (info.isAgreed) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: const Color(0xFFECFDF5),
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: const Color(0xFF059669).withOpacity(0.2),
             width: 1,
@@ -406,12 +447,12 @@ class FriendRequestsPage extends StatelessWidget {
               size: 16.sp,
               color: const Color(0xFF059669),
             ),
-            6.horizontalSpace,
+            8.horizontalSpace,
             Text(
               StrRes.approved,
               style: TextStyle(
                 fontFamily: 'FilsonPro',
-                fontSize: 12.sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF059669),
               ),

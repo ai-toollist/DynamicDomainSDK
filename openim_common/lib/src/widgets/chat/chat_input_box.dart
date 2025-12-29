@@ -483,7 +483,6 @@ class _ChatInputBoxState extends State<ChatInputBox>
             ? widget.multiOpToolbox
             : Container(
                 color: Colors.white,
-                padding: const EdgeInsets.only(bottom: 20.0),
                 child: Column(
                   children: [
                     AnimatedBuilder(
@@ -557,7 +556,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
     setState(() {
       _toolsVisible = false;
       _emojiVisible = false;
-      _leftKeyboardButton = false;
+      // Don't close voice mode (_leftKeyboardButton) when recording
+      // This allows user to tap on chat list while recording voice
       _rightKeyboardButton = false;
     });
     if (ChatBottomPanelType.none != panelController.currentPanelType) {
@@ -939,6 +939,16 @@ class _ChatInputBoxState extends State<ChatInputBox>
   void onTapVoiceFromToolbox() {
     // This is called from the options toolbox voice button
     onTapSpeak();
+  }
+
+  /// Check if currently recording voice
+  bool get isRecordingVoice => _leftKeyboardButton;
+
+  /// Cancel voice recording externally (e.g., when navigating away)
+  void cancelVoiceRecording() {
+    if (_leftKeyboardButton) {
+      _voiceRecordBarKey.currentState?.cancelVoice();
+    }
   }
 
   focus() => FocusScope.of(context).requestFocus(widget.focusNode);

@@ -28,13 +28,19 @@ class UserProfilePanelPage extends StatelessWidget {
             children: [
               // ===== FIXED HEADER SECTION =====
               // User Info (Fixed - not scrollable)
-              Text(
-                logic.getShowName(),
-                style: TextStyle(
-                  fontFamily: 'FilsonPro',
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Text(
+                  logic.getShowName(),
+                  style: TextStyle(
+                    fontFamily: 'FilsonPro',
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               8.verticalSpace,
@@ -277,7 +283,6 @@ class UserProfilePanelPage extends StatelessWidget {
         if (logic.showJoinGroupTime)
           _buildMenuItem(
             icon: CupertinoIcons.calendar,
-            iconColor: const Color(0xFF10B981),
             label: StrRes.joinGroupDate,
             value: DateUtil.formatDateMs(
               logic.joinGroupTime.value,
@@ -288,7 +293,6 @@ class UserProfilePanelPage extends StatelessWidget {
         if (logic.showJoinGroupMethod)
           _buildMenuItem(
             icon: CupertinoIcons.arrow_right_square,
-            iconColor: const Color(0xFF3B82F6),
             label: StrRes.joinGroupMethod,
             value: logic.joinGroupMethod.value,
             isLast: true,
@@ -299,7 +303,6 @@ class UserProfilePanelPage extends StatelessWidget {
         if (logic.iAmOwner.value && logic.groupMembersInfo != null)
           SettingsMenuItem(
             icon: CupertinoIcons.shield,
-            color: const Color(0xFF3B82F6),
             label: StrRes.setAsAdmin,
             onSwitchChanged: (_) => logic.toggleAdmin(),
             switchValue: logic.hasAdminPermission.value,
@@ -310,7 +313,6 @@ class UserProfilePanelPage extends StatelessWidget {
         if (logic.iHasMutePermissions.value && logic.groupMembersInfo != null)
           _buildMenuItem(
             icon: CupertinoIcons.mic_slash,
-            iconColor: const Color(0xFFF87171),
             label: StrRes.setMute,
             value: IMUtils.emptyStrToNull(logic.mutedTime.value),
             onTap: logic.setMute,
@@ -321,14 +323,12 @@ class UserProfilePanelPage extends StatelessWidget {
                 !logic.notAllowLookGroupMemberProfiles.value)
           _buildMenuItem(
             icon: CupertinoIcons.person,
-            iconColor: const Color(0xFF10B981),
             label: StrRes.personalInfo,
             onTap: logic.viewPersonalInfo,
           ),
         if ((!logic.isMyself && logic.isFriendship) || logic.isBlacklist)
           SettingsMenuItem(
             icon: CupertinoIcons.hand_raised,
-            color: const Color(0xFFB98610),
             label: StrRes.addToBlacklist,
             onSwitchChanged: (_) => logic.toggleBlacklist(),
             switchValue: logic.isBlacklist,
@@ -341,14 +341,12 @@ class UserProfilePanelPage extends StatelessWidget {
         if (logic.isFriendship) ...[
           _buildMenuItem(
             icon: CupertinoIcons.pencil,
-            iconColor: const Color(0xFF4F42FF),
             label: StrRes.setupRemark,
             onTap: logic.setFriendRemark,
             isLast: false,
           ),
           _buildMenuItem(
             icon: CupertinoIcons.person_add,
-            iconColor: const Color(0xFF34D399),
             label: StrRes.recommendToFriend,
             onTap: logic.recommendToFriend,
             isLast: false,
@@ -370,7 +368,6 @@ class UserProfilePanelPage extends StatelessWidget {
 
   Widget _buildMenuItem({
     required IconData icon,
-    required Color iconColor,
     required String label,
     String? value,
     VoidCallback? onTap,
@@ -383,7 +380,6 @@ class UserProfilePanelPage extends StatelessWidget {
         onTap: onTap,
         showArrow: onTap != null,
         showDivider: !isLast,
-        color: iconColor,
         isRow: true,
       );
 
@@ -393,8 +389,7 @@ class UserProfilePanelPage extends StatelessWidget {
         onTap: logic.deleteFromFriendList,
         showArrow: true,
         showDivider: false,
-        color: const Color(0xFFF87171),
-        isWarning: true,
+        isDestroy: true,
         isRow: true,
       );
 }

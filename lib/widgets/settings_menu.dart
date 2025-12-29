@@ -60,11 +60,19 @@ class SettingsMenuItem extends StatelessWidget {
   final bool hasSwitch;
   final bool? switchValue;
   final ValueChanged<bool>? onSwitchChanged;
-  final bool isWarning;
+  final bool isWarning; // Amber color for warnings
+  final bool isDestroy; // Red color for destructive actions
   final bool showDivider;
   final Color? color;
   final EdgeInsetsGeometry? padding;
   final bool isRow;
+
+  // Colors
+  static const Color _warningColor = Color(0xFFF59E0B); // Amber
+  static const Color _destroyColor = Color(0xFFEF4444); // Red
+  static const Color _defaultIconColor = Color(0xFF424242); // Dark gray
+  static const Color _defaultTextColor = Color(0xFF374151); // Gray
+  static const Color _defaultBgColor = Color(0xFFF3F4F6); // Light gray
 
   const SettingsMenuItem(
       {super.key,
@@ -79,10 +87,31 @@ class SettingsMenuItem extends StatelessWidget {
       this.switchValue,
       this.onSwitchChanged,
       this.isWarning = false,
+      this.isDestroy = false,
       this.showDivider = true,
       this.color,
       this.padding,
       this.isRow = true});
+
+  Color get _iconColor {
+    if (color != null) return color!;
+    if (isDestroy) return _destroyColor;
+    if (isWarning) return _warningColor;
+    return _defaultIconColor;
+  }
+
+  Color get _iconBgColor {
+    if (color != null) return color!.withOpacity(0.1);
+    if (isDestroy) return _destroyColor.withOpacity(0.1);
+    if (isWarning) return _warningColor.withOpacity(0.1);
+    return _defaultBgColor;
+  }
+
+  Color get _textColor {
+    if (isDestroy) return _destroyColor;
+    if (isWarning) return _warningColor;
+    return _defaultTextColor;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,20 +151,13 @@ class SettingsMenuItem extends StatelessWidget {
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: color != null
-                      ? color!.withOpacity(0.1)
-                      : (isWarning
-                          ? const Color(0xFFEF4444).withOpacity(0.1)
-                          : const Color(0xFFF3F4F6)),
+                  color: _iconBgColor,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
                   icon,
                   size: 20.w,
-                  color: color ??
-                      (isWarning
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFF424242)),
+                  color: _iconColor,
                 ),
               ),
           12.horizontalSpace,
@@ -148,9 +170,10 @@ class SettingsMenuItem extends StatelessWidget {
               fontFamily: 'FilsonPro',
               fontWeight: FontWeight.w500,
               fontSize: 15.sp,
-              color:
-                  isWarning ? const Color(0xFFEF4444) : const Color(0xFF374151),
+              color: _textColor,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         // Value / Switch / Arrow
@@ -197,20 +220,13 @@ class SettingsMenuItem extends StatelessWidget {
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: color != null
-                      ? color!.withOpacity(0.1)
-                      : (isWarning
-                          ? const Color(0xFFEF4444).withOpacity(0.1)
-                          : const Color(0xFFF3F4F6)),
+                  color: _iconBgColor,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
                   icon,
                   size: 20.w,
-                  color: color ??
-                      (isWarning
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFF424242)),
+                  color: _iconColor,
                 ),
               ),
           12.horizontalSpace,
@@ -228,9 +244,7 @@ class SettingsMenuItem extends StatelessWidget {
                   fontFamily: 'FilsonPro',
                   fontWeight: FontWeight.w500,
                   fontSize: 15.sp,
-                  color: isWarning
-                      ? const Color(0xFFEF4444)
-                      : const Color(0xFF374151),
+                  color: _textColor,
                 ),
               ),
               if (value != null)

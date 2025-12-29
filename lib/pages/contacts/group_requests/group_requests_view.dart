@@ -169,6 +169,12 @@ class GroupRequestsPage extends StatelessWidget {
     final isISendRequest = info.userID == OpenIM.iMManager.userID;
     final primaryColor = Theme.of(context).primaryColor;
 
+    // Format request time
+    String timeStr = '';
+    if (info.reqTime != null) {
+      timeStr = IMUtils.getChatTimeline(info.reqTime!);
+    }
+
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
@@ -198,6 +204,7 @@ class GroupRequestsPage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           child: Column(
             children: [
+              // Header row: avatar, name/time
               Row(
                 children: [
                   AvatarView(
@@ -225,11 +232,21 @@ class GroupRequestsPage extends StatelessWidget {
                         ),
                         6.verticalSpace,
                         _buildActionDescription(context, info),
+                        if (timeStr.isNotEmpty) ...[
+                          4.verticalSpace,
+                          Text(
+                            timeStr,
+                            style: TextStyle(
+                              fontFamily: 'FilsonPro',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  12.horizontalSpace,
-                  _buildActionWidget(context, info, isISendRequest),
                 ],
               ),
               // Application reason (if available)
@@ -260,6 +277,9 @@ class GroupRequestsPage extends StatelessWidget {
                   ),
                 ),
               ],
+              // Action buttons row at bottom
+              12.verticalSpace,
+              _buildActionWidget(context, info, isISendRequest),
             ],
           ),
         ),
@@ -383,63 +403,68 @@ class GroupRequestsPage extends StatelessWidget {
       // Show action buttons only for pending requests
       if (info.handleResult == 0) {
         return Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             // Reject button
-            GestureDetector(
-              onTap: () => logic.rejectApplication(info),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                    color: const Color(0xFFDC2626).withOpacity(0.3),
-                    width: 1,
+            Expanded(
+              child: GestureDetector(
+                onTap: () => logic.rejectApplication(info),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEE2E2),
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: const Color(0xFFDC2626).withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: Text(
-                  StrRes.reject,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFFDC2626),
+                  alignment: Alignment.center,
+                  child: Text(
+                    StrRes.reject,
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFDC2626),
+                    ),
                   ),
                 ),
               ),
             ),
-            8.horizontalSpace,
+            12.horizontalSpace,
             // Approve button
-            GestureDetector(
-              onTap: () => logic.approveApplication(info),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      primaryColor,
-                      primaryColor.withOpacity(0.8),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withOpacity(0.3),
-                      offset: const Offset(0, 2),
-                      blurRadius: 6,
+            Expanded(
+              child: GestureDetector(
+                onTap: () => logic.approveApplication(info),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor,
+                        primaryColor.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: Text(
-                  StrRes.accept,
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryColor.withOpacity(0.3),
+                        offset: const Offset(0, 2),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    StrRes.accept,
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -447,12 +472,13 @@ class GroupRequestsPage extends StatelessWidget {
           ],
         );
       } else if (info.handleResult == 1) {
-        // Approved status badge
+        // Approved status badge - full width like reason section
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
           decoration: BoxDecoration(
             color: const Color(0xFFECFDF5),
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: const Color(0xFF059669).withOpacity(0.2),
               width: 1,
@@ -466,12 +492,12 @@ class GroupRequestsPage extends StatelessWidget {
                 size: 16.w,
                 color: const Color(0xFF059669),
               ),
-              6.horizontalSpace,
+              8.horizontalSpace,
               Text(
                 StrRes.approved,
                 style: TextStyle(
                   fontFamily: 'FilsonPro',
-                  fontSize: 12.sp,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF059669),
                 ),
@@ -480,12 +506,13 @@ class GroupRequestsPage extends StatelessWidget {
           ),
         );
       } else if (info.handleResult == -1) {
-        // Rejected status badge
+        // Rejected status badge - full width like reason section
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
           decoration: BoxDecoration(
             color: const Color(0xFFFEE2E2),
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: const Color(0xFFDC2626).withOpacity(0.2),
               width: 1,
@@ -499,12 +526,12 @@ class GroupRequestsPage extends StatelessWidget {
                 size: 16.w,
                 color: const Color(0xFFDC2626),
               ),
-              6.horizontalSpace,
+              8.horizontalSpace,
               Text(
                 StrRes.rejected,
                 style: TextStyle(
                   fontFamily: 'FilsonPro',
-                  fontSize: 12.sp,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFFDC2626),
                 ),

@@ -211,7 +211,7 @@ class GroupSetupPage extends StatelessWidget {
                         icon: CupertinoIcons.delete,
                         label: StrRes.clearChatHistory,
                         onTap: logic.clearChatHistory,
-                        isWarning: true,
+                        isDestroy: true,
                       ),
                       if (!logic.isOwner)
                         SettingsMenuItem(
@@ -220,14 +220,14 @@ class GroupSetupPage extends StatelessWidget {
                               ? StrRes.exitGroup
                               : StrRes.delete,
                           onTap: logic.quitGroup,
-                          isWarning: true,
+                          isDestroy: true,
                         ),
                       if (logic.isOwner)
                         SettingsMenuItem(
                           icon: CupertinoIcons.xmark_circle,
                           label: StrRes.dismissGroup,
                           onTap: logic.quitGroup,
-                          isWarning: true,
+                          isDestroy: true,
                         ),
 
                       40.verticalSpace,

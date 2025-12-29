@@ -139,7 +139,7 @@ class GroupManagePage extends StatelessWidget {
                               icon: CupertinoIcons.arrow_right_arrow_left,
                               label: StrRes.transferGroupOwnerRight,
                               onTap: logic.transferGroupOwnerRight,
-                              isWarning: true,
+                              isDestroy: true,
                               showDivider: false,
                               isRow: true,
                             ),

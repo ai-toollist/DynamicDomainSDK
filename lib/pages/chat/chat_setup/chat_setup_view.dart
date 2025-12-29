@@ -32,13 +32,19 @@ class ChatSetupPage extends StatelessWidget {
               // User Info
               GestureDetector(
                 onTap: logic.viewUserInfo,
-                child: Text(
-                  logic.conversationInfo.value.showName ?? '',
-                  style: TextStyle(
-                    fontFamily: 'FilsonPro',
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Text(
+                    logic.conversationInfo.value.showName ?? '',
+                    style: TextStyle(
+                      fontFamily: 'FilsonPro',
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -152,13 +158,12 @@ class ChatSetupPage extends StatelessWidget {
                         icon: CupertinoIcons.flag,
                         label: StrRes.report,
                         onTap: logic.startReport,
-                        color: Colors.amber,
                       ),
                       SettingsMenuItem(
                         icon: CupertinoIcons.delete,
                         label: StrRes.clearChatHistory,
                         onTap: logic.clearChatHistory,
-                        isWarning: true,
+                        isDestroy: true,
                       ),
 
                       40.verticalSpace,

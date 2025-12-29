@@ -72,7 +72,6 @@ class MyInfoPage extends StatelessWidget {
                 items: [
                   SettingsMenuItem(
                     icon: CupertinoIcons.person,
-                    color: const Color(0xFF10B981),
                     label: StrRes.nickname,
                     value: imLogic.userInfo.value.nickname ?? '',
                     onTap: logic.editMyName,
@@ -80,7 +79,6 @@ class MyInfoPage extends StatelessWidget {
                   ),
                   SettingsMenuItem(
                     icon: CupertinoIcons.person_2_fill,
-                    color: const Color(0xFFF87171),
                     label: StrRes.gender,
                     value: imLogic.userInfo.value.gender == 1
                         ? StrRes.man
@@ -90,7 +88,6 @@ class MyInfoPage extends StatelessWidget {
                   ),
                   SettingsMenuItem(
                     icon: CupertinoIcons.gift,
-                    color: const Color(0xFF8B5CF6),
                     label: StrRes.birthDay,
                     value: DateUtil.formatDateMs(
                       imLogic.userInfo.value.birth ?? 0,
@@ -101,7 +98,6 @@ class MyInfoPage extends StatelessWidget {
                   ),
                   SettingsMenuItem(
                     icon: CupertinoIcons.phone,
-                    color: const Color(0xFF3B82F6),
                     label: StrRes.mobile,
                     value: imLogic.userInfo.value.phoneNumber ?? '',
                     showArrow: false,

@@ -416,6 +416,8 @@ class ChatSetupLogic extends GetxController {
 
   void _recoverBackground() {
     chatLogic?.clearBackground();
+    Get.back();
+    IMViews.showToast(StrRes.setSuccessfully, type: 1);
   }
 
   void searchChatHistory() => AppNavigator.startSearchChatHistory(

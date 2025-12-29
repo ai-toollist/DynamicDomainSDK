@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:rxdart/rxdart.dart';
 
-typedef SpeakViewChildBuilder = Widget Function(ChatVoiceRecordBar recordBar);
+typedef SpeakViewChildBuilder = Widget Function(Widget voiceWidget);
 
 class ChatVoiceRecordLayout extends StatefulWidget {
   const ChatVoiceRecordLayout({
@@ -29,19 +29,20 @@ class ChatVoiceRecordLayout extends StatefulWidget {
   final int maxRecordSec;
 
   @override
-  State<ChatVoiceRecordLayout> createState() => _ChatVoiceRecordLayoutState();
+  State<ChatVoiceRecordLayout> createState() => ChatVoiceRecordLayoutState();
 }
 
-class _ChatVoiceRecordLayoutState extends State<ChatVoiceRecordLayout> {
+class ChatVoiceRecordLayoutState extends State<ChatVoiceRecordLayout> {
   final _interruptSub = PublishSubject<bool>();
   bool _showVoiceRecordView = false;
-  RecordBarStatus _status = RecordBarStatus.holdTalk;
   bool _isCancelSend = false;
+
+  /// Expose isRecording state for parent widgets to check
+  bool get isRecording => _showVoiceRecordView;
 
   void _completed(int sec, String path) {
     if (_isCancelSend) {
       File(path).delete();
-      _status = RecordBarStatus.holdTalk;
       _isCancelSend = false;
     } else {
       if (sec == 0) {
@@ -51,6 +52,37 @@ class _ChatVoiceRecordLayoutState extends State<ChatVoiceRecordLayout> {
         widget.onCompleted?.call(sec, path);
       }
     }
+    setState(() {
+      _showVoiceRecordView = false;
+    });
+  }
+
+  /// Cancel recording externally (e.g., when navigating away)
+  void cancelRecording() {
+    if (_showVoiceRecordView) {
+      _isCancelSend = true;
+      _interruptSub.add(true);
+      setState(() {
+        _showVoiceRecordView = false;
+      });
+    }
+  }
+
+  /// Called when user taps Cancel button
+  void _onCancelPressed() {
+    _isCancelSend = true;
+    _interruptSub.add(true);
+    setState(() {
+      _showVoiceRecordView = false;
+    });
+  }
+
+  /// Called when user taps Send button
+  void _onSendPressed() {
+    // Recording will stop and onCompleted will be called by ChatRecordVoiceView dispose
+    _isCancelSend = false;
+    _interruptSub.add(true);
+    // Note: _showVoiceRecordView will be set to false in _completed callback
   }
 
   @override
@@ -64,78 +96,113 @@ class _ChatVoiceRecordLayoutState extends State<ChatVoiceRecordLayout> {
     super.dispose();
   }
 
+  /// The voice bar that user taps to start recording
   ChatVoiceRecordBar get _createSpeakBar => ChatVoiceRecordBar(
         speakBarColor: widget.speakBarColor,
         speakTextStyle: widget.speakTextStyle,
         interruptListener: _interruptSub.stream,
-        onChangedBarStatus: (status) {
-          if (status != _status) {
-            setState(() {
-              _isCancelSend = status == RecordBarStatus.liftFingerToCancelSend;
-              _status = status;
-            });
-          }
-        },
-        onLongPressMoveUpdate: (details) {},
-        onLongPressEnd: (details) async {
+        onRecordingChanged: (isRecording) {
           setState(() {
-            _showVoiceRecordView = false;
-          });
-        },
-        onLongPressStart: (details) {
-          setState(() {
-            _showVoiceRecordView = true;
+            _showVoiceRecordView = isRecording;
+            if (!isRecording) {
+              _isCancelSend = false;
+            }
           });
         },
       );
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.builder(_createSpeakBar),
-        Visibility(
-          visible: _showVoiceRecordView,
-          child: ChatRecordVoiceView(
-            onCompleted: _completed,
-            onInterrupt: () {
-              setState(() {
-                _interruptSub.add(true);
-                _showVoiceRecordView = false;
-              });
-            },
-            builder: (_, sec) => Material(
-              color: Colors.transparent,
-              child: Center(
-                child: Container(
-                  width: 138.w,
-                  height: 124.h,
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: _isCancelSend
-                        ? Styles.c_FF381F_opacity70
-                        : Styles.c_0C1C33_opacity60,
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
-                  child: Column(
-                    children: [
-                      IMUtils.seconds2HMS(sec).toText
-                        ..style = Styles.ts_FFFFFF_12sp,
-                      Expanded(child: _lottieAnimWidget),
-                      (_isCancelSend
-                              ? StrRes.liftFingerToCancel
-                              : StrRes.releaseToSendSwipeUpToCancel)
-                          .toText
-                        ..style = Styles.ts_FFFFFF_12sp,
-                    ],
-                  ),
-                ),
+  /// The recording controls with Cancel, Timer, and Send buttons
+  Widget _buildRecordingControls(int sec) {
+    return Container(
+      height: kVoiceRecordBarHeight,
+      decoration: BoxDecoration(
+        color: Styles.c_0C1C33_opacity60,
+        borderRadius: BorderRadius.circular(4.r),
+      ),
+      child: Row(
+        children: [
+          // Cancel button
+          GestureDetector(
+            onTap: _onCancelPressed,
+            child: Container(
+              width: 36.w,
+              height: 36.w,
+              margin: EdgeInsets.only(left: 4.w),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.close,
+                color: Styles.c_FF381F,
+                size: 24.w,
               ),
             ),
           ),
-        ),
-      ],
+          // Recording indicator and timer
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 24.w,
+                  height: 24.w,
+                  child: _lottieAnimWidget,
+                ),
+                8.horizontalSpace,
+                Text(
+                  IMUtils.seconds2HMS(sec),
+                  style: Styles.ts_FFFFFF_14sp,
+                ),
+              ],
+            ),
+          ),
+          // Send button
+          GestureDetector(
+            onTap: _onSendPressed,
+            child: Container(
+              width: 36.w,
+              height: 36.w,
+              margin: EdgeInsets.only(right: 4.w),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.send,
+                color: Styles.c_0089FF,
+                size: 24.w,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  /// Build the voice widget - either the speak bar or recording controls
+  Widget get _voiceWidget {
+    if (_showVoiceRecordView) {
+      // Show recording controls with ChatRecordVoiceView for actual recording
+      return ChatRecordVoiceView(
+        onCompleted: _completed,
+        onInterrupt: () {
+          setState(() {
+            _showVoiceRecordView = false;
+          });
+        },
+        builder: (_, sec) => _buildRecordingControls(sec),
+      );
+    } else {
+      // Show normal speak bar
+      return _createSpeakBar;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Pass the voice widget to the builder - it will be placed where the bar should be
+    return widget.builder(_voiceWidget);
   }
 
   Widget get _lottieAnimWidget => Lottie.asset(

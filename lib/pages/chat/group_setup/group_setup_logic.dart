@@ -589,7 +589,7 @@ class GroupSetupLogic extends GetxController {
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w),
         child: AppTextFormField(
-          focusNode: FocusNode()..requestFocus(),
+          autofocus: true,
           controller: nameController,
           label: StrRes.enterYourNicknameInGroup,
           hint: StrRes.enterYourGroupNickname,

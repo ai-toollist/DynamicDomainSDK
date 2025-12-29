@@ -21,6 +21,7 @@ class AppTextFormField extends StatefulWidget {
   final Function(String?) validator;
   final bool isRequired;
   final int? maxLength;
+  final bool autofocus;
 
   /// Optional external key to access FormFieldState for external validation trigger
   final GlobalKey<FormFieldState>? formFieldKey;
@@ -44,6 +45,7 @@ class AppTextFormField extends StatefulWidget {
     this.isRequired = false,
     this.maxLength,
     this.formFieldKey,
+    this.autofocus = false,
   });
 
   @override
@@ -62,6 +64,13 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
     // Always create internal FocusNode to avoid disposed node issues
     _internalFocusNode = FocusNode();
     _internalFocusNode.addListener(_onFocusChange);
+
+    // Auto-focus after the widget is built
+    if (widget.autofocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _internalFocusNode.requestFocus();
+      });
+    }
   }
 
   void _onFocusChange() {

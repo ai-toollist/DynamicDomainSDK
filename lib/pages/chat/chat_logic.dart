@@ -141,6 +141,9 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   String? groupOwnerID;
 
+  /// GlobalKey to access voice recording state for navigation confirmation
+  final voiceRecordKey = GlobalKey<ChatVoiceRecordLayoutState>();
+
   final _pageSize = 40;
   String? get userID => conversationInfo.userID;
 
@@ -497,6 +500,9 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     if (isBanned) {
       return;
     }
+    // Cancel voice recording before navigating to settings
+    _cancelVoiceRecordingIfActive();
+
     isSingleChat
         ? AppNavigator.startChatSetup(conversationInfo: conversationInfo)
         : AppNavigator.startGroupChatSetup(conversationInfo: conversationInfo);
@@ -1547,8 +1553,11 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   /// Handle back button press from GradientScaffold
   /// Always navigates back to conversation list
-  void onBackPressed() {
+  void onBackPressed() async {
     print('=== onBackPressed called ===');
+
+    // Cancel voice recording if active (no confirmation needed)
+    _cancelVoiceRecordingIfActive();
 
     // Close multi-select mode if active (but still navigate)
     if (multiSelMode.value) {
@@ -1575,6 +1584,32 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         cid: conversationInfo.conversationID,
         draftText: draftText,
       );
+    }
+  }
+
+  /// Check if voice recording is active via ChatInputBox
+  bool _isVoiceRecordingActive() {
+    final inputBoxState = chatInputBoxStateKey.currentState;
+    if (inputBoxState != null) {
+      // Access via dynamic since _ChatInputBoxState is private
+      try {
+        return (inputBoxState as dynamic).isRecordingVoice ?? false;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  /// Cancel voice recording if active
+  void _cancelVoiceRecordingIfActive() {
+    final inputBoxState = chatInputBoxStateKey.currentState;
+    if (inputBoxState != null) {
+      try {
+        (inputBoxState as dynamic).cancelVoiceRecording();
+      } catch (e) {
+        // Ignore if method doesn't exist
+      }
     }
   }
 

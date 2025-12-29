@@ -318,6 +318,7 @@ class ChatPage extends StatelessWidget {
     return WillPopScope(
       onWillPop: logic.willPop(),
       child: ChatVoiceRecordLayout(
+        key: logic.voiceRecordKey,
         onCompleted: logic.sendVoice,
         builder: (bar) => Obx(() {
           return GradientScaffold(
@@ -577,7 +578,7 @@ class ChatPage extends StatelessWidget {
                     ),
                     if (logic.memberStr.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(left: 8.w),
+                        padding: EdgeInsets.only(left: 4.w, right: 8.w),
                         child: Text(
                           logic.memberStr,
                           style: TextStyle(

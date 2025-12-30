@@ -13,27 +13,31 @@ class ChatPicturePreview extends StatelessWidget {
     this.heroTag,
     this.onTap,
     this.onLongPress,
-  })  : controller = images.length > 1 ? ExtendedPageController(initialPage: currentIndex, pageSpacing: 50) : null;
+  }) : controller = images.length > 1
+            ? ExtendedPageController(initialPage: currentIndex, pageSpacing: 50)
+            : null;
   final int currentIndex;
   final List<MediaSource> images;
   final String? heroTag;
   final Function()? onTap;
   final Function(String url)? onLongPress;
   final ExtendedPageController? controller;
-  GlobalKey<ExtendedImageSlidePageState> slidePagekey = GlobalKey<ExtendedImageSlidePageState>();
+  GlobalKey<ExtendedImageSlidePageState> slidePagekey =
+      GlobalKey<ExtendedImageSlidePageState>();
   @override
   Widget build(BuildContext context) {
     return ExtendedImageSlidePage(
       key: slidePagekey,
       slideAxis: SlideAxis.vertical,
-      slidePageBackgroundHandler: (offset, pageSize) => defaultSlidePageBackgroundHandler(
+      slidePageBackgroundHandler: (offset, pageSize) =>
+          defaultSlidePageBackgroundHandler(
         color: Colors.black,
         offset: offset,
         pageSize: pageSize,
       ),
       child: MetaHero(
         heroTag: heroTag,
-        onTap: onTap ?? () => Get.back(),
+        onTap: onTap,
         onLongPress: () {
           final index = controller?.page?.round() ?? 0;
           onLongPress?.call(images[index].url);
@@ -83,7 +87,10 @@ class ChatPicturePreview extends StatelessWidget {
                 }
                 final ImageChunkEvent? loadingProgress = state.loadingProgress;
                 final double? progress =
-                    loadingProgress?.expectedTotalBytes != null ? loadingProgress!.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null;
+                    loadingProgress?.expectedTotalBytes != null
+                        ? loadingProgress!.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null;
                 // CupertinoActivityIndicator()
                 return SizedBox(
                   width: 15.0,
@@ -112,7 +119,8 @@ class ChatPicturePreview extends StatelessWidget {
             case LoadState.failed:
               // remove memory cached
               state.imageProvider.evict();
-              return Icon(Icons.image_outlined, size: 16.w, color: Styles.c_8E9AB0);
+              return Icon(Icons.image_outlined,
+                  size: 16.w, color: Styles.c_8E9AB0);
           }
         },
       );

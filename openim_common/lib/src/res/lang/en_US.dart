@@ -119,7 +119,8 @@ const Map<String, String> en_US = {
   "confirmPassword": "Confirm Password",
   "wrongPasswordFormat": "8-20 chars, include letters & numbers",
   "passwordMustLength": "Password must be 8-20 characters long",
-  "passwordMustContainLetterNumber": "Password must include letters and numbers",
+  "passwordMustContainLetterNumber":
+      "Password must include letters and numbers",
   "passwordMustContainLetter": "Password must include a letter",
   "passwordMustContainNumber": "Password must include a number",
   "plsCompleteInfo": "Please complete your personal information",
@@ -659,7 +660,7 @@ const Map<String, String> en_US = {
   'serverSettingTips':
       'After modifying the configuration, you need to save and restart for the changes to take effect',
   'callFail': 'You cannot call this user',
-  'search_by_phone_and_uid': 'Search by phone and uid',
+  'search_by_phone_and_uid': 'Search by phone number or user ID',
   'special_message': 'Special message',
   'edit_group_name': 'Modify group chat name',
   'edit_group_tips':

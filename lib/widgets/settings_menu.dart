@@ -119,7 +119,7 @@ class SettingsMenuItem extends StatelessWidget {
             onTap: hasSwitch ? null : onTap,
             child: Padding(
               padding: padding ??
-                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                  EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
               child: isRow ? _buildRowLayout() : _buildColumnLayout(),
             ),
           ),
@@ -156,7 +156,7 @@ class SettingsMenuItem extends StatelessWidget {
                   color: _iconColor,
                 ),
               ),
-          12.horizontalSpace,
+          8.horizontalSpace,
         ],
         // Label
         Expanded(
@@ -164,8 +164,8 @@ class SettingsMenuItem extends StatelessWidget {
             label,
             style: TextStyle(
               fontFamily: 'FilsonPro',
-              fontWeight: FontWeight.w500,
-              fontSize: 15.sp,
+              fontWeight: FontWeight.w600,
+              fontSize: 14.sp,
               color: _textColor,
             ),
           ),

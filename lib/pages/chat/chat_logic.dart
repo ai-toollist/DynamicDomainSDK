@@ -3393,8 +3393,11 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   // Define isMessageHidden method
   bool isMessageHidden(dynamic message) {
-    // Add logic to determine if a message is hidden
-    return false; // Default implementation
+    if (message is Message) {
+      return clientConfigLogic.isMessageHidden(
+          message, groupMemberRoleLevel.value);
+    }
+    return false;
   }
 
   // Define onClickTitle getter

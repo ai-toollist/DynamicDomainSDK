@@ -18,12 +18,12 @@ class EmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          24.verticalSpace,
             Container(
               width: 120.w,
               height: 120.h,
@@ -56,7 +56,6 @@ class EmptyView extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -1014,18 +1014,10 @@ class ConversationLogic extends SuperController {
     ConversationInfo? conversationInfo,
     Message? searchMessage,
   }) async {
-    try {
-      print('=== toChat called ===');
-      print('groupID: $groupID, userID: $userID, sessionType: $sessionType');
-
-      // 获取会话信息，若不存在则创建
-      if (conversationInfo == null) {
-        print('Creating conversation...');
-        conversationInfo = await _createConversation(
+    try {if (conversationInfo == null) {conversationInfo = await _createConversation(
           sourceID: userID ?? groupID!,
           sessionType: userID == null ? sessionType! : ConversationType.single,
         );
-        print('Conversation created: ${conversationInfo.conversationID}');
       }
 
       // 标记已读
@@ -1040,7 +1032,6 @@ class ConversationLogic extends SuperController {
         text: conversationInfo.draftText ?? '',
       );
 
-      print('Starting chat navigation...');
       // 打开聊天窗口，关闭返回草稿
       /*var newDraftText = */
       await AppNavigator.startChat(

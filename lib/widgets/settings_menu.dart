@@ -63,7 +63,6 @@ class SettingsMenuItem extends StatelessWidget {
   final bool isWarning; // Amber color for warnings
   final bool isDestroy; // Red color for destructive actions
   final bool showDivider;
-  final Color? color;
   final EdgeInsetsGeometry? padding;
   final bool isRow;
 
@@ -89,19 +88,16 @@ class SettingsMenuItem extends StatelessWidget {
       this.isWarning = false,
       this.isDestroy = false,
       this.showDivider = true,
-      this.color,
       this.padding,
       this.isRow = true});
 
   Color get _iconColor {
-    if (color != null) return color!;
     if (isDestroy) return _destroyColor;
     if (isWarning) return _warningColor;
     return _defaultIconColor;
   }
 
   Color get _iconBgColor {
-    if (color != null) return color!.withOpacity(0.1);
     if (isDestroy) return _destroyColor.withOpacity(0.1);
     if (isWarning) return _warningColor.withOpacity(0.1);
     return _defaultBgColor;

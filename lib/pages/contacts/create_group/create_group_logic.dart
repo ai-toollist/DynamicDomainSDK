@@ -20,9 +20,6 @@ class CreateGroupLogic extends GetxController {
 
   @override
   void onInit() {
-    print('=== CreateGroupLogic onInit ===');
-    print('Get.arguments: ${Get.arguments}');
-
     // Always add current user first
     final currentUser = OpenIM.iMManager.userInfo;
     allList.add(UserInfo(
@@ -30,12 +27,9 @@ class CreateGroupLogic extends GetxController {
       nickname: currentUser.nickname,
       faceURL: currentUser.faceURL,
     ));
-    print(
-        'Added current user: ${currentUser.nickname} (${currentUser.userID})');
 
     // Read defaultCheckedMaps (List of Maps) - contains chat partner info
     final argDefaultMaps = Get.arguments?['defaultCheckedMaps'];
-    print('argDefaultMaps: $argDefaultMaps');
 
     if (argDefaultMaps is List) {
       for (var map in argDefaultMaps) {
@@ -50,8 +44,6 @@ class CreateGroupLogic extends GetxController {
             );
             defaultCheckedList.add(user);
             allList.add(user);
-            print(
-                '  Added from defaultCheckedMaps: ${user.nickname} (${user.userID})');
           }
         }
       }
@@ -59,7 +51,6 @@ class CreateGroupLogic extends GetxController {
 
     // Read checkedList (List of UserInfo) - newly selected members
     final argChecked = Get.arguments?['checkedList'];
-    print('argChecked: $argChecked');
 
     if (argChecked is List) {
       for (var item in argChecked) {
@@ -68,14 +59,11 @@ class CreateGroupLogic extends GetxController {
           if (!allList.any((u) => u.userID == item.userID)) {
             checkedList.add(item);
             allList.add(item);
-            print(
-                '  Added from checkedList: ${item.nickname} (${item.userID})');
           }
         }
       }
     }
 
-    print('allList total count: ${allList.length}');
     super.onInit();
   }
 
@@ -90,15 +78,25 @@ class CreateGroupLogic extends GetxController {
 
   completeCreation() async {
     try {
-      // allList contains other users (not current user)
-      // API requires at least 1 other member to create a group (current user is added automatically)
+      print('=== completeCreation START ===');
+
+      print('allList length: ${allList.length}');
+      print('currentUserID: ${OpenIM.iMManager.userID}');
+
       if (allList.isEmpty) {
+        print('allList is EMPTY → stop');
         IMViews.showToast(StrRes.createGroupMinMemberHint);
         return;
       }
 
-      // Create group with all members
-      print('=== Creating group ===');
+      final memberIDs = allList
+          .where((e) => e.userID != OpenIM.iMManager.userID)
+          .map((e) => e.userID!)
+          .toList();
+
+      print('memberUserIDs to send: $memberIDs');
+
+      print('=== CALL createGroup ===');
       var info = await LoadingView.singleton.wrap(
         asyncFunction: () => OpenIM.iMManager.groupManager.createGroup(
           groupInfo: GroupInfo(
@@ -107,37 +105,44 @@ class CreateGroupLogic extends GetxController {
             faceURL: faceURL.value,
             groupType: GroupType.work,
           ),
-          memberUserIDs: allList
-              .where((e) => e.userID != OpenIM.iMManager.userID)
-              .map((e) => e.userID!)
-              .toList(),
+          memberUserIDs: memberIDs,
         ),
       );
-      print('Group created successfully: ${info.groupID}');
 
-      // Create conversation first to ensure it exists
-      print('=== Creating conversation ===');
+      print('=== createGroup RESULT ===');
+      print('groupID: ${info.groupID}');
+      print('sessionType: ${info.sessionType}');
+      print('groupName: $groupName');
+      print('faceURL: ${faceURL.value}');
+
+      print('=== TRY getOneConversation (immediate) ===');
       final conversationInfo =
           await OpenIM.iMManager.conversationManager.getOneConversation(
         sourceID: info.groupID,
         sessionType: ConversationType.superGroup,
       );
-      print('Conversation created: ${conversationInfo.conversationID}');
-      print('ConversationInfo: $conversationInfo');
 
-      // Navigate to chat - use offUntilHome: true to clear all screens
-      // back to home screen first, then navigate to chat
-      print('=== Navigating to chat with offUntilHome: true ===');
-      await AppNavigator.startChat(
+      print('conversationInfo is null: ${conversationInfo == null}');
+      print('conversationID: ${conversationInfo?.conversationID}');
+      print('conversationInfo: $conversationInfo');
+
+      print('=== CALL toChat ===');
+      conversationLogic.toChat(
+        // offUntilHome: false,
+        groupID: info.groupID,
+        nickname: groupName,
+        faceURL: faceURL.value,
+        sessionType: info.sessionType,
         conversationInfo: conversationInfo,
-        offUntilHome: true, // Clear all routes until home, then push chat
       );
-      print('=== Navigation completed ===');
+
+      print('=== completeCreation END ===');
     } catch (e, stackTrace) {
       print('=== ERROR in completeCreation ===');
       print('Error type: ${e.runtimeType}');
       print('Error: $e');
       print('Stack trace: $stackTrace');
+
       if (e is PlatformException) {
         print('PlatformException code: ${e.code}');
         print('PlatformException message: ${e.message}');

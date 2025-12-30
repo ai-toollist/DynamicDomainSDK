@@ -36,6 +36,8 @@ class StrRes {
 
   static String get passwordMustContainLetterNumber =>
       'passwordMustContainLetterNumber'.tr;
+  static String get passwordMustContainLetter => 'passwordMustContainLetter'.tr;
+  static String get passwordMustContainNumber => 'passwordMustContainNumber'.tr;
 
   static String get account => 'account'.tr;
 
@@ -210,7 +212,7 @@ class StrRes {
   static String get notFoundAccount => 'notFoundAccount'.tr;
 
   static String get loginIncorrectPwd => 'loginIncorrectPwd'.tr;
-
+  static String get passwordChanged => 'passwordChanged'.tr;
   static String get passwordLogin => 'passwordLogin'.tr;
 
   static String get through => 'through'.tr;

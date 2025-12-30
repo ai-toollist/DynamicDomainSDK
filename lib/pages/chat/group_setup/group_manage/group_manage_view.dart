@@ -32,7 +32,6 @@ class GroupManagePage extends StatelessWidget {
           color: const Color(0xFFF9FAFB),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.only(bottom: 24.h),
             child: Obx(
               () => AnimationLimiter(
                 child: Column(
@@ -47,7 +46,6 @@ class GroupManagePage extends StatelessWidget {
                     children: [
                       // Group Control Section
                       SectionTitle(title: StrRes.groupControl),
-                      8.verticalSpace,
                       SettingsMenuSection(
                         items: [
                           SettingsMenuItem(
@@ -61,12 +59,8 @@ class GroupManagePage extends StatelessWidget {
                           ),
                         ],
                       ),
-
-                      20.verticalSpace,
-
-                      // Member Settings Section
+// Member Settings Section
                       SectionTitle(title: StrRes.memberSettings),
-                      8.verticalSpace,
                       SettingsMenuSection(
                         items: [
                           SettingsMenuItem(
@@ -101,11 +95,8 @@ class GroupManagePage extends StatelessWidget {
                       ),
 
                       if (logic.isOwner) ...[
-                        20.verticalSpace,
-
                         // Owner Settings Section
                         SectionTitle(title: StrRes.ownerSettings),
-                        8.verticalSpace,
                         SettingsMenuSection(
                           items: [
                             SettingsMenuItem(
@@ -118,9 +109,7 @@ class GroupManagePage extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ],
-
-                      24.verticalSpace,
+                      ]
                     ],
                   ),
                 ),

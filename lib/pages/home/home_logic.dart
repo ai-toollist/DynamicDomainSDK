@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:get/get.dart';
@@ -46,6 +49,8 @@ class HomeLogic extends SuperController with UpgradeManger {
   final gatewayConfigController = Get.find<GatewayConfigController>();
 
   String get discoverPageURL => clientConfigLogic.discoverPageURL;
+
+  late StreamSubscription kickedOfflineSub;
 
   Function()? onScrollToUnreadMessage;
 
@@ -266,6 +271,18 @@ class HomeLogic extends SuperController with UpgradeManger {
   addGroup() =>
       AppNavigator.startAddContactsBySearch(searchType: SearchType.group);
 
+  void kickedOffline({String? tips}) async {
+    if (EasyLoading.isShow) {
+      EasyLoading.dismiss();
+    }
+
+    IMViews.showToast(tips??StrRes.accountException, type:2);
+    await DataSp.removeLoginCertificate();
+    pushLogic.logout();
+    trtcLogic.logout();
+    AppNavigator.startInviteCode();
+  }
+
   @override
   void onInit() {
     _isAutoLogin = Get.arguments != null ? Get.arguments['isAutoLogin'] : false;
@@ -287,10 +304,21 @@ class HomeLogic extends SuperController with UpgradeManger {
       if (value.status == IMSdkStatus.connectionSucceeded) {}
     });
 
+    kickedOfflineSub = imLogic.onKickedOfflineSubject.listen((value) {
+      if (value == KickoffType.userTokenInvalid) {
+        kickedOffline(tips: StrRes.tokenInvalid);
+      } else if (value.index == 2) {
+        kickedOffline(tips: StrRes.passwordChanged);
+      } else {
+        kickedOffline();
+      }
+    });
+
     Apis.kickoffController.stream.listen((event) {
       DataSp.removeLoginCertificate();
       Get.find<PushController>().logout();
       AppNavigator.startInviteCode();
+      IMViews.showToast(StrRes.accountException);
     });
 
     super.onInit();
@@ -317,6 +345,7 @@ class HomeLogic extends SuperController with UpgradeManger {
   @override
   void onClose() {
     _errorController.close();
+    kickedOfflineSub.cancel();
     super.onClose();
   }
 
@@ -335,6 +364,5 @@ class HomeLogic extends SuperController with UpgradeManger {
   }
 
   @override
-  void onHidden() {
-  }
+  void onHidden() {}
 }

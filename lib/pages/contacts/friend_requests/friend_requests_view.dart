@@ -11,6 +11,7 @@ import 'package:openim/widgets/gradient_scaffold.dart';
 import 'package:openim_common/openim_common.dart';
 
 import 'friend_requests_logic.dart';
+import '../../../routes/app_navigator.dart';
 
 class FriendRequestsPage extends StatelessWidget {
   final logic = Get.find<FriendRequestsLogic>();
@@ -207,6 +208,14 @@ class FriendRequestsPage extends StatelessWidget {
                     url: faceURL,
                     text: name,
                     isCircle: true,
+                    onTap: () {
+                      AppNavigator.startUserProfilePane(
+                        userID:
+                            isISendRequest ? info.toUserID! : info.fromUserID!,
+                        nickname: name,
+                        faceURL: faceURL,
+                      );
+                    },
                   ),
                   16.horizontalSpace,
                   Expanded(

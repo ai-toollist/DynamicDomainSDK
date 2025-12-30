@@ -438,7 +438,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       Logger.print('SMS verification code response: $result');
 
       if (result == true) {
-        IMViews.showToast(StrRes.verificationCodeSent);
+        IMViews.showToast(StrRes.verificationCodeSent, type: 1);
         return true;
       }
 
@@ -450,7 +450,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       // final smsMsg = result['smsCode']?.toString();
 
       if (smsCode == null || smsCode.isEmpty) {
-        IMViews.showToast(StrRes.verificationCodeSent);
+        IMViews.showToast(StrRes.verificationCodeSent, type: 1);
         return true;
       }
 

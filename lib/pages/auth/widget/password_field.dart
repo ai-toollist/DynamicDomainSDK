@@ -97,8 +97,11 @@ class _PasswordFieldState extends State<PasswordField> {
             // Check for at least one letter and one number
             final hasLetter = RegExp(r'[a-zA-Z]').hasMatch(value);
             final hasNumber = RegExp(r'[0-9]').hasMatch(value);
-            if (!hasLetter || !hasNumber) {
-              return StrRes.passwordMustContainLetterNumber;
+            if (!hasLetter) {
+              return StrRes.passwordMustContainLetter;
+            }
+            if (!hasNumber) {
+              return StrRes.passwordMustContainNumber;
             }
           }
 

@@ -119,8 +119,9 @@ const Map<String, String> en_US = {
   "confirmPassword": "Confirm Password",
   "wrongPasswordFormat": "8-20 chars, include letters & numbers",
   "passwordMustLength": "Password must be 8-20 characters long",
-  "passwordMustContainLetterNumber":
-      "Password must include letters and numbers",
+  "passwordMustContainLetterNumber": "Password must include letters and numbers",
+  "passwordMustContainLetter": "Password must include a letter",
+  "passwordMustContainNumber": "Password must include a number",
   "plsCompleteInfo": "Please complete your personal information",
   "nameLengthError": "Nickname must be at least 2 characters",
   "plsEnterYourNickname": "Please enter your nickname",
@@ -968,6 +969,7 @@ const Map<String, String> en_US = {
   "enterAppealDetails": "Please enter detailed appeal content",
   "phoneLabel": "Phone",
   "passwordLabel": "Password",
+  "passwordChanged": "Password has been changed, please login again",
 
   // Report and Appeal Dialog Texts
   "reportImages": "Attach Images",

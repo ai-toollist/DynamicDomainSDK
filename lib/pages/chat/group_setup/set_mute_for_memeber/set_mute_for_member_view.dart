@@ -164,7 +164,7 @@ class SetMuteForGroupMemberPage extends StatelessWidget {
     return SettingsMenuItem(
       label: label,
       showArrow: false,
-      color: isDestructive ? const Color(0xFFEF4444) : null,
+      isDestroy: isDestructive,
       valueWidget: logic.index.value == index
           ? Container(
               width: 24.w,

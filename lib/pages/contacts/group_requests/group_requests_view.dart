@@ -213,6 +213,13 @@ class GroupRequestsPage extends StatelessWidget {
                     url: info.userFaceURL,
                     text: info.nickname,
                     isCircle: true,
+                    onTap: () {
+                      AppNavigator.startUserProfilePane(
+                        userID: info.userID!,
+                        nickname: info.nickname,
+                        faceURL: info.userFaceURL,
+                      );
+                    },
                   ),
                   16.horizontalSpace,
                   Expanded(
@@ -368,7 +375,8 @@ class GroupRequestsPage extends StatelessWidget {
     if (isISendRequest) {
       if (info.handleResult == 0) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
           decoration: BoxDecoration(
             color: primaryColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8.r),

@@ -43,7 +43,6 @@ class PersonalInfoPage extends StatelessWidget {
                     SettingsMenuItem(
                       label: StrRes.avatar,
                       icon: CupertinoIcons.person,
-                      color: const Color(0xFF3B82F6),
                       showArrow: false,
                       valueWidget: AvatarView(
                         width: 44.w,
@@ -63,21 +62,18 @@ class PersonalInfoPage extends StatelessWidget {
                       label: StrRes.nickname,
                       value: logic.nickname,
                       icon: CupertinoIcons.person_fill,
-                      color: const Color(0xFF10B981),
                       showArrow: false,
                     ),
                     SettingsMenuItem(
                       label: StrRes.gender,
                       value: logic.isMale ? StrRes.man : StrRes.woman,
                       icon: CupertinoIcons.person_2_fill,
-                      color: const Color(0xFFF87171),
                       showArrow: false,
                     ),
                     SettingsMenuItem(
                       label: StrRes.birthDay,
                       value: logic.birth,
                       icon: CupertinoIcons.gift,
-                      color: const Color(0xFF8B5CF6),
                       showArrow: false,
                       showDivider: false,
                     ),
@@ -85,7 +81,6 @@ class PersonalInfoPage extends StatelessWidget {
                       label: StrRes.mobile,
                       value: logic.phoneNumber,
                       icon: CupertinoIcons.phone,
-                      color: Colors.pink,
                       showArrow: false,
                       showDivider: false,
                     ),

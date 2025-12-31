@@ -10,7 +10,9 @@ import 'package:openim/routes/app_navigator.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../../../widgets/custom_bottom_sheet.dart';
+import '../../../widgets/custom_buttom.dart';
 import '../../../widgets/settings_menu.dart';
+import '../../auth/widget/password_field.dart';
 import '../unlock_setup/unlock_setup_logic.dart';
 
 import '../../../core/controller/im_controller.dart';
@@ -675,31 +677,38 @@ class AccountSetupLogic extends GetxController {
     final newPwdCtrl = TextEditingController();
     final againPwdCtrl = TextEditingController();
 
-    final oldPwdObscure = true.obs;
-    final newPwdObscure = true.obs;
-    final againPwdObscure = true.obs;
+    // Focus nodes for PasswordField
+    final oldPwdFocus = FocusNode();
+    final newPwdFocus = FocusNode();
+    final againPwdFocus = FocusNode();
+    final confirmPwdFieldKey = GlobalKey<FormFieldState>();
+
+    final formKey = GlobalKey<FormState>();
+    final isFormValid = false.obs;
+
+    void checkValidation() {
+      // Simple check to enable/disable button
+      final old = oldPwdCtrl.text;
+      final newPwd = newPwdCtrl.text;
+      final again = againPwdCtrl.text;
+
+      bool isValid =
+          old.isNotEmpty && IMUtils.isValidPassword(newPwd) && newPwd == again;
+
+      isFormValid.value = isValid;
+    }
+
+    oldPwdCtrl.addListener(checkValidation);
+    newPwdCtrl.addListener(checkValidation);
+    againPwdCtrl.addListener(checkValidation);
 
     void confirm() async {
-      if (oldPwdCtrl.text.isEmpty) {
-        IMViews.showToast(StrRes.plsEnterOldPwd);
-        return;
-      }
-      if (!IMUtils.isValidPassword(newPwdCtrl.text)) {
-        IMViews.showToast(StrRes.wrongPasswordFormat);
-        return;
-      }
-      if (newPwdCtrl.text.isEmpty) {
-        IMViews.showToast(StrRes.plsEnterNewPwd);
-        return;
-      }
-      if (againPwdCtrl.text.isEmpty) {
-        IMViews.showToast(StrRes.plsEnterConfirmPwd);
-        return;
-      }
-      if (newPwdCtrl.text != againPwdCtrl.text) {
-        IMViews.showToast(StrRes.twicePwdNoSame);
-        return;
-      }
+      oldPwdFocus.unfocus();
+      newPwdFocus.unfocus();
+      againPwdFocus.unfocus();
+
+      if (!isFormValid.value) return;
+      if (!formKey.currentState!.validate()) return;
 
       final result = await LoadingView.singleton.wrap(
         asyncFunction: () => GatewayApi.changePassword(
@@ -709,7 +718,6 @@ class AccountSetupLogic extends GetxController {
       );
       if (result) {
         Get.back(); // Close bottom sheet
-        IMViews.showToast(StrRes.changedSuccessfully, type: 1);
         await LoadingView.singleton.wrap(asyncFunction: () async {
           await OpenIM.iMManager.logout();
           await DataSp.removeLoginCertificate();
@@ -723,134 +731,72 @@ class AccountSetupLogic extends GetxController {
     CustomBottomSheet.show(
       title: StrRes.changePassword,
       icon: CupertinoIcons.lock_rotation,
+      isDismissible: true,
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w),
-        child: SettingsMenuSection(
-          items: [
-            _buildPasswordField(
-              label: StrRes.oldPwd,
-              controller: oldPwdCtrl,
-              obscureRx: oldPwdObscure,
-              icon: CupertinoIcons.lock,
-            ),
-            _buildPasswordField(
-              label: StrRes.newPwd,
-              controller: newPwdCtrl,
-              obscureRx: newPwdObscure,
-              icon: CupertinoIcons.lock_rotation,
-            ),
-            _buildPasswordField(
-              label: StrRes.confirmNewPwd,
-              controller: againPwdCtrl,
-              obscureRx: againPwdObscure,
-              icon: CupertinoIcons.checkmark_shield,
-              showDivider: false,
-            ),
-          ],
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                children: [
+                  PasswordField(
+                    focusNode: oldPwdFocus,
+                    controller: oldPwdCtrl,
+                    isRequired: true,
+                    label: StrRes.oldPwd,
+                    emptyErrorLabel: StrRes.plsEnterOldPwd,
+                  ),
+                  12.verticalSpace,
+                  PasswordField(
+                    focusNode: newPwdFocus,
+                    controller: newPwdCtrl,
+                    validateFormat: true,
+                    isRequired: true,
+                    label: StrRes.newPwd,
+                    onPasswordChange: () {
+                      if (againPwdCtrl.text.isNotEmpty) {
+                        confirmPwdFieldKey.currentState?.validate();
+                      }
+                    },
+                  ),
+                  12.verticalSpace,
+                  PasswordField(
+                    focusNode: againPwdFocus,
+                    controller: againPwdCtrl,
+                    compareController: newPwdCtrl,
+                    formFieldKey: confirmPwdFieldKey,
+                    isRequired: true,
+                    label: StrRes.confirmNewPwd,
+                  ),
+                ],
+              ).paddingSymmetric(vertical: 16.h),
+              // Custom Confirm Button
+              Obx(() => CustomButton(
+                    onTap: isFormValid.value ? confirm : null,
+                    title: StrRes.confirm,
+                    color: isFormValid.value
+                        ? Get.theme.primaryColor
+                        : Colors.grey,
+                    expand: true,
+                  )),
+              30.verticalSpace,
+            ],
+          ),
         ),
       ),
-      onConfirm: confirm,
-      confirmText: StrRes.confirm,
-      isDismissible: true,
+      // We handle the button ourselves in the body
+      onConfirm: null,
     ).then((_) {
-      // Add delay to ensure bottom sheet is fully closed before disposing
       Future.delayed(const Duration(milliseconds: 300), () {
         oldPwdCtrl.dispose();
         newPwdCtrl.dispose();
         againPwdCtrl.dispose();
+        oldPwdFocus.dispose();
+        newPwdFocus.dispose();
+        againPwdFocus.dispose();
       });
     });
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required TextEditingController controller,
-    required RxBool obscureRx,
-    required IconData icon,
-    bool showDivider = true,
-  }) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8.w),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Icon(
-                  icon,
-                  size: 22.w,
-                  color: Colors.black,
-                ),
-              ),
-              12.horizontalSpace,
-              Expanded(
-                child: Obx(
-                    key: ValueKey('password_field_$label'),
-                    () => Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12.w, vertical: 8.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF9FAFB),
-                            borderRadius: BorderRadius.circular(10.r),
-                            border: Border.all(
-                              color: const Color(0xFFE5E7EB),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: controller,
-                                  obscureText: obscureRx.value,
-                                  style: TextStyle(
-                                    fontFamily: 'FilsonPro',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF374151),
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.zero,
-                                    border: InputBorder.none,
-                                    hintText: label,
-                                    hintStyle: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: const Color(0xFF9CA3AF),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              6.horizontalSpace,
-                              GestureDetector(
-                                onTap: () => obscureRx.value = !obscureRx.value,
-                                child: Icon(
-                                  obscureRx.value
-                                      ? Icons.visibility_off_rounded
-                                      : Icons.visibility_rounded,
-                                  size: 22.w,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-              ),
-            ],
-          ),
-        ),
-        if (showDivider)
-          Container(
-            margin: EdgeInsets.only(left: 68.w),
-            height: 1,
-            color: const Color(0xFFF3F4F6),
-          ),
-      ],
-    );
   }
 }

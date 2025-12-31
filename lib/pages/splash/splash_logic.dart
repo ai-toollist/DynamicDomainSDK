@@ -80,7 +80,7 @@ class SplashLogic extends GetxController {
               ),
             ),
             TextSpan(
-              text: StrRes.privacyPolicy,
+              text: StrRes.privacyPolicyDoc,
               style: const TextStyle(
                 fontFamily: 'FilsonPro',
                 color: Colors.blue,
@@ -90,7 +90,7 @@ class SplashLogic extends GetxController {
                 ..onTap = startPrivacyPolicy,
             ),
             TextSpan(
-              text: userPrivateProtocol,
+              text: ' $userPrivateProtocol',
               style: TextStyle(
                 fontFamily: 'FilsonPro',
                 color: Colors.grey[600],

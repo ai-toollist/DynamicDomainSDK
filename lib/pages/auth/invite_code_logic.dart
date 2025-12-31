@@ -6,6 +6,7 @@ import 'package:openim/tracking_service.dart';
 import 'package:openim/core/controller/auth_controller.dart';
 import 'package:openim/core/controller/gateway_config_controller.dart';
 import 'package:openim/routes/app_navigator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:openim_common/openim_common.dart';
 
 class InviteCodeLogic extends GetxController {
@@ -21,6 +22,41 @@ class InviteCodeLogic extends GetxController {
 
   final gradientOpacity = 0.0.obs;
   final isButtonEnabled = false.obs; // Track if submit button should be enabled
+
+  // Language switcher
+  final currentLocale = Get.locale.obs;
+  final languageIndex = 0.obs;
+
+  Widget get currentFlagImage {
+    if (languageIndex.value == 0) {
+      return Icon(Icons.public, size: 24.w, color: Colors.black87);
+    }
+    if (currentLocale.value?.languageCode == 'zh') {
+      return ImageRes.chinaFlag.toImage;
+    }
+    return ImageRes.englandFlag.toImage;
+  }
+
+  void changeLanguage(int index) {
+    Locale newLocale;
+    if (index == 0) {
+      if (Get.deviceLocale?.languageCode == 'zh') {
+        newLocale = const Locale('zh', 'CN');
+      } else {
+        newLocale = const Locale('en', 'US');
+      }
+    } else if (index == 1) {
+      // Chinese
+      newLocale = const Locale('zh', 'CN');
+    } else {
+      // English
+      newLocale = const Locale('en', 'US');
+    }
+    Get.updateLocale(newLocale);
+    currentLocale.value = newLocale;
+    languageIndex.value = index;
+    DataSp.putLanguage(index);
+  }
 
   final Set<String> _validInviteCodesCache = {};
 
@@ -110,6 +146,7 @@ class InviteCodeLogic extends GetxController {
 
   @override
   void onInit() {
+    languageIndex.value = DataSp.getLanguage() ?? 0;
     super.onInit();
 
     // Listen to text changes to validate and enable/disable submit button

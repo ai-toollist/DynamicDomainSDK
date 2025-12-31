@@ -110,7 +110,6 @@ class MineLogic extends GetxController {
       EasyLoading.dismiss();
     }
 
-    IMViews.showToast(tips??StrRes.accountException, type:2);
     await DataSp.removeLoginCertificate();
     pushLogic.logout();
     trtcLogic.logout();

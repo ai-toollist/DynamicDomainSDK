@@ -26,15 +26,8 @@ class ChatPicturePreview extends StatelessWidget {
       GlobalKey<ExtendedImageSlidePageState>();
   @override
   Widget build(BuildContext context) {
-    return ExtendedImageSlidePage(
-      key: slidePagekey,
-      slideAxis: SlideAxis.vertical,
-      slidePageBackgroundHandler: (offset, pageSize) =>
-          defaultSlidePageBackgroundHandler(
-        color: Colors.black,
-        offset: offset,
-        pageSize: pageSize,
-      ),
+    return Container(
+      color: Colors.black,
       child: MetaHero(
         heroTag: heroTag,
         onTap: onTap,
@@ -141,12 +134,16 @@ class MetaHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final view = GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: onTap,
-      onLongPress: onLongPress,
-      child: child,
-    );
+    Widget view = child;
+    // Only wrap with GestureDetector for onLongPress, ignore onTap
+    // onTap is removed to prevent accidental dismissal
+    if (onLongPress != null) {
+      view = GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onLongPress: onLongPress,
+        child: child,
+      );
+    }
     return heroTag == null ? view : Hero(tag: heroTag!, child: view);
   }
 }

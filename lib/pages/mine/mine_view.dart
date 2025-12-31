@@ -185,11 +185,11 @@ class _MinePageState extends State<MinePage> {
                     SectionTitle(title: StrRes.systemSection),
                     SettingsMenuSection(
                       items: [
-                        SettingsMenuItem(
-                          icon: CupertinoIcons.chart_bar,
-                          label: StrRes.chatAnalytics,
-                          onTap: logic.startChatAnalytics,
-                        ),
+                        // SettingsMenuItem(
+                        //   icon: CupertinoIcons.chart_bar,
+                        //   label: StrRes.chatAnalytics,
+                        //   onTap: logic.startChatAnalytics,
+                        // ),
                         SettingsMenuItem(
                           icon: Icons.logout,
                           label: StrRes.logout,

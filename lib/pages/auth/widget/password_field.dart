@@ -11,6 +11,8 @@ class PasswordField extends StatefulWidget {
   final bool validateFormat;
   final bool isRequired;
   final Function(String)? onFieldSubmitted;
+  final String? label;
+  final String? emptyErrorLabel;
 
   /// Key to access this field's FormFieldState for external validation trigger
   final GlobalKey<FormFieldState>? formFieldKey;
@@ -28,6 +30,8 @@ class PasswordField extends StatefulWidget {
     this.onFieldSubmitted,
     this.formFieldKey,
     this.onPasswordChange,
+    this.label,
+    this.emptyErrorLabel,
   });
 
   @override
@@ -42,7 +46,8 @@ class _PasswordFieldState extends State<PasswordField> {
     final isConfirmPassword = widget.compareController != null;
     return AppTextFormField(
         formFieldKey: widget.formFieldKey,
-        label: isConfirmPassword ? StrRes.confirmPassword : StrRes.password,
+        label: widget.label ??
+            (isConfirmPassword ? StrRes.confirmPassword : StrRes.password),
         focusNode: widget.focusNode,
         controller: widget.controller,
         textInputAction:
@@ -82,7 +87,12 @@ class _PasswordFieldState extends State<PasswordField> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return StrRes.plsEnterPwd;
+            if (widget.emptyErrorLabel != null) {
+              return widget.emptyErrorLabel;
+            }
+            return widget.compareController != null
+                ? StrRes.plsEnterConfirmPwd
+                : StrRes.plsEnterPwd;
           }
 
           if (widget.compareController != null &&

@@ -1860,12 +1860,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   bool get showGroupOnlineInfo {
     final result = isGroupChat &&
         clientConfigLogic.shouldShowGroupOnlineInfo(groupMemberRoleLevel.value);
-    print('=== DEBUG showGroupOnlineInfo ===');
-    print('isGroupChat: $isGroupChat');
-    print('groupMemberRoleLevel: ${groupMemberRoleLevel.value}');
-    print('onlineInfoVisibility: ${clientConfigLogic.onlineInfoVisibility}');
-    print('onlineUserId count: ${onlineInfoLogic.onlineUserId.length}');
-    print('result: $result');
     return result;
   }
 

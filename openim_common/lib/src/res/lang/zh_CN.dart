@@ -121,7 +121,7 @@ const Map<String, String> zh_CN = {
   "plsEnterYourNickname": "请输入您的昵称",
   "setInfo": "设置信息",
   "loginPwdFormat": "6～20位，至少包含数字、字母",
-  "savedInviteCode": "服务器码保存成功",
+  "savedInviteCode": "验证成功",
   "passwordLogin": "密码登录",
   "loginFailed": "登录失败，请重试",
   "notFoundAccount": "未找到该账号",

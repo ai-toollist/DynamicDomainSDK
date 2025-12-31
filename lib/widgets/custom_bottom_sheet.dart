@@ -58,83 +58,85 @@ class CustomBottomSheet {
                 ),
               ],
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: 12.h),
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-
-                // Title Section
-                if (title != null && title.isNotEmpty) ...[
+            child: TouchCloseSoftKeyboard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle bar
                   Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    child: Row(
-                      children: [
-                        if (icon != null) ...[
-                          Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Get.theme.primaryColor.withOpacity(0.1),
-                                  Get.theme.primaryColor.withOpacity(0.05),
-                                ],
+                    margin: EdgeInsets.only(top: 12.h),
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+
+                  // Title Section
+                  if (title != null && title.isNotEmpty) ...[
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 16.h),
+                      child: Row(
+                        children: [
+                          if (icon != null) ...[
+                            Container(
+                              padding: EdgeInsets.all(8.w),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Get.theme.primaryColor.withOpacity(0.1),
+                                    Get.theme.primaryColor.withOpacity(0.05),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
-                              borderRadius: BorderRadius.circular(12.r),
+                              child: Icon(
+                                icon,
+                                size: 24.w,
+                                color: Get.theme.primaryColor,
+                              ),
                             ),
-                            child: Icon(
-                              icon,
-                              size: 24.w,
-                              color: Get.theme.primaryColor,
+                            12.horizontalSpace,
+                          ],
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                fontFamily: 'FilsonPro',
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Get.theme.primaryColor,
+                              ),
                             ),
                           ),
-                          12.horizontalSpace,
                         ],
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontFamily: 'FilsonPro',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Get.theme.primaryColor,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
 
-                // Body content
-                body,
+                  // Body content
+                  body,
 
-                // Buttons section
-                if (onConfirm != null || showCancelButton) ...[
-                  SizedBox(height: 24.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: _buildButtons(
-                      onConfirm: onConfirm,
-                      confirmText: confirmText,
-                      showCancelButton: showCancelButton,
-                      onCancel: onCancel,
-                      cancelText: cancelText,
+                  // Buttons section
+                  if (onConfirm != null || showCancelButton) ...[
+                    SizedBox(height: 24.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: _buildButtons(
+                        onConfirm: onConfirm,
+                        confirmText: confirmText,
+                        showCancelButton: showCancelButton,
+                        onCancel: onCancel,
+                        cancelText: cancelText,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
 
-                SizedBox(height: 30.h),
-              ],
+                  SizedBox(height: 30.h),
+                ],
+              ),
             ),
           ),
         ],

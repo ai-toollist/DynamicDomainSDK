@@ -287,91 +287,89 @@ class AuthView extends StatelessWidget {
   }
 
   Widget _buildModeToggle(Color primaryColor) {
-    return Obx(() => Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          padding: EdgeInsets.all(4.w),
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => logic.switchFormMode(AuthFormMode.login),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.fastOutSlowIn,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: logic.currentFormMode.value == AuthFormMode.login
-                          ? Colors.white
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Text(
-                      StrRes.login,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 14.sp,
-                        fontWeight:
-                            logic.currentFormMode.value == AuthFormMode.login
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                        color: logic.currentFormMode.value == AuthFormMode.login
-                            ? primaryColor
-                            : const Color(0xFF6B7280),
+    return Obx(() {
+      final isLogin = logic.currentFormMode.value == AuthFormMode.login;
+      return Container(
+        height: 48.h,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        padding: EdgeInsets.all(4.w),
+        child: Stack(
+          children: [
+            // Sliding White Thumb
+            AnimatedAlign(
+              alignment: isLogin ? Alignment.centerLeft : Alignment.centerRight,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              child: FractionallySizedBox(
+                widthFactor: 0.5,
+                heightFactor: 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Text Labels
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => logic.switchFormMode(AuthFormMode.login),
+                    behavior: HitTestBehavior.opaque,
+                    child: Center(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 14.sp,
+                          fontWeight:
+                              isLogin ? FontWeight.w600 : FontWeight.w500,
+                          color:
+                              isLogin ? primaryColor : const Color(0xFF6B7280),
+                        ),
+                        child: Text(StrRes.login),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => logic.switchFormMode(AuthFormMode.register),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.fastOutSlowIn,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color:
-                          logic.currentFormMode.value == AuthFormMode.register
-                              ? Colors.white
-                              : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10.r),
-                      boxShadow:
-                          logic.currentFormMode.value == AuthFormMode.register
-                              ? [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ]
-                              : null,
-                    ),
-                    child: Text(
-                      StrRes.register,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'FilsonPro',
-                        fontSize: 14.sp,
-                        fontWeight:
-                            logic.currentFormMode.value == AuthFormMode.register
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                        color:
-                            logic.currentFormMode.value == AuthFormMode.register
-                                ? primaryColor
-                                : const Color(0xFF6B7280),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => logic.switchFormMode(AuthFormMode.register),
+                    behavior: HitTestBehavior.opaque,
+                    child: Center(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: TextStyle(
+                          fontFamily: 'FilsonPro',
+                          fontSize: 14.sp,
+                          fontWeight:
+                              !isLogin ? FontWeight.w600 : FontWeight.w500,
+                          color:
+                              !isLogin ? primaryColor : const Color(0xFF6B7280),
+                        ),
+                        child: Text(StrRes.register),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ));
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildLoginFields(Color primaryColor) {

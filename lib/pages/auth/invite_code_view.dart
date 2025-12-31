@@ -139,8 +139,124 @@ class InviteCodeView extends StatelessWidget {
                   ),
                 ),
               ),
+              // Language Switcher Button
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 10,
+                right: 16,
+                child: OverlayPopupMenuButton(
+                  child: Obx(() => Container(
+                        width: 32.w,
+                        height: 32.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(90.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF9CA3AF).withOpacity(0.1),
+                              offset: const Offset(0, 4),
+                              blurRadius: 12.r,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20.r),
+                          child: logic.currentFlagImage,
+                        ),
+                      )),
+                  builder: (controller) => Container(
+                    width: 160.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Obx(() => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildLanguageItem(
+                              Icon(Icons.public,
+                                  size: 24.w, color: Colors.black87),
+                              StrRes.followSystem,
+                              logic.languageIndex.value == 0,
+                              () {
+                                logic.changeLanguage(0);
+                                controller?.reverse();
+                              },
+                            ),
+                            Divider(height: 1, color: Colors.grey.shade200),
+                            _buildLanguageItem(
+                              ImageRes.englandFlag.toImage,
+                              StrRes.english,
+                              logic.languageIndex.value == 2,
+                              () {
+                                logic.changeLanguage(2);
+                                controller?.reverse();
+                              },
+                            ),
+                            Divider(height: 1, color: Colors.grey.shade200),
+                            _buildLanguageItem(
+                              ImageRes.chinaFlag.toImage,
+                              StrRes.chinese,
+                              logic.languageIndex.value == 1,
+                              () {
+                                logic.changeLanguage(1);
+                                controller?.reverse();
+                              },
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageItem(
+    Widget flagImage,
+    String label,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 24.w,
+              height: 24.w,
+              child: flagImage,
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check,
+                size: 18.w,
+                color: Theme.of(Get.context!).primaryColor,
+              ),
+          ],
         ),
       ),
     );

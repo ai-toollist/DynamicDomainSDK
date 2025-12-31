@@ -15,6 +15,10 @@ class ImageRes {
   static const loginLogo = "$_dir/ic_login_logo.png";
   static const logoApp = "$_dir/ic_logo_app.png";
 
+
+  static const englandFlag = "$_dir/ic_england_flag.png";
+  static const chinaFlag = "$_dir/ic_china_flag.png";
+
   static const tabBarChat = "$_dir/__";
   static const tabBarChatSelected = "$_dir/__";
   static const tabBarContact = "$_dir/__";

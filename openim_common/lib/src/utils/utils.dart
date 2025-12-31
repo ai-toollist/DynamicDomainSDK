@@ -1100,19 +1100,39 @@ class IMUtils {
     String? heroTag,
   }) =>
       navigator?.push(TransparentRoute(
-        builder: (BuildContext context) => GestureDetector(
-          onTap: () => Get.back(),
-          child: ChatPicturePreview(
-            currentIndex: currentIndex,
-            images: sources,
-            heroTag: heroTag,
-            onLongPress: (url) {
-              IMViews.openDownloadSheet(
-                url,
-                onDownload: () => HttpUtil.saveUrlPicture(url),
-              );
-            },
-          ),
+        builder: (BuildContext context) => Stack(
+          children: [
+            ChatPicturePreview(
+              currentIndex: currentIndex,
+              images: sources,
+              heroTag: heroTag,
+              onLongPress: (url) {
+                IMViews.openDownloadSheet(
+                  url,
+                  onDownload: () => HttpUtil.saveUrlPicture(url),
+                );
+              },
+            ),
+            Positioned(
+              right: 15,
+              top: MediaQuery.of(context).padding.top + 10,
+              child: GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ));
 
@@ -1538,6 +1558,8 @@ class IMUtils {
         // controller: logic.browserController,
         // If allowPullDownToPop is true, the allowSwipeDownToPop setting is invalid.
         allowPullDownToPop: true,
+        allowTapToPop:
+            false, // Disable tap-to-close, only close button should close
         heroTagBuilder: (int index) {
           return mediaMessages[index].clientMsgID!;
         },

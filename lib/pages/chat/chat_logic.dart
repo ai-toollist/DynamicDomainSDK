@@ -2149,10 +2149,10 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         if (firstItem is Map<String, dynamic>) {
           _blockDialogShowFlag = true;
           CustomDialog.show(
-                title: '群组已被封停',
-                content: '因：${firstItem['reason']} 已被封停，不能使用',
-                showCancel: false,
-              );
+            title: '群组已被封停',
+            content: '因：${firstItem['reason']} 已被封停，不能使用',
+            showCancel: false,
+          );
           _blockDialogShowFlag = false;
           return;
         }

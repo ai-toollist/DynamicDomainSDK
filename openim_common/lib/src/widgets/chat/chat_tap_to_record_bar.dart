@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lottie/lottie.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:record/record.dart';
 
@@ -25,7 +25,8 @@ class ChatTapToRecordBar extends StatefulWidget {
   State<ChatTapToRecordBar> createState() => ChatTapToRecordBarState();
 }
 
-class ChatTapToRecordBarState extends State<ChatTapToRecordBar> {
+class ChatTapToRecordBarState extends State<ChatTapToRecordBar>
+    with SingleTickerProviderStateMixin {
   static const _dir = "voice";
   static const _ext = ".m4a";
   late String _path;
@@ -37,11 +38,18 @@ class ChatTapToRecordBarState extends State<ChatTapToRecordBar> {
   bool _isCancelled = false;
   bool _isSending = false;
 
+  // Animation controller for waveform
+  late AnimationController _waveController;
+
   static int _now() => DateTime.now().millisecondsSinceEpoch;
 
   @override
   void initState() {
     super.initState();
+    _waveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
     _startRecording();
   }
 
@@ -102,14 +110,51 @@ class ChatTapToRecordBarState extends State<ChatTapToRecordBar> {
 
   @override
   void dispose() {
+    _waveController.dispose();
     _stopRecording();
     super.dispose();
+  }
+
+  /// Build animated waveform bars
+  Widget _buildWaveformBars() {
+    const int barCount = 35;
+    const double maxHeight = 18.0;
+    const double minHeight = 4.0;
+
+    return AnimatedBuilder(
+      animation: _waveController,
+      builder: (context, child) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: List.generate(barCount, (index) {
+            // Stagger the phase for each bar
+            final phase = index * (math.pi * 2 / barCount);
+            final animValue =
+                math.sin(_waveController.value * 2 * math.pi + phase);
+            final height =
+                minHeight + (maxHeight - minHeight) * ((animValue + 1) / 2);
+
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 1.w),
+              width: 2.5.w,
+              height: height.h,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(1.5.r),
+              ),
+            );
+          }),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 36.h,
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(16.r),
@@ -119,19 +164,15 @@ class ChatTapToRecordBarState extends State<ChatTapToRecordBar> {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Recording pulse animation
-          Container(
-            width: 10.w,
-            height: 10.h,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFEF4444),
+          // Animated waveform bars - takes most of the space
+          Expanded(
+            child: Center(
+              child: _buildWaveformBars(),
             ),
           ),
           8.horizontalSpace,
-          // Duration text
+          // Duration text on the right
           Text(
             IMUtils.seconds2HMS(_duration),
             style: TextStyle(
@@ -139,17 +180,6 @@ class ChatTapToRecordBarState extends State<ChatTapToRecordBar> {
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF374151),
-            ),
-          ),
-          8.horizontalSpace,
-          // Recording waveform
-          SizedBox(
-            width: 40.w,
-            height: 20.h,
-            child: Lottie.asset(
-              'assets/anim/voice_record.json',
-              fit: BoxFit.contain,
-              package: 'openim_common',
             ),
           ),
         ],

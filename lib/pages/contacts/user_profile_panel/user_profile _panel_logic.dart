@@ -119,7 +119,8 @@ class UserProfilePanelLogic extends GetxController {
         groupUserNickname.value = value.nickname ?? '';
       }
     });
-    _friendApplicationChangedSub = imLogic.friendApplicationChangedSubject.listen((value) {
+    _friendApplicationChangedSub =
+        imLogic.friendApplicationChangedSubject.listen((value) {
       _onFriendApplicationChanged(value);
     });
     super.onInit();
@@ -248,15 +249,17 @@ class UserProfilePanelLogic extends GetxController {
 
   _checkPendingFriendRequest() async {
     try {
-      print('🔍 Checking pending friend request for userID: ${userInfo.value.userID}');
+      print(
+          '🔍 Checking pending friend request for userID: ${userInfo.value.userID}');
       final applications = await OpenIM.iMManager.friendshipManager
           .getFriendApplicationListAsApplicant();
       print('📋 Total applications sent: ${applications.length}');
-      
+
       for (var app in applications) {
-        print('  - toUserID: ${app.toUserID}, handleResult: ${app.handleResult}');
+        print(
+            '  - toUserID: ${app.toUserID}, handleResult: ${app.handleResult}');
       }
-      
+
       final hasPending = applications.any((app) =>
           app.toUserID == userInfo.value.userID && app.handleResult == 0);
       print('✅ Has pending request: $hasPending');
@@ -274,7 +277,7 @@ class UserProfilePanelLogic extends GetxController {
       print('  - toUserID: ${value.toUserID}');
       print('  - handleResult: ${value.handleResult}');
       print('  - current userID: ${userInfo.value.userID}');
-      
+
       if (value.toUserID == userInfo.value.userID) {
         print('✅ Match! Updating status...');
         if (value.handleResult == 0) {
@@ -436,7 +439,7 @@ class UserProfilePanelLogic extends GetxController {
     if (null != groupMembersInfo) {
       imLogic.memberInfoChangedSubject.add(groupMembersInfo!);
     }
-    IMViews.showToast(StrRes.setSuccessfully,type:1);
+    IMViews.showToast(StrRes.setSuccessfully, type: 1);
   }
 
   void toChat() {
@@ -576,7 +579,7 @@ class UserProfilePanelLogic extends GetxController {
         conversationLogic.list
             .removeWhere((e) => e.conversationID == conversationID);
       });
-      IMViews.showToast(StrRes.friendDeletedSuccessfully,type:1);
+      IMViews.showToast(StrRes.friendDeletedSuccessfully, type: 1);
       if (offAllWhenDelFriend == true) {
         AppNavigator.startBackMain();
       } else {

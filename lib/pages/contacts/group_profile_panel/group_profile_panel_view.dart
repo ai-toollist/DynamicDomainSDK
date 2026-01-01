@@ -101,7 +101,7 @@ class GroupProfilePanelPage extends StatelessWidget {
               url: logic.groupInfo.value.faceURL,
               text: logic.groupInfo.value.groupName,
               isGroup: true,
-              borderRadius: BorderRadius.circular(12.r),
+              isCircle: true,
             ),
             16.horizontalSpace,
             Expanded(
@@ -251,7 +251,7 @@ class GroupProfilePanelPage extends StatelessWidget {
                   height: 44.h,
                   text: member.nickname,
                   url: member.faceURL,
-                  borderRadius: BorderRadius.circular(10.r),
+                  isCircle: true,
                 );
               },
             ),

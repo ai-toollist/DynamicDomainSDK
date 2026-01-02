@@ -168,15 +168,6 @@ class CreateGroupPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: Row(
                 children: [
-                  Text(
-                    StrRes.groupMember,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF374151),
-                    ),
-                  ),
                   const Spacer(),
                   Container(
                     padding: EdgeInsets.symmetric(

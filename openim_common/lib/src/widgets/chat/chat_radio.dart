@@ -18,7 +18,9 @@ class ChatRadio extends StatelessWidget {
         behavior: HitTestBehavior.translucent,
         child: Icon(
           (checked || !enabled ? Icons.check_circle : Icons.circle_outlined),
-          color: (checked || !enabled ? Theme.of(context).primaryColor : Colors.grey)
+          color: (checked || !enabled
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey)
               .withValues(alpha: enabled ? 1 : 0.5),
           size: 20.w,
         ));

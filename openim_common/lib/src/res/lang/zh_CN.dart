@@ -390,6 +390,8 @@ const Map<String, String> zh_CN = {
   "enterRemarkName": "输入备注名称...",
   "save": "保存",
   "saveSuccessfully": "保存成功",
+  "downloadSuccessfully": "下载成功",
+  "downloadFailed": "下载失败",
   "deleteSuccessfully": "删除成功",
   "deleteFailed": "删除失败",
   "confirm": "确认",

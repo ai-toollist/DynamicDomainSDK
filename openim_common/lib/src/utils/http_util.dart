@@ -267,8 +267,7 @@ class HttpUtil {
           intervalDo.drop(
               fun: () async {
                 await ImageGallerySaverPlus.saveFile(cachePath);
-                IMViews.showToast("${StrRes.saveSuccessfully}($cachePath)",
-                    type: 1);
+                IMViews.showToast(StrRes.downloadSuccessfully, type: 1);
               },
               milliseconds: 1500);
         }
@@ -276,7 +275,7 @@ class HttpUtil {
           onCompletion?.call();
           final result = await ImageGallerySaverPlus.saveFile(cachePath);
           if (result != null) {
-            IMViews.showToast(StrRes.saveSuccessfully, type: 1);
+            IMViews.showToast(StrRes.downloadSuccessfully, type: 1);
           }
         }
       },
@@ -309,7 +308,7 @@ class HttpUtil {
         // File already exists, save it to gallery
         final result = await ImageGallerySaverPlus.saveFile(cachePath);
         if (result != null) {
-          IMViews.showToast(StrRes.saveSuccessfully, type: 1);
+          IMViews.showToast(StrRes.downloadSuccessfully, type: 1);
         }
         onCompletion?.call();
         return;
@@ -326,20 +325,20 @@ class HttpUtil {
             try {
               final result = await ImageGallerySaverPlus.saveFile(cachePath);
               if (result != null) {
-                IMViews.showToast(StrRes.saveSuccessfully, type: 1);
+                IMViews.showToast(StrRes.downloadSuccessfully, type: 1);
               } else {
-                IMViews.showToast(StrRes.saveFailed);
+                IMViews.showToast(StrRes.downloadFailed);
               }
             } catch (e) {
               Logger.print('Save to gallery failed: $e');
-              IMViews.showToast(StrRes.saveFailed);
+              IMViews.showToast(StrRes.downloadFailed);
             }
           }
         },
       );
     } catch (e) {
       Logger.print('Save video error: $e');
-      IMViews.showToast(StrRes.saveFailed);
+      IMViews.showToast(StrRes.downloadFailed);
       onCompletion?.call();
     }
   }
@@ -349,21 +348,21 @@ class HttpUtil {
     try {
       if (!file.existsSync()) {
         if (showToast) {
-          IMViews.showToast(StrRes.saveFailed);
+          IMViews.showToast(StrRes.downloadFailed);
         }
+        IMViews.showToast(StrRes.downloadFailed);
         return;
       }
 
       final result = await ImageGallerySaverPlus.saveFile(file.path);
       if (result != null && showToast) {
-        IMViews.showToast(StrRes.saveSuccessfully, type: 1);
+        IMViews.showToast(StrRes.downloadSuccessfully, type: 1);
       } else if (showToast) {
-        IMViews.showToast(StrRes.saveFailed);
+        IMViews.showToast(StrRes.downloadFailed);
       }
     } catch (e) {
-      Logger.print('Save file to gallery error: $e');
       if (showToast) {
-        IMViews.showToast(StrRes.saveFailed);
+        IMViews.showToast(StrRes.downloadFailed);
       }
     }
   }

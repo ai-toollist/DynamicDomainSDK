@@ -74,8 +74,6 @@ class GroupMemberListPage extends StatelessWidget {
   Widget _buildContentContainer() {
     return Column(
       children: [
-        SizedBox(height: 40.h),
-
         // @Everyone option for group at
         if (logic.isOwnerOrAdmin && logic.isShowEveryone)
           Obx(() {
@@ -88,7 +86,7 @@ class GroupMemberListPage extends StatelessWidget {
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+                    margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16.r),
@@ -111,8 +109,8 @@ class GroupMemberListPage extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          width: 42.w,
-                          height: 42.w,
+                          width: 32.w,
+                          height: 32.w,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],

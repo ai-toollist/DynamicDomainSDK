@@ -99,7 +99,7 @@ class ChatItemContainer extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 20.h, top: 10.h),
               ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (this.isMultiSelModel)
                   Container(
@@ -133,7 +133,9 @@ class ChatItemContainer extends StatelessWidget {
         ? ChatBubble(
             bubbleType: type,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 0.7.sw),
+              constraints: BoxConstraints(
+                maxWidth: this.isMultiSelModel ? 0.6.sw : 0.7.sw,
+              ),
               child: bubbleContent,
             ),
           )
@@ -223,69 +225,71 @@ class ChatItemContainer extends StatelessWidget {
               isCircle: true,
             ),
             5.horizontalSpace,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (this.showLeftNickname &&
-                    this.leftNickname != null &&
-                    this.leftNickname!.isNotEmpty &&
-                    _shouldShowLeftNickname()) ...[
-                  Row(
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(maxWidth: 100.w),
-                        margin: EdgeInsets.only(right: 6.w),
-                        child: Text(
-                          this.leftNickname!,
-                          style: Styles.ts_8E9AB0_12sp,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (this.showLeftNickname &&
+                      this.leftNickname != null &&
+                      this.leftNickname!.isNotEmpty &&
+                      _shouldShowLeftNickname()) ...[
+                    Row(
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 100.w),
+                          margin: EdgeInsets.only(right: 6.w),
+                          child: Text(
+                            this.leftNickname!,
+                            style: Styles.ts_8E9AB0_12sp,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      if (this.timeStr != null)
-                        Text(this.timeStr!, style: Styles.ts_8E9AB0_12sp),
+                        if (this.timeStr != null)
+                          Text(this.timeStr!, style: Styles.ts_8E9AB0_12sp),
+                      ],
+                    ),
+                    2.verticalSpace,
+                  ],
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildChildView(context, BubbleType.receiver),
+                      //  / 4.horizontalSpace,
+                      if (!this.isMultiSelModel)
+                        ChatDestroyAfterReadingView(
+                          hasRead: this.hasRead,
+                          isPrivateChat: this.isPrivateChat,
+                          readingDuration: this.readingDuration,
+                          onStartDestroy: this.onStartDestroy,
+                        ),
+                      // if (null != this.voiceReadStatusView)
+                      //   this.voiceReadStatusView!,
                     ],
                   ),
-                  2.verticalSpace,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, animation) {
+                      final offset = Tween<Offset>(
+                              begin: const Offset(0, -0.1), end: Offset.zero)
+                          .animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(position: offset, child: child),
+                      );
+                    },
+                    child: this.bottomInfoView == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: EdgeInsets.only(top: 4.h),
+                            child: this.bottomInfoView,
+                          ),
+                  ),
                 ],
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildChildView(context, BubbleType.receiver),
-                    //  / 4.horizontalSpace,
-                    if (!this.isMultiSelModel)
-                      ChatDestroyAfterReadingView(
-                        hasRead: this.hasRead,
-                        isPrivateChat: this.isPrivateChat,
-                        readingDuration: this.readingDuration,
-                        onStartDestroy: this.onStartDestroy,
-                      ),
-                    // if (null != this.voiceReadStatusView)
-                    //   this.voiceReadStatusView!,
-                  ],
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  transitionBuilder: (child, animation) {
-                    final offset = Tween<Offset>(
-                            begin: const Offset(0, -0.1), end: Offset.zero)
-                        .animate(animation);
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(position: offset, child: child),
-                    );
-                  },
-                  child: this.bottomInfoView == null
-                      ? const SizedBox.shrink()
-                      : Padding(
-                          padding: EdgeInsets.only(top: 4.h),
-                          child: this.bottomInfoView,
-                        ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -297,77 +301,79 @@ class ChatItemContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (this.showRightNickname &&
-                    this.rightNickname != null &&
-                    this.rightNickname!.isNotEmpty) ...[
-                  Row(
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(maxWidth: 100.w),
-                        margin: EdgeInsets.only(right: 6.w),
-                        child: Text(
-                          this.rightNickname!,
-                          style: Styles.ts_8E9AB0_12sp,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (this.showRightNickname &&
+                      this.rightNickname != null &&
+                      this.rightNickname!.isNotEmpty) ...[
+                    Row(
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 100.w),
+                          margin: EdgeInsets.only(right: 6.w),
+                          child: Text(
+                            this.rightNickname!,
+                            style: Styles.ts_8E9AB0_12sp,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      if (this.timeStr != null)
-                        Text(this.timeStr!, style: Styles.ts_8E9AB0_12sp),
+                        if (this.timeStr != null)
+                          Text(this.timeStr!, style: Styles.ts_8E9AB0_12sp),
+                      ],
+                    ),
+                    2.verticalSpace,
+                  ],
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!this.isMultiSelModel && this.isSendFailed)
+                        ChatSendFailedView(
+                          id: this.id,
+                          isISend: this.isISend,
+                          onFailedToResend: this.onFailedToResend,
+                          isFailed: this.isSendFailed,
+                          stream: this.sendStatusStream,
+                        ),
+                      if (!this.isMultiSelModel)
+                        ChatDestroyAfterReadingView(
+                          hasRead: this.hasRead,
+                          isPrivateChat: this.isPrivateChat,
+                          readingDuration: this.readingDuration,
+                          onStartDestroy: this.onStartDestroy,
+                        ),
+                      if (!this.isMultiSelModel && this.isSending)
+                        ChatDelayedStatusView(isSending: this.isSending),
+                      4.horizontalSpace,
+                      _buildChildView(context, BubbleType.send),
                     ],
                   ),
-                  2.verticalSpace,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, animation) {
+                      final offset = Tween<Offset>(
+                              begin: const Offset(0, -0.1), end: Offset.zero)
+                          .animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(position: offset, child: child),
+                      );
+                    },
+                    child: this.bottomInfoView == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: EdgeInsets.only(top: 4.h),
+                            child: this.bottomInfoView,
+                          ),
+                  ),
+                  if (null != this.readStatusView) this.readStatusView!,
                 ],
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!this.isMultiSelModel && this.isSendFailed)
-                      ChatSendFailedView(
-                        id: this.id,
-                        isISend: this.isISend,
-                        onFailedToResend: this.onFailedToResend,
-                        isFailed: this.isSendFailed,
-                        stream: this.sendStatusStream,
-                      ),
-                    if (!this.isMultiSelModel)
-                      ChatDestroyAfterReadingView(
-                        hasRead: this.hasRead,
-                        isPrivateChat: this.isPrivateChat,
-                        readingDuration: this.readingDuration,
-                        onStartDestroy: this.onStartDestroy,
-                      ),
-                    if (!this.isMultiSelModel && this.isSending)
-                      ChatDelayedStatusView(isSending: this.isSending),
-                    4.horizontalSpace,
-                    _buildChildView(context, BubbleType.send),
-                  ],
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  transitionBuilder: (child, animation) {
-                    final offset = Tween<Offset>(
-                            begin: const Offset(0, -0.1), end: Offset.zero)
-                        .animate(animation);
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(position: offset, child: child),
-                    );
-                  },
-                  child: this.bottomInfoView == null
-                      ? const SizedBox.shrink()
-                      : Padding(
-                          padding: EdgeInsets.only(top: 4.h),
-                          child: this.bottomInfoView,
-                        ),
-                ),
-                if (null != this.readStatusView) this.readStatusView!,
-              ],
+              ),
             ),
             // 5.horizontalSpace,
             // AvatarView(

@@ -2909,7 +2909,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         message.isCardType ||
         message.isAtTextType ||
         message.isTagTextType ||
-        message.isVoiceType;
+        message.isVoiceType ||
+        message.isMergerType;
   }
 
   /// 是否显示撤回消息菜单

@@ -724,6 +724,10 @@ class StrRes {
 
   static String get saveFailed => 'saveFailed'.tr;
 
+  static String get downloadSuccessfully => 'downloadSuccessfully'.tr;
+
+  static String get downloadFailed => 'downloadFailed'.tr;
+
   static String get deleteSuccessfully => 'deleteSuccessfully'.tr;
 
   static String get deleteFailed => 'deleteFailed'.tr;

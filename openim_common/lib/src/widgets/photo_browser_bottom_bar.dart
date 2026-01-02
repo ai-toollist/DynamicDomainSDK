@@ -99,7 +99,7 @@ class PhotoBrowserBottomBar {
                     // Save option
                     _buildOptionItem(
                       icon: CupertinoIcons.arrow_down_to_line,
-                      label: StrRes.save,
+                      label: StrRes.download,
                       primaryColor: primaryColor,
                       showDivider: false,
                       onTap: () {

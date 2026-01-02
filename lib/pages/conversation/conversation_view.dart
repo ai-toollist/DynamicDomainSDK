@@ -454,6 +454,16 @@ class _ConversationPageState extends State<ConversationPage> {
                                     color: Theme.of(Get.context!).primaryColor,
                                   ),
                                 ],
+                                // Mute/Do Not Disturb icon
+                                if (info.recvMsgOpt != null &&
+                                    info.recvMsgOpt != 0) ...[
+                                  4.horizontalSpace,
+                                  Icon(
+                                    CupertinoIcons.bell_slash,
+                                    size: 14.w,
+                                    color: const Color(0xFF9E9E9E),
+                                  ),
+                                ],
                               ],
                             ),
                           ),

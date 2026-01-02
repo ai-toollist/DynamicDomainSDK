@@ -126,7 +126,7 @@ class GradientScaffold extends StatelessWidget {
         showTopBodyPadding ? 15.h : 0; // Use 0 if showTopBodyPadding is false
     if (showTopBodyPadding) {
       if (searchBox != null) {
-        bodyTopPadding = 30.h; // Space for the bottom half of searchbox + gap
+        bodyTopPadding = 28.h; // Space for the bottom half of searchbox + gap
       } else if (avatar != null) {
         bodyTopPadding = 75.h; // Space for bottom half of avatar + gap
       }

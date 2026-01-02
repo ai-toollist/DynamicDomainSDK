@@ -411,6 +411,8 @@ const Map<String, String> en_US = {
   "save": "Save",
   "saveSuccessfully": "Saved Successfully",
   "saveFailed": "Save Failed",
+  "downloadSuccessfully": "Downloaded Successfully",
+  "downloadFailed": "Download Failed",
   "deleteSuccessfully": "Delete Successfully",
   "deleteFailed": "Delete Failed",
   "confirm": "Confirm",

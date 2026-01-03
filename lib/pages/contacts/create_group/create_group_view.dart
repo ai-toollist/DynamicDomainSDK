@@ -233,7 +233,7 @@ class CreateGroupPage extends StatelessWidget {
                     ),
                     2.verticalSpace,
                     Text(
-                      info.nickname ?? '',
+                      info.getShowName() ?? '',
                       style: TextStyle(
                         fontFamily: 'FilsonPro',
                         fontSize: 12.sp,

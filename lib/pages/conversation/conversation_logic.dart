@@ -776,7 +776,7 @@ class ConversationLogic extends SuperController {
   bool get showLoading => !reInstall && isLoadingStatus;
 
   String get titleText {
-    if (showLoading) return StrRes.connecting;
+    if (showLoading) return "${StrRes.connecting}...";
     if (imSdkStatus != null) {
       return imSdkStatus!;
     }

@@ -728,6 +728,8 @@ class StrRes {
 
   static String get downloadFailed => 'downloadFailed'.tr;
 
+  static String get cannotViewMemberProfile => 'cannotViewMemberProfile'.tr;
+
   static String get deleteSuccessfully => 'deleteSuccessfully'.tr;
 
   static String get deleteFailed => 'deleteFailed'.tr;

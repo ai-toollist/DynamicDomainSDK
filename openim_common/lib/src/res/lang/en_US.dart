@@ -413,6 +413,8 @@ const Map<String, String> en_US = {
   "saveFailed": "Save Failed",
   "downloadSuccessfully": "Downloaded Successfully",
   "downloadFailed": "Download Failed",
+  "cannotViewMemberProfile":
+      "Cannot view member profile. Group settings restrict viewing non-friend profiles.",
   "deleteSuccessfully": "Delete Successfully",
   "deleteFailed": "Delete Failed",
   "confirm": "Confirm",

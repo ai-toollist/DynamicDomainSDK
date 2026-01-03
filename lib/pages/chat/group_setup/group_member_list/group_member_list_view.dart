@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -650,6 +651,7 @@ class SelectedMemberListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
     return Container(
       constraints: BoxConstraints(maxHeight: 548.h),
       decoration: BoxDecoration(
@@ -667,17 +669,6 @@ class SelectedMemberListView extends StatelessWidget {
       ),
       child: Obx(() => Column(
             children: [
-              // Handle bar
-              Container(
-                width: 36.w,
-                height: 4.h,
-                margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-
               // Header
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
@@ -699,7 +690,7 @@ class SelectedMemberListView extends StatelessWidget {
                         fontFamily: 'FilsonPro',
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF374151),
+                        color: primaryColor,
                       ),
                     ),
                     const Spacer(),
@@ -707,49 +698,31 @@ class SelectedMemberListView extends StatelessWidget {
                       behavior: HitTestBehavior.translucent,
                       onTap: () => Get.back(),
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 8.h),
+                        width: 32.w,
+                        height: 32.w,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4F42FF).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16.r),
+                          color: const Color(0xFFF3F4F6),
+                          shape: BoxShape.circle,
                         ),
-                        child: Text(
-                          StrRes.confirm,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4F42FF),
-                          ),
+                        child: Icon(
+                          CupertinoIcons.xmark,
+                          size: 14.w,
+                          color: const Color(0xFF6B7280),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // List with Animation
+              // List
               Expanded(
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                    itemCount: logic.checkedList.length,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    itemBuilder: (_, index) =>
-                        AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 400),
-                      child: SlideAnimation(
-                        curve: Curves.easeOutCubic,
-                        verticalOffset: 40.0,
-                        child: FadeInAnimation(
-                          child: _buildCheckedItemView(
-                            logic.checkedList[index],
-                            isLast: index == logic.checkedList.length - 1,
-                          ),
-                        ),
-                      ),
-                    ),
+                child: ListView.builder(
+                  itemCount: logic.checkedList.length,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  itemBuilder: (_, index) => _buildCheckedItemView(
+                    logic.checkedList[index],
+                    isLast: index == logic.checkedList.length - 1,
                   ),
                 ),
               ),
@@ -760,89 +733,63 @@ class SelectedMemberListView extends StatelessWidget {
 
   Widget _buildCheckedItemView(GroupMembersInfo membersInfo,
           {bool isLast = false}) =>
-      Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12.r),
-          onTap: () => logic.removeSelectedMember(membersInfo),
-          child: Container(
-            margin: EdgeInsets.only(
-              left: 16.w,
-              right: 16.w,
-              bottom: isLast ? 0 : 8.h,
-            ),
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFFFFF),
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: const Color(0xFFF1F5F9),
-                width: 1,
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        child: Row(
+          children: [
+            // Avatar with border
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(34.r),
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1.5.w,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9CA3AF).withOpacity(0.1),
+                    offset: const Offset(0, 2),
+                    blurRadius: 8.r,
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF64748B).withOpacity(0.03),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8.r,
-                ),
-              ],
+              child: AvatarView(
+                url: membersInfo.faceURL,
+                text: logic.getDisplayName(membersInfo),
+                width: 50.w,
+                height: 50.h,
+                isCircle: true,
+              ),
             ),
-            child: Row(
-              children: [
-                // Avatar
-                AvatarView(
-                  width: 48.w,
-                  height: 48.h,
-                  url: membersInfo.faceURL,
-                  text: logic.getDisplayName(membersInfo),
-                  textStyle: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF374151),
-                  ),
+            16.horizontalSpace,
+            // Member name
+            Expanded(
+              child: Text(
+                logic.getDisplayName(membersInfo),
+                style: TextStyle(
+                  fontFamily: 'FilsonPro',
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF374151),
                 ),
-
-                16.horizontalSpace,
-
-                // Member info
-                Expanded(
-                  child: Text(
-                    logic.getDisplayName(membersInfo),
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1F2937),
-                      height: 1.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-
-                8.horizontalSpace,
-
-                // Remove button
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    StrRes.remove,
-                    style: TextStyle(
-                      fontFamily: 'FilsonPro',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFFEF4444),
-                    ),
-                  ),
-                ),
-              ],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
+            // Trash icon
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => logic.removeSelectedMember(membersInfo),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                child: Icon(
+                  CupertinoIcons.delete,
+                  color: Colors.red,
+                  size: 20.w,
+                ),
+              ),
+            ),
+          ],
         ),
       );
 }

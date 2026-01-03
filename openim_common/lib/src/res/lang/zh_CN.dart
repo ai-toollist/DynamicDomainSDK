@@ -392,6 +392,7 @@ const Map<String, String> zh_CN = {
   "saveSuccessfully": "保存成功",
   "downloadSuccessfully": "下载成功",
   "downloadFailed": "下载失败",
+  "cannotViewMemberProfile": "无法查看成员资料。群组设置禁止查看非好友资料。",
   "deleteSuccessfully": "删除成功",
   "deleteFailed": "删除失败",
   "confirm": "确认",

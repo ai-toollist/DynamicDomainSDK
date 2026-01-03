@@ -1670,12 +1670,16 @@ class IMUtils {
   }
 
   static void previewMergeMessage(
-    Message message,
-  ) =>
+    Message message, {
+    GroupInfo? groupInfo,
+    String? groupID,
+  }) =>
       Get.to(
         () => ChatPreviewMergeMsgView(
           title: message.mergeElem!.title!,
           messageList: message.mergeElem!.multiMessage ?? [],
+          groupInfo: groupInfo,
+          groupID: groupID,
         ),
         preventDuplicates: false,
         transition: Transition.cupertino,
@@ -1694,6 +1698,8 @@ class IMUtils {
     Message message, {
     List<Message> messageList = const [],
     Function(UserInfo userInfo)? onViewUserInfo,
+    GroupInfo? groupInfo,
+    String? groupID,
   }) async {
     if (message.contentType == MessageType.picture ||
         message.contentType == MessageType.video) {
@@ -1716,7 +1722,7 @@ class IMUtils {
     } else if (message.contentType == MessageType.card) {
       previewCarteMessage(message, onViewUserInfo);
     } else if (message.contentType == MessageType.merger) {
-      previewMergeMessage(message);
+      previewMergeMessage(message, groupInfo: groupInfo, groupID: groupID);
     } else if (message.contentType == MessageType.customFace) {
       previewCustomFace(message);
     }

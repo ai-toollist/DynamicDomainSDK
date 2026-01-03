@@ -12,11 +12,18 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatPreviewMergeMsgView extends StatefulWidget {
-  const ChatPreviewMergeMsgView(
-      {super.key, required this.messageList, required this.title});
+  const ChatPreviewMergeMsgView({
+    super.key,
+    required this.messageList,
+    required this.title,
+    this.groupInfo,
+    this.groupID,
+  });
 
   final List<Message> messageList;
   final String title;
+  final GroupInfo? groupInfo;
+  final String? groupID;
 
   @override
   State<ChatPreviewMergeMsgView> createState() =>
@@ -30,7 +37,6 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
 
   @override
   void initState() {
-
     // // Remove any existing suffix pattern like " (Chat Records)" or " (聊天记录)"
 
     _initPlayListener();
@@ -129,7 +135,37 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
   }
 
   /// Open user profile
-  void viewUserInfo(UserInfo userInfo) {
+  void viewUserInfo(UserInfo userInfo) async {
+    // Check if this is a group chat with lookMemberInfo restriction
+    final isGroupChat = widget.groupInfo != null;
+    final isSelf = userInfo.userID == OpenIM.iMManager.userID;
+
+    if (isGroupChat && !isSelf) {
+      // Check if user is a friend
+      final friendList =
+          await OpenIM.iMManager.friendshipManager.getFriendList();
+      final isFriend =
+          friendList.any((friend) => friend.userID == userInfo.userID);
+
+      // Check if current user is admin or owner
+      final myMemberInfo =
+          await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+        groupID: widget.groupID!,
+        userIDList: [OpenIM.iMManager.userID],
+      );
+      final isAdminOrOwner = myMemberInfo.isNotEmpty &&
+          (myMemberInfo.first.roleLevel == GroupRoleLevel.owner ||
+              myMemberInfo.first.roleLevel == GroupRoleLevel.admin);
+
+      // If lookMemberInfo is enabled (1) and user is not admin/owner and target is not a friend, block
+      if (widget.groupInfo!.lookMemberInfo == 1 &&
+          !isAdminOrOwner &&
+          !isFriend) {
+        IMViews.showToast(StrRes.cannotViewMemberProfile);
+        return;
+      }
+    }
+
     // Create tag before navigating to avoid "Bad state: No element" error
     GetTags.createUserProfileTag();
 
@@ -137,6 +173,7 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
       'userID': userInfo.userID,
       'nickname': userInfo.nickname,
       'faceURL': userInfo.faceURL,
+      'groupID': widget.groupID,
     };
     Get.toNamed(
       '/user_profile_panel',
@@ -213,7 +250,8 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -245,7 +283,9 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              widget.title.replaceAll("Chat Records", '').trim(),
+                              widget.title
+                                  .replaceAll("Chat Records", '')
+                                  .trim(),
                               style: TextStyle(
                                 fontFamily: 'FilsonPro',
                                 fontWeight: FontWeight.w500,
@@ -328,18 +368,7 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
         IMUtils.parseClickEvent(
           message,
           messageList: [message],
-          onViewUserInfo: (userInfo) {
-            final arguments = {
-              'userID': userInfo.userID,
-              'nickname': userInfo.nickname,
-              'faceURL': userInfo.faceURL,
-            };
-            Get.toNamed(
-              '/user_profile_panel',
-              arguments: arguments,
-              preventDuplicates: false,
-            );
-          },
+          onViewUserInfo: (userInfo) => viewUserInfo(userInfo),
         );
       },
       child: Container(

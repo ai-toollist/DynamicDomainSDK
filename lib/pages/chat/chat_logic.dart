@@ -1420,6 +1420,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       msg,
       messageList: messageList,
       onViewUserInfo: viewUserInfo,
+      groupInfo: groupInfo,
+      groupID: groupID,
     );
   }
 

@@ -1501,6 +1501,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         groupInfo?.lookMemberInfo == 1 &&
         !isAdminOrOwner &&
         !isFriend) {
+      IMViews.showToast(StrRes.cannotViewMemberProfile);
       return;
     }
 

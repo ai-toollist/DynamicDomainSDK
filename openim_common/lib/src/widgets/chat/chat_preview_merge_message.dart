@@ -394,29 +394,38 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Avatar
-              Visibility.maintain(
-                // visible: !isSame,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(21.r),
-                    border: Border.all(
-                      color: const Color(0xFFE5E7EB),
-                      width: 1.5.w,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9CA3AF).withOpacity(0.1),
-                        offset: const Offset(0, 2),
-                        blurRadius: 8.r,
+              GestureDetector(
+                onTap: () {
+                  viewUserInfo(UserInfo(
+                    userID: message.sendID,
+                    nickname: message.senderNickname,
+                    faceURL: message.senderFaceUrl,
+                  ));
+                },
+                child: Visibility.maintain(
+                  // visible: !isSame,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(21.r),
+                      border: Border.all(
+                        color: const Color(0xFFE5E7EB),
+                        width: 1.5.w,
                       ),
-                    ],
-                  ),
-                  child: AvatarView(
-                    url: message.senderFaceUrl,
-                    text: message.senderNickname,
-                    width: 42.w,
-                    height: 42.w,
-                    isCircle: true,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF9CA3AF).withOpacity(0.1),
+                          offset: const Offset(0, 2),
+                          blurRadius: 8.r,
+                        ),
+                      ],
+                    ),
+                    child: AvatarView(
+                      url: message.senderFaceUrl,
+                      text: message.senderNickname,
+                      width: 42.w,
+                      height: 42.w,
+                      isCircle: true,
+                    ),
                   ),
                 ),
               ),
@@ -432,13 +441,22 @@ class _ChatPreviewMergeMsgViewState extends State<ChatPreviewMergeMsgView> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              message.senderNickname ?? '',
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF374151),
+                            child: GestureDetector(
+                              onTap: () {
+                                viewUserInfo(UserInfo(
+                                  userID: message.sendID,
+                                  nickname: message.senderNickname,
+                                  faceURL: message.senderFaceUrl,
+                                ));
+                              },
+                              child: Text(
+                                message.senderNickname ?? '',
+                                style: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF374151),
+                                ),
                               ),
                             ),
                           ),

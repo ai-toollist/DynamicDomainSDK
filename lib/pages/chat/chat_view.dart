@@ -370,7 +370,7 @@ class ChatPage extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
               padding: EdgeInsets.only(
-                  bottom: logic.isInputFocused.value ? 0 : 16.h),
+                  bottom: logic.isInputFocused.value ? 0 : 8.h),
               child: WaterMarkBgView(
                 text: '',
                 path: logic.background.value,

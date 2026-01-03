@@ -2017,6 +2017,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
           // Clear curMsgAtUser completely and add only @everyone
           curMsgAtUser.clear();
           curMsgAtUser.add(imLogic.atAllTag);
+          // Add nickname mapping for SDK to recognize @everyone
+          atUserNameMappingMap[imLogic.atAllTag] = StrRes.everyone;
           inputCtrl.text = '@${StrRes.everyone} ';
           inputCtrl.selection = TextSelection.fromPosition(TextPosition(
             offset: inputCtrl.text.length,

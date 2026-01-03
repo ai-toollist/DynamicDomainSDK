@@ -504,10 +504,11 @@ class _ConversationPageState extends State<ConversationPage> {
                                 style: TextStyle(
                                   fontFamily: 'FilsonPro',
                                   fontSize: 14.sp,
-                                  fontWeight: logic.getUnreadCount(info) > 0
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
-                                  color: const Color(0xFF3B82F6),
+                                  fontWeight: FontWeight.bold,
+                                  color: (logic.getPrefixTag(info) ?? "")
+                                          .startsWith('@')
+                                      ? Colors.amber
+                                      : const Color(0xFF3B82F6),
                                 ),
                               ),
                               maxLines: 1,

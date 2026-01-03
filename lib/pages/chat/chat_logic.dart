@@ -2001,8 +2001,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
           curMsgAtUser.where((uid) => uid != imLogic.atAllTag).length;
       final maxCount = 10 - currentUserCount - (hasEveryone ? 1 : 0);
 
-      final defaultUserIDs =
-          curMsgAtUser.where((uid) => uid != imLogic.atAllTag).toList();
+      final defaultUserIDs = List<String>.from(curMsgAtUser);
 
       AppNavigator.startGroupMemberList(
         groupInfo: groupInfo!,
@@ -2014,15 +2013,32 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
         if (list is List &&
             list.isNotEmpty &&
             list.first.nickname == StrRes.everyone) {
-          // Clear curMsgAtUser completely and add only @everyone
-          curMsgAtUser.clear();
-          curMsgAtUser.add(imLogic.atAllTag);
+          // Add @everyone to curMsgAtUser (keep existing users if any)
+          if (!curMsgAtUser.contains(imLogic.atAllTag)) {
+            curMsgAtUser.add(imLogic.atAllTag);
+          }
           // Add nickname mapping for SDK to recognize @everyone
           atUserNameMappingMap[imLogic.atAllTag] = StrRes.everyone;
-          inputCtrl.text = '@${StrRes.everyone} ';
-          inputCtrl.selection = TextSelection.fromPosition(TextPosition(
-            offset: inputCtrl.text.length,
-          ));
+
+          // Insert @Everyone at cursor position instead of overwriting
+          final currentText = inputCtrl.text;
+          final cursor = inputCtrl.selection.baseOffset < 0
+              ? currentText.length
+              : inputCtrl.selection.baseOffset;
+
+          // Check if the character before cursor is replacing '@'
+          final replaceStart = (cursor > 0 && currentText[cursor - 1] == '@')
+              ? cursor - 1
+              : cursor;
+
+          final atText = '@${StrRes.everyone} ';
+          final newText = currentText.substring(0, replaceStart) +
+              atText +
+              currentText.substring(cursor);
+          inputCtrl.text = newText;
+          inputCtrl.selection = TextSelection.fromPosition(
+            TextPosition(offset: cursor + atText.length),
+          );
           return;
         }
 

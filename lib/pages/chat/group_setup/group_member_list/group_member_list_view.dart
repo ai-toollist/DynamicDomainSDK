@@ -86,8 +86,8 @@ class GroupMemberListPage extends StatelessWidget {
                   onTap: logic.selectEveryone,
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 8.h),
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    margin: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0.h),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16.r),

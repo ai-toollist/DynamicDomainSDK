@@ -17,7 +17,6 @@ import 'package:flutter/cupertino.dart';
 
 import 'conversation_logic.dart';
 
-
 class ConversationPage extends StatefulWidget {
   ConversationPage({super.key});
 
@@ -414,6 +413,7 @@ class _ConversationPageState extends State<ConversationPage> {
       child: Material(
         color: Colors.transparent,
         child: GestureDetector(
+          onDoubleTap: () => logic.toChat(conversationInfo: info),
           child: InkWell(
             onTap: () => logic.toChat(conversationInfo: info),
             child: Row(

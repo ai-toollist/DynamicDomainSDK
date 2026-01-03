@@ -113,13 +113,30 @@ class GroupMemberListLogic extends GetxController {
     if (defaultCheckedUserIDs.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
-          final list = await OpenIM.iMManager.groupManager.getGroupMembersInfo(
-            groupID: groupInfo.groupID,
-            userIDList: defaultCheckedUserIDs,
-          );
-          // Add to checkedList if not already present
-          for (var member in list) {
-            if (!checkedList.contains(member)) checkedList.add(member);
+          final atAllTag = OpenIM.iMManager.conversationManager.atAllTag;
+
+          // 1. Handle @All tag manually
+          if (defaultCheckedUserIDs.contains(atAllTag)) {
+            final everyoneInfo = _buildEveryoneMemberInfo();
+            if (!checkedList.any((e) => e.userID == atAllTag)) {
+              checkedList.add(everyoneInfo);
+            }
+          }
+
+          // 2. Fetch info for real users
+          final realUserIDs =
+              defaultCheckedUserIDs.where((id) => id != atAllTag).toList();
+
+          if (realUserIDs.isNotEmpty) {
+            final list =
+                await OpenIM.iMManager.groupManager.getGroupMembersInfo(
+              groupID: groupInfo.groupID,
+              userIDList: realUserIDs,
+            );
+            // Add to checkedList if not already present
+            for (var member in list) {
+              if (!checkedList.contains(member)) checkedList.add(member);
+            }
           }
         } catch (e) {
           Logger.print('Error loading default checked members: $e');
@@ -221,14 +238,10 @@ class GroupMemberListLogic extends GetxController {
       } else {
         // If "everyone" is currently selected, remove it when selecting any member
         final everyoneId = OpenIM.iMManager.conversationManager.atAllTag;
-        final everyoneIndex =
-            checkedList.indexWhere((e) => e.userID == everyoneId);
-        if (everyoneIndex > -1) {
-          final everyoneMember = checkedList[everyoneIndex];
-          checkedList.removeAt(everyoneIndex);
-          // Update everyone checkbox and selected count
-          update(['checkbox_${everyoneMember.userID}', 'selected_count']);
-        }
+        // Robustly remove everyone tag (all instances if any)
+        checkedList.removeWhere((e) => e.userID == everyoneId);
+        // Force update just to be safe, though checkedList is observable
+        update(['selected_count']);
 
         if (checkedList.length < maxLength) {
           checkedList.add(membersInfo);

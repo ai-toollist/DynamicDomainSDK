@@ -535,34 +535,43 @@ class ConversationLogic extends SuperController {
   /// 会话前缀标签
   String? getPrefixTag(ConversationInfo info) {
     String? prefix;
+    Logger.print(
+        'getPrefixTag check: type=${info.groupAtType}, draft=${info.draftText}');
+
+    bool hasDraft = false;
     try {
-      // 草稿
       if (null != info.draftText && '' != info.draftText) {
         var map = json.decode(info.draftText!);
         String text = map['text'];
         if (text.isNotEmpty) {
           prefix = '[${StrRes.draftText}]';
-        }
-      } else {
-        switch (info.groupAtType) {
-          case GroupAtType.atAll:
-            prefix = '[@${StrRes.everyone}]';
-            break;
-          case GroupAtType.atAllAtMe:
-            prefix = '[@${StrRes.everyone} @${StrRes.you}]';
-            break;
-          case GroupAtType.atMe:
-            prefix = '[${StrRes.someoneMentionYou}]';
-            break;
-          case GroupAtType.atNormal:
-            break;
-          case GroupAtType.groupNotification:
-            prefix = '[${StrRes.groupAc}]';
-            break;
+          hasDraft = true;
         }
       }
-    } catch (e, s) {
-      Logger.print('e: $e  s: $s');
+    } catch (e) // ignore: empty_catches
+    {}
+
+    if (!hasDraft) {
+      switch (info.groupAtType) {
+        case GroupAtType.atAll:
+          prefix = '@${StrRes.everyone} ';
+          break;
+        case GroupAtType.atAllAtMe:
+          prefix = '@${StrRes.everyone} ';
+          break;
+        case GroupAtType.atMe:
+          prefix = '@${StrRes.you} ';
+          break;
+        case GroupAtType.atNormal:
+          break;
+        case GroupAtType.groupNotification:
+          prefix = '[${StrRes.groupAc}] ';
+          break;
+      }
+
+      // Note: @everyone detection relies on SDK setting groupAtType.atAll
+      // just like @you relies on groupAtType.atMe
+      // If @everyone prefix is missing, check SDK/backend configuration
     }
 
     return prefix;

@@ -244,9 +244,14 @@ class MyInfoLogic extends GetxController {
   }
 
   void openUpdateAvatarSheet() {
+    final faceURL = imLogic.userInfo.value.faceURL;
+    final isDefaultAvatar =
+        faceURL == null || faceURL.isEmpty || faceURL == 'NICKNAME';
+
     IMViews.openPhotoSheet(
       onlyImage: true,
       allowGif: true,
+      useNicknameAsAvatarEnabled: !isDefaultAvatar,
       onData: (path, url) async {
         if (url != null) {
           try {

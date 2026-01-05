@@ -396,25 +396,23 @@ class _ConversationPageState extends State<ConversationPage> {
       );
 
   Widget _buildItemView(ConversationInfo info) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.r),
-
-          /// viền cạnh dưới
-          border: Border(
-            bottom: BorderSide(
-              color: Theme.of(Get.context!).primaryColor.withOpacity(0.1),
-              width: 0.5.w,
-            ),
-          )),
-      child: Material(
-        color: Colors.transparent,
-        child: GestureDetector(
-          child: InkWell(
-            onTap: () => logic.toChat(conversationInfo: info),
+    return Material(
+      color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        child: InkWell(
+          onTap: () => logic.toChat(conversationInfo: info),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+                /// viền cạnh dưới
+                border: Border(
+                  bottom: BorderSide(
+                    color: Theme.of(Get.context!).primaryColor.withOpacity(0.1),
+                    width: 0.5.w,
+                  ),
+                )),
             child: Row(
               children: [
                 _buildAvatar(info),

@@ -21,8 +21,7 @@ class ResetPasswordPage extends StatelessWidget {
     final logic = Get.find<ResetPasswordLogic>();
     final primaryColor = Theme.of(context).primaryColor;
 
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: logic.fromLogin ? StrRes.forgotPassword : StrRes.resetPassword,
         showBackButton: true,
         scrollable: true,
@@ -139,7 +138,6 @@ class ResetPasswordPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

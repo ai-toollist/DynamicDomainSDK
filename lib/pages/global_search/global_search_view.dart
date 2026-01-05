@@ -60,101 +60,99 @@ class _GlobalSearchPageState extends State<GlobalSearchPage>
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
-        title: StrRes.globalSearch,
-        searchBox: _buildSearchBox(),
-        body: Column(
-          children: [
-            // Tab Bar
-            TabBar(
-              controller: _tabController,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  color: primaryColor,
-                  width: 3.0,
-                ),
-                insets: EdgeInsets.symmetric(horizontal: 16.0),
-                borderRadius: BorderRadius.circular(2),
+    return GradientScaffold(
+      title: StrRes.globalSearch,
+      searchBox: _buildSearchBox(),
+      body: Column(
+        children: [
+          // Tab Bar
+          TabBar(
+            controller: _tabController,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(
+                color: primaryColor,
+                width: 3.0,
               ),
-              indicatorPadding: EdgeInsets.zero,
-              dividerColor: Colors.transparent,
-              splashFactory: NoSplash.splashFactory,
-              overlayColor: WidgetStateProperty.all(Colors.transparent),
-              labelColor: primaryColor,
-              unselectedLabelColor: const Color(0xFF9CA3AF),
-              labelStyle: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w800,
-              ),
-              unselectedLabelStyle: TextStyle(
-                fontFamily: 'FilsonPro',
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              labelPadding: EdgeInsets.zero,
-              isScrollable: false,
-              padding: EdgeInsets.symmetric(horizontal: 0.w),
-              tabs: [
-                Tab(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(StrRes.globalSearchAll),
-                  ),
-                ),
-                Tab(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(StrRes.globalSearchContacts),
-                  ),
-                ),
-                Tab(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(StrRes.globalSearchGroup),
-                  ),
-                ),
-                Tab(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(StrRes.messages),
-                  ),
-                ),
-                Tab(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(StrRes.globalSearchChatFile),
-                  ),
-                ),
-              ],
+              insets: EdgeInsets.symmetric(horizontal: 16.0),
+              borderRadius: BorderRadius.circular(2),
             ),
-
-            const Divider(height: 1, color: Color(0xFFF3F4F6)),
-
-            // Tab Bar View
-            Expanded(
-              child: Obx(() {
-                if (!logic.hasSearched.value) {
-                  return _initialEmptyStateView;
-                }
-                if (logic.isSearchNotResult) {
-                  return _emptyListViewWidget;
-                }
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildAllListView(),
-                    _buildContactsListView(),
-                    _buildGroupListView(),
-                    _buildChatHistoryListView(),
-                    _buildFileListView(),
-                  ],
-                );
-              }),
+            indicatorPadding: EdgeInsets.zero,
+            dividerColor: Colors.transparent,
+            splashFactory: NoSplash.splashFactory,
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            labelColor: primaryColor,
+            unselectedLabelColor: const Color(0xFF9CA3AF),
+            labelStyle: TextStyle(
+              fontFamily: 'FilsonPro',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w800,
             ),
-          ],
-        ),
+            unselectedLabelStyle: TextStyle(
+              fontFamily: 'FilsonPro',
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+            ),
+            labelPadding: EdgeInsets.zero,
+            isScrollable: false,
+            padding: EdgeInsets.symmetric(horizontal: 0.w),
+            tabs: [
+              Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(StrRes.globalSearchAll),
+                ),
+              ),
+              Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(StrRes.globalSearchContacts),
+                ),
+              ),
+              Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(StrRes.globalSearchGroup),
+                ),
+              ),
+              Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(StrRes.messages),
+                ),
+              ),
+              Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(StrRes.globalSearchChatFile),
+                ),
+              ),
+            ],
+          ),
+
+          const Divider(height: 1, color: Color(0xFFF3F4F6)),
+
+          // Tab Bar View
+          Expanded(
+            child: Obx(() {
+              if (!logic.hasSearched.value) {
+                return _initialEmptyStateView;
+              }
+              if (logic.isSearchNotResult) {
+                return _emptyListViewWidget;
+              }
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildAllListView(),
+                  _buildContactsListView(),
+                  _buildGroupListView(),
+                  _buildChatHistoryListView(),
+                  _buildFileListView(),
+                ],
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

@@ -19,8 +19,7 @@ class SendVerificationApplicationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     logic.inputCtrl.text =
         logic.isEnterGroup ? StrRes.acceptMeJoin : StrRes.addMeAsFriend;
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.sendRequest,
         showBackButton: true,
         bodyColor: const Color(0xFFF9FAFB),
@@ -83,7 +82,6 @@ class SendVerificationApplicationPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

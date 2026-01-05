@@ -17,8 +17,7 @@ class MerchantListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.myCompany,
         showBackButton: true,
         bodyColor: const Color(0xFFF9FAFB),
@@ -110,7 +109,6 @@ class MerchantListView extends StatelessWidget {
             ),
           );
         }),
-      ),
     );
   }
 }

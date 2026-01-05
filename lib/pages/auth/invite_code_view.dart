@@ -164,7 +164,7 @@ class InviteCodeView extends StatelessWidget {
                         ),
                       )),
                   builder: (controller) => Container(
-                    width: 160.w,
+                    width: 185.w,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12.r),

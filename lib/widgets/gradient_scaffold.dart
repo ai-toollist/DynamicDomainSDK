@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:openim_common/openim_common.dart';
 
 /// A complete scaffold widget with gradient header and body
 /// Unified component - no types, simple API
@@ -166,7 +167,7 @@ class GradientScaffold extends StatelessWidget {
             ),
           );
 
-    return Scaffold(
+    return TouchCloseSoftKeyboard(child: Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -301,6 +302,6 @@ class GradientScaffold extends StatelessWidget {
             ),
         ],
       ),
-    );
+    ));
   }
 }

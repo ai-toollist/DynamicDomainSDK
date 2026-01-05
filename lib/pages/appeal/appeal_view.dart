@@ -16,8 +16,7 @@ class AppealPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.appealSubmit,
         showBackButton: true,
         trailing: CustomButton(
@@ -76,7 +75,6 @@ class AppealPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

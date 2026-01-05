@@ -25,8 +25,7 @@ class SelectContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.selectContacts,
         showBackButton: true,
         searchBox: WechatStyleSearchBox(
@@ -39,7 +38,6 @@ class SelectContactsPage extends StatelessWidget {
           margin: EdgeInsets.zero,
         ),
         body: _buildContentContainer(),
-      ),
     );
   }
 

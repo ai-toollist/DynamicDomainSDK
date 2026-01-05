@@ -29,13 +29,11 @@ class SearchChatHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.globalSearchChatHistory,
         showBackButton: true,
         searchBox: _buildSearchBox(context),
-        body: _buildContentContainer(),
-      ),
+        body: _buildContentContainer()
     );
   }
 

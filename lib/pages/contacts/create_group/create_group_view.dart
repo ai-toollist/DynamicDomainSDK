@@ -22,8 +22,7 @@ class CreateGroupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TouchCloseSoftKeyboard(
-      child: GradientScaffold(
+    return GradientScaffold(
         title: StrRes.createGroup,
         subtitle: StrRes.createGroupHint,
         showBackButton: true,
@@ -56,7 +55,6 @@ class CreateGroupPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 

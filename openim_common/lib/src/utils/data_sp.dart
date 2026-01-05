@@ -417,6 +417,10 @@ class DataSp {
     return SpUtil().putString(_keyFor(phone), password);
   }
 
+  static Future<bool>? clearSavedPassword(String phone) {
+    return SpUtil().remove(_keyFor(phone));
+  }
+
   static const _inviteCodeKey = '_inviteCodeKey';
   static String? getSavedInviteCode() {
     return SpUtil().getString(_inviteCodeKey, defValue: null);

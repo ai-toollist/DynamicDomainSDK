@@ -33,7 +33,8 @@ class GroupProfilePanelPage extends StatelessWidget {
                     children: [
                       _buildBaseInfo(),
                       16.verticalSpace,
-                      if (logic.members.isNotEmpty) _buildGroupMemberList(),
+                      if (logic.members.isNotEmpty && logic.showMemberCount)
+                        _buildGroupMemberList(),
                       30.verticalSpace,
                       Obx(() {
                         final isPending = logic.hasPendingRequest.value;

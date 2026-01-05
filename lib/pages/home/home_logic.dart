@@ -199,6 +199,16 @@ class HomeLogic extends SuperController with UpgradeManger {
         onMaxRetries: (_) async {
           Get.back();
           await LoadingView.singleton.wrap(asyncFunction: () async {
+            // Clear saved password for security (failed unlock attempts)
+            final loginAccount = DataSp.getLoginAccount();
+            Logger.print(
+                'onMaxRetries: clearing saved password for account: ${loginAccount?['account']}');
+            if (loginAccount != null && loginAccount['account'] != null) {
+              final accountKey = (loginAccount['account'] as String).trim();
+              Logger.print(
+                  'onMaxRetries: clearing password with key: $accountKey');
+              await DataSp.clearSavedPassword(accountKey);
+            }
             await imLogic.logout();
             await DataSp.removeLoginCertificate();
             await DataSp.clearLockScreenPassword();

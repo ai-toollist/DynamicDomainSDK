@@ -373,7 +373,7 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
       password: IMUtils.generateMD5(loginPasswordController.text)!,
       onSuccess: () {
         DataSp.putSavedPassword(
-          loginPhoneController.text,
+          loginPhoneController.text.trim(),
           rememberPassword.isTrue ? loginPasswordController.text : '',
         );
       },

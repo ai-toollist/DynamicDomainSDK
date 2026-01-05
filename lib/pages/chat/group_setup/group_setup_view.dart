@@ -141,8 +141,9 @@ class GroupSetupPage extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
-                      // Group Members Section
-                      if (logic.isJoinedGroup.value) ...[
+                      // Group Members Section - only shown to admins/owners or when member count is visible
+                      if (logic.isJoinedGroup.value &&
+                          (logic.isOwnerOrAdmin || logic.showMemberCount)) ...[
                         SectionTitle(title: StrRes.groupMembers),
                         _buildGroupMembersGrid(),
                         24.verticalSpace,
@@ -153,6 +154,14 @@ class GroupSetupPage extends StatelessWidget {
                       SectionTitle(title: StrRes.groupInformation),
                       SettingsMenuSection(
                         items: [
+                          // Add Member - shown when member section is hidden but user is joined
+                          if (logic.isJoinedGroup.value &&
+                              !(logic.isOwnerOrAdmin || logic.showMemberCount))
+                            SettingsMenuItem(
+                              icon: CupertinoIcons.person_add,
+                              label: StrRes.addMember,
+                              onTap: logic.addMember,
+                            ),
                           SettingsMenuItem(
                             icon: CupertinoIcons.bell,
                             label: StrRes.groupAc,

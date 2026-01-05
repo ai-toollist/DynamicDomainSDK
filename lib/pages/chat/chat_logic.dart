@@ -2037,7 +2037,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
               currentText.substring(cursor);
           inputCtrl.text = newText;
           inputCtrl.selection = TextSelection.fromPosition(
-            TextPosition(offset: cursor + atText.length),
+            TextPosition(offset: replaceStart + atText.length),
           );
           return;
         }

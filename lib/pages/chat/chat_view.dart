@@ -369,8 +369,8 @@ class ChatPage extends StatelessWidget {
             body: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
-              padding: EdgeInsets.only(
-                  bottom: logic.isInputFocused.value ? 0 : 8.h),
+              padding:
+                  EdgeInsets.only(bottom: logic.isInputFocused.value ? 0 : 8.h),
               child: WaterMarkBgView(
                 text: '',
                 path: logic.background.value,
@@ -425,7 +425,9 @@ class ChatPage extends StatelessWidget {
                         ),
                         multiOpToolbox: ChatMultiSelToolbox(
                           onDelete: logic.mergeDelete,
-                          onMergeForward: () => logic.forward(null),
+                          onMergeForward: logic.hasFailedMessageSelected
+                              ? null
+                              : () => logic.forward(null),
                           onCancel: logic.closeMultiSelMode,
                         ),
                         callbackKeyboardHeight: (double height) =>

@@ -83,6 +83,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   final quoteContent = "".obs;
   final multiSelMode = false.obs;
   final multiSelList = <Message>[].obs;
+  bool get hasFailedMessageSelected =>
+      multiSelList.any((e) => e.status == MessageStatus.failed);
   final atUserNameMappingMap = <String, String>{};
   final atUserInfoMappingMap = <String, UserInfo>{};
   final curMsgAtUser = <String>[];

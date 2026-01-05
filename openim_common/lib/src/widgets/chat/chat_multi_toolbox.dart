@@ -38,10 +38,19 @@ class ChatMultiSelToolbox extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: onMergeForward,
-                  child: Icon(Icons.ios_share_outlined, size: 24.w),
+                  child: Icon(
+                    Icons.ios_share_outlined,
+                    size: 24.w,
+                    color: null == onMergeForward
+                        ? Styles.c_8E9AB0
+                        : const Color(0xFF333333),
+                  ),
                 ),
                 4.verticalSpace,
-                StrRes.mergeForward.toText..style = Styles.ts_0C1C33_10sp,
+                StrRes.mergeForward.toText
+                  ..style = null == onMergeForward
+                      ? Styles.ts_8E9AB0_10sp
+                      : Styles.ts_0C1C33_10sp,
               ],
             ),
           ),

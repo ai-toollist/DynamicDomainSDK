@@ -87,7 +87,11 @@ class ChatItemContainer extends StatelessWidget {
       onTap: this.isPrivateChat
           ? null
           : (this.isMultiSelModel
-              ? () => this.onRadioChanged?.call(!this.isChecked)
+              ? () {
+                  if (!this.isSendFailed) {
+                    this.onRadioChanged?.call(!this.isChecked);
+                  }
+                }
               : null),
       child: IgnorePointer(
         ignoring: this.ignorePointer || this.isMultiSelModel,
@@ -105,7 +109,9 @@ class ChatItemContainer extends StatelessWidget {
                   Container(
                     height: 44.w,
                     margin: EdgeInsets.only(right: 10.w),
-                    child: ChatRadio(checked: this.isChecked),
+                    child: this.isSendFailed
+                        ? SizedBox(width: 22.w)
+                        : ChatRadio(checked: this.isChecked),
                   ),
                 Expanded(
                     child: this.isISend

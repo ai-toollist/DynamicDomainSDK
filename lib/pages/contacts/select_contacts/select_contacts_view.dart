@@ -26,18 +26,18 @@ class SelectContactsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GradientScaffold(
-        title: StrRes.selectContacts,
-        showBackButton: true,
-        searchBox: WechatStyleSearchBox(
-          hintText: StrRes.search,
-          enabled: true,
-          autofocus: false,
-          controller: logic.searchCtrl,
-          onChanged: logic.performSearch,
-          onCleared: logic.clearSearch,
-          margin: EdgeInsets.zero,
-        ),
-        body: _buildContentContainer(),
+      title: StrRes.selectContacts,
+      showBackButton: true,
+      searchBox: WechatStyleSearchBox(
+        hintText: StrRes.search,
+        enabled: true,
+        autofocus: false,
+        controller: logic.searchCtrl,
+        onChanged: logic.performSearch,
+        onCleared: logic.clearSearch,
+        margin: EdgeInsets.zero,
+      ),
+      body: _buildContentContainer(),
     );
   }
 
@@ -330,121 +330,158 @@ class CheckedConfirmView extends StatelessWidget {
       constraints: BoxConstraints(
         minHeight: 80.h,
       ),
-      // margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-      child: Obx(() => Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 3,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: logic.viewSelectedContactsList,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              sprintf(StrRes.selectedPeopleCount,
-                                  [logic.checkedList.length]),
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF3B82F6),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.6, 1.0],
+        ),
+        borderRadius: BorderRadius.circular(18.r),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF64748B).withOpacity(0.08),
+            offset: const Offset(0, 4),
+            blurRadius: 12,
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: const Color(0xFF64748B).withOpacity(0.04),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+            spreadRadius: 0,
+          ),
+        ],
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 1.5,
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: Obx(() => Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: logic.viewSelectedContactsList,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                sprintf(StrRes.selectedPeopleCount,
+                                    [logic.checkedList.length]),
+                                style: TextStyle(
+                                  fontFamily: 'FilsonPro',
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          8.horizontalSpace,
-                          Icon(
-                            Icons.keyboard_arrow_up,
-                            size: 20.w,
-                            color: const Color(0xFF3B82F6),
-                          ),
-                        ],
-                      ),
-                      if (logic.checkedList.isNotEmpty) 4.verticalSpace,
-                      if (logic.checkedList.isNotEmpty)
-                        Text(
-                          logic.checkedStrTips,
-                          style: TextStyle(
-                            fontFamily: 'FilsonPro',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF64748B),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                            8.horizontalSpace,
+                            Icon(
+                              Icons.keyboard_arrow_up,
+                              size: 20.w,
+                              color: const Color(0xFF3B82F6),
+                            ),
+                          ],
                         ),
-                    ],
+                        // Use AnimatedSize to collapse when empty
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeInOut,
+                          alignment: Alignment.topLeft,
+                          child: logic.checkedList.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    4.verticalSpace,
+                                    Text(
+                                      logic.checkedStrTips,
+                                      style: TextStyle(
+                                        fontFamily: 'FilsonPro',
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Confirm Button
-              SizedBox(
-                height: 44.h,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: logic.enabledConfirmButton
-                        ? logic.confirmSelectedList
+                // Confirm Button
+                Container(
+                  height: 44.h,
+                  decoration: BoxDecoration(
+                    gradient: logic.enabledConfirmButton
+                        ? const LinearGradient(
+                            colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
                         : null,
+                    color: logic.enabledConfirmButton
+                        ? null
+                        : const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(22.r),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: logic.enabledConfirmButton
-                            ? const LinearGradient(
-                                colors: [
-                                  Color(0xFF3B82F6),
-                                  Color(0xFF1D4ED8),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )
-                            : null,
-                        color: logic.enabledConfirmButton
-                            ? null
-                            : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(22.r),
-                        boxShadow: logic.enabledConfirmButton
-                            ? [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xFF3B82F6).withOpacity(0.25),
-                                  offset: const Offset(0, 2),
-                                  blurRadius: 8,
-                                  spreadRadius: 0,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        sprintf(StrRes.confirmSelectedPeople, [
-                          logic.checkedList.length,
-                          '999',
-                        ]),
-                        style: TextStyle(
-                          fontFamily: 'FilsonPro',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: logic.enabledConfirmButton
-                              ? Colors.white
-                              : const Color(0xFF64748B),
+                    boxShadow: logic.enabledConfirmButton
+                        ? [
+                            BoxShadow(
+                              color: const Color(0xFF3B82F6).withOpacity(0.25),
+                              offset: const Offset(0, 2),
+                              blurRadius: 6.r,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: logic.enabledConfirmButton
+                          ? logic.confirmSelectedList
+                          : null,
+                      borderRadius: BorderRadius.circular(22.r),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        alignment: Alignment.center,
+                        child: Text(
+                          sprintf(StrRes.confirmSelectedPeople, [
+                            logic.checkedList.length,
+                            '999',
+                          ]),
+                          style: TextStyle(
+                            fontFamily: 'FilsonPro',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: logic.enabledConfirmButton
+                                ? Colors.white
+                                : const Color(0xFF64748B),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          )),
+              ],
+            )),
+      ),
     );
   }
 }

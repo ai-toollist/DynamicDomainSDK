@@ -527,6 +527,7 @@ class _CheckedConfirmView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
                         children: [
@@ -552,31 +553,32 @@ class _CheckedConfirmView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // Use AnimatedOpacity instead of conditional to prevent layout shift
-                      AnimatedOpacity(
-                        opacity: logic.checkedList.isNotEmpty ? 1.0 : 0.0,
+                      // Use AnimatedSize to collapse when empty
+                      AnimatedSize(
                         duration: const Duration(milliseconds: 150),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            4.verticalSpace,
-                            Text(
-                              logic.checkedList.isNotEmpty
-                                  ? logic.checkedList
-                                      .map((e) => logic.getDisplayName(e))
-                                      .join('、')
-                                  : '',
-                              style: TextStyle(
-                                fontFamily: 'FilsonPro',
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w400,
-                                color: const Color(0xFF64748B),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
+                        curve: Curves.easeInOut,
+                        alignment: Alignment.topLeft,
+                        child: logic.checkedList.isNotEmpty
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  4.verticalSpace,
+                                  Text(
+                                    logic.checkedList
+                                        .map((e) => logic.getDisplayName(e))
+                                        .join('、'),
+                                    style: TextStyle(
+                                      fontFamily: 'FilsonPro',
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
                       ),
                     ],
                   ),

@@ -606,7 +606,7 @@ class ConversationLogic extends SuperController {
 
       final renderName =
           imLogic.userRemarkMap[msg.sendID] ?? msg.senderNickname;
-      final parsedMsg = IMUtils.parseMsg(msg, isConversation: true);
+      final parsedMsg = IMUtils.parseMsg(msg, isConversation: true,replaceIdToNickname: true);
       return '$renderName: $parsedMsg';
     } catch (e, s) {
       Logger.print('------e:$e s:$s');

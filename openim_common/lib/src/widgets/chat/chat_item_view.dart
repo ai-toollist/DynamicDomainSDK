@@ -410,7 +410,7 @@ class _ChatItemViewState extends State<ChatItemView> {
       }
     } else if (_message.isRevokeType) {
       return child = Padding(
-        padding: EdgeInsets.only(bottom: 20.h),
+        padding: EdgeInsets.only(bottom: 16.h),
         child: ChatRevokeView(
           message: _message,
           onReEdit: widget.onReEit,
@@ -429,7 +429,7 @@ class _ChatItemViewState extends State<ChatItemView> {
         child = ChatNoticeView(isISend: _isISend, content: noticeContent!);
       } else {
         return Padding(
-          padding: EdgeInsets.only(bottom: 20.h),
+          padding: EdgeInsets.only(bottom: 10.h, top: 10.h),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxWidth),
             child: ChatHintTextView(

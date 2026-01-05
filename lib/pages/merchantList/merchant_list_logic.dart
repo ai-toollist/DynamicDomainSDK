@@ -158,7 +158,6 @@ class MerchantListLogic extends GetxController
       refreshData();
     } catch (e) {
       print('===BIND=== Error: $e');
-      IMViews.showToast('Bind failed: $e');
     }
   }
 

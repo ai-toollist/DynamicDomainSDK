@@ -282,11 +282,19 @@ class AccountSetupLogic extends GetxController {
                               ),
                               GestureDetector(
                                 onTap: () async {
-                                  await OpenIM.iMManager.friendshipManager
-                                      .removeBlacklist(
-                                    userID: info.userID!,
+                                  CustomDialog.show(
+                                    title: StrRes.confirmRemoveFromBlacklist
+                                        .replaceFirst(
+                                            '%s', info.nickname ?? 'this user'),
+                                    onTapRight: () async {
+                                      await OpenIM.iMManager.friendshipManager
+                                          .removeBlacklist(
+                                        userID: info.userID!,
+                                      );
+                                      blacklist.remove(info);
+                                      Get.back();
+                                    },
                                   );
-                                  blacklist.remove(info);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(

@@ -707,7 +707,6 @@ class RealNameAuthView extends StatelessWidget {
           ),
           16.verticalSpace,
           _buildInfoRow(StrRes.realName, authInfo['realName'] ?? ''),
-          8.verticalSpace,
           _buildInfoRow(
               StrRes.realNameIdCardNumber, authInfo['idCardMasked'] ?? ''),
         ],
@@ -716,21 +715,31 @@ class RealNameAuthView extends StatelessWidget {
   }
 
   Widget _buildInfoRow(String label, String value) {
-    return RichText(
-      text: TextSpan(
-        text: '$label:  ',
-        style: const TextStyle(fontFamily: 'FilsonPro').copyWith(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w500,
-          color: const Color(0xFF6B7280),
-        ),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextSpan(
-            text: value,
-            style: const TextStyle(fontFamily: 'FilsonPro').copyWith(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF374151),
+          SizedBox(
+            width: 90.w,
+            child: Text(
+              label,
+              style: const TextStyle(fontFamily: 'FilsonPro').copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+          ),
+          16.horizontalSpace,
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontFamily: 'FilsonPro').copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF374151),
+              ),
             ),
           ),
         ],

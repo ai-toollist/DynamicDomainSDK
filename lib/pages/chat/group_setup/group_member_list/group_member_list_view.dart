@@ -332,7 +332,7 @@ class _MemberItemView extends StatelessWidget {
               onTap: () => logic.clickMember(member),
               borderRadius: BorderRadius.circular(16.r),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Row(
                   children: [
                     if (hasIcon)
@@ -736,7 +736,7 @@ class SelectedMemberListView extends StatelessWidget {
   Widget _buildCheckedItemView(GroupMembersInfo membersInfo,
           {bool isLast = false}) =>
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         child: Row(
           children: [
             // Avatar with border

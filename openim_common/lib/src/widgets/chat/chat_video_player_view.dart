@@ -94,11 +94,12 @@ class ChatVideoPlayerView extends StatefulWidget {
 
 class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
     with SingleTickerProviderStateMixin {
-  late VideoPlayerController _videoPlayerController;
+  VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   String? _initError;
   bool _isTranscoding = false;
   bool _isOpeningExternally = false;
+  bool _disposed = false;
 
   final _cachedVideoControllerService =
       CachedVideoControllerService(DefaultCacheManager());
@@ -111,14 +112,19 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
 
   @override
   void dispose() {
+    _disposed = true;
     Logger.print('[ChatVideoPlayerView]: dispose');
 
-    () async {
-      await _chewieController?.pause();
-      await _videoPlayerController.pause();
-      await _videoPlayerController.dispose();
+    try {
       _chewieController?.dispose();
-    }();
+    } catch (e) {
+      Logger.print('[ChatVideoPlayerView]: chewie dispose error: $e');
+    }
+    try {
+      _videoPlayerController?.dispose();
+    } catch (e) {
+      Logger.print('[ChatVideoPlayerView]: video controller dispose error: $e');
+    }
     super.dispose();
   }
 
@@ -156,9 +162,10 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
 
     // Build controller
     try {
+      VideoPlayerController controller;
       if (file != null && file.existsSync()) {
         Logger.print('[ChatVideoPlayerView] Using local file: ${file.path}');
-        _videoPlayerController = VideoPlayerController.file(
+        controller = VideoPlayerController.file(
           file,
           videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
@@ -167,23 +174,33 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
         if (!IMUtils.isValidUrl(_url)) {
           Logger.print(
               '[ChatVideoPlayerView] Invalid or empty video url: $_url');
-          setState(() {
-            _initError = StrRes.videoUnavailable;
-          });
+          if (mounted) {
+            setState(() {
+              _initError = StrRes.videoUnavailable;
+            });
+          }
           return;
         }
         Logger.print('[ChatVideoPlayerView] Loading from network/cache: $_url');
-        _videoPlayerController =
-            await _cachedVideoControllerService.getVideo(_url!);
+        controller = await _cachedVideoControllerService.getVideo(_url!);
       }
 
-      await _videoPlayerController.initialize();
+      if (_disposed) {
+        controller.dispose();
+        return;
+      }
+      _videoPlayerController = controller;
+
+      await _videoPlayerController!.initialize();
+      if (_disposed) return;
+
       if (widget.muted) {
-        _videoPlayerController.setVolume(0);
+        _videoPlayerController?.setVolume(0);
       }
       _createChewieController();
       if (mounted) setState(() {});
     } catch (e, s) {
+      if (_disposed) return;
       Logger.print('[ChatVideoPlayerView] initialize error: $e\n$s');
 
       // iOS: try auto-transcode fallback to MP4 (H.264 + AAC)
@@ -291,17 +308,25 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
       // Initialize controller with transcoded file
       Logger.print(
           '[ChatVideoPlayerView] Initializing controller with Android transcoded file: ${outFile.path}');
-      _videoPlayerController = VideoPlayerController.file(
+      final controller = VideoPlayerController.file(
         outFile,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      await _videoPlayerController.initialize();
+      if (_disposed) {
+        controller.dispose();
+        return false;
+      }
+      _videoPlayerController = controller;
+
+      await _videoPlayerController!.initialize();
+      if (_disposed) return false;
+
       Logger.print(
           '[ChatVideoPlayerView] Android transcode controller initialized successfully');
 
       if (widget.muted) {
-        _videoPlayerController.setVolume(0);
+        _videoPlayerController?.setVolume(0);
       }
       _createChewieController();
 
@@ -429,16 +454,24 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
       // Initialize controller with transcoded file
       Logger.print(
           '[ChatVideoPlayerView] Initializing controller with transcoded file: ${outFile.path}');
-      _videoPlayerController = VideoPlayerController.file(
+      final controller = VideoPlayerController.file(
         outFile,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      await _videoPlayerController.initialize();
+      if (_disposed) {
+        controller.dispose();
+        return false;
+      }
+      _videoPlayerController = controller;
+
+      await _videoPlayerController!.initialize();
+      if (_disposed) return false;
+
       Logger.print('[ChatVideoPlayerView] Controller initialized successfully');
 
       if (widget.muted) {
-        _videoPlayerController.setVolume(0);
+        _videoPlayerController?.setVolume(0);
       }
       _createChewieController();
 
@@ -479,9 +512,10 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
   String _ffArg(String p) => '"$p"';
 
   void _createChewieController() {
+    if (_videoPlayerController == null) return;
     final hasValidUrl = IMUtils.isValidUrl(widget.url);
     _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
+      videoPlayerController: _videoPlayerController!,
       autoPlay: widget.autoPlay,
       looping: false,
       allowFullScreen: false,
@@ -525,7 +559,7 @@ class _ChatVideoPlayerViewState extends State<ChatVideoPlayerView>
   }
 
   Future<void> toggleVideo() async {
-    await _videoPlayerController.pause();
+    await _videoPlayerController?.pause();
     await initializePlayer();
   }
 

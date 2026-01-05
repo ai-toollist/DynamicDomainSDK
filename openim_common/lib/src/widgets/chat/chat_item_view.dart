@@ -278,7 +278,6 @@ class _ChatItemViewState extends State<ChatItemView> {
       },
       child: Container(
         color: widget.highlightColor,
-        margin: EdgeInsets.only(bottom: 3.h),
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Center(child: _child),
       ),

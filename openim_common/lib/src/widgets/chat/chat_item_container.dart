@@ -100,7 +100,7 @@ class ChatItemContainer extends StatelessWidget {
             if (null != this.timelineStr)
               ChatTimelineView(
                 timeStr: this.timelineStr!,
-                margin: EdgeInsets.only(bottom: 20.h, top: 10.h),
+                margin: EdgeInsets.symmetric(vertical: 8.h),
               ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -215,7 +215,7 @@ class ChatItemContainer extends StatelessWidget {
       ];
 
   Widget _buildLeftView(BuildContext context) => Padding(
-        padding: EdgeInsets.only(bottom: 10.h),
+        padding: EdgeInsets.only(bottom: 4.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -290,7 +290,7 @@ class ChatItemContainer extends StatelessWidget {
                     child: this.bottomInfoView == null
                         ? const SizedBox.shrink()
                         : Padding(
-                            padding: EdgeInsets.only(top: 4.h),
+                            padding: EdgeInsets.only(top: 2.h),
                             child: this.bottomInfoView,
                           ),
                   ),
@@ -302,7 +302,7 @@ class ChatItemContainer extends StatelessWidget {
       );
 
   Widget _buildRightView(BuildContext context) => Padding(
-        padding: EdgeInsets.only(bottom: 10.h),
+        padding: EdgeInsets.only(bottom: 4.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
@@ -373,7 +373,7 @@ class ChatItemContainer extends StatelessWidget {
                     child: this.bottomInfoView == null
                         ? const SizedBox.shrink()
                         : Padding(
-                            padding: EdgeInsets.only(top: 4.h),
+                            padding: EdgeInsets.only(top: 2.h),
                             child: this.bottomInfoView,
                           ),
                   ),

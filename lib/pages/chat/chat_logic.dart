@@ -297,7 +297,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
               !scrollingCacheMessageList.contains(message)) {
             _isReceivedMessageWhenSyncing = true;
             _parseAnnouncement(message);
-            if (isShowPopMenu.value || scrollController.offset != 0) {
+            if (isShowPopMenu.value ||
+                (scrollController.hasClients && scrollController.offset != 0)) {
               scrollingCacheMessageList.add(message);
             } else {
               messageList.add(message);

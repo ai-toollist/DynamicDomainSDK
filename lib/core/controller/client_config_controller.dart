@@ -168,8 +168,14 @@ class ClientConfigController extends GetxController {
     }
   }
 
-  bool shouldShowMemberKickedMessages(Message message) {
+  bool shouldShowMemberKickedMessages(Message message,
+      [int? groupMemberRoleLevel]) {
     if (showMemberKickedMessages) {
+      return true;
+    }
+
+    // Admin/Owner should always see kicked messages
+    if (isAdminOrOwner(groupMemberRoleLevel)) {
       return true;
     }
 
@@ -192,7 +198,10 @@ class ClientConfigController extends GetxController {
       final isSelfOperator = opUser.userID == OpenIM.iMManager.userID;
       final visible = hasSelfBeenKicked || isSelfOperator;
 
-      MessageVisibilityCache.instance.setVisibility(message, visible);
+      // Don't cache 'false' if role is unknown, as it might become true later
+      if (visible || groupMemberRoleLevel != null) {
+        MessageVisibilityCache.instance.setVisibility(message, visible);
+      }
 
       return visible;
     } catch (e) {
@@ -225,7 +234,9 @@ class ClientConfigController extends GetxController {
       if (message.contentType == MessageType.memberEnterNotification) {
         final ntf = EnterGroupNotification.fromJson(map);
         final visible = ntf.entrantUser?.userID! == OpenIM.iMManager.userID;
-        MessageVisibilityCache.instance.setVisibility(message, visible);
+        if (visible || groupMemberRoleLevel != null) {
+          MessageVisibilityCache.instance.setVisibility(message, visible);
+        }
         return visible;
       } else if (message.contentType == MessageType.memberInvitedNotification) {
         final ntf = InvitedJoinGroupNotification.fromJson(map);
@@ -235,7 +246,9 @@ class ClientConfigController extends GetxController {
             }) ??
             false;
         final visible = isSelfOperator || hasSelfBeenJoined;
-        MessageVisibilityCache.instance.setVisibility(message, visible);
+        if (visible || groupMemberRoleLevel != null) {
+          MessageVisibilityCache.instance.setVisibility(message, visible);
+        }
         return visible;
       }
 
@@ -266,15 +279,24 @@ class ClientConfigController extends GetxController {
 
       final isSelfOperator = ntf.quitUser?.userID == OpenIM.iMManager.userID;
       final visible = isSelfOperator || isAdminOrOwner(groupMemberRoleLevel);
-      MessageVisibilityCache.instance.setVisibility(message, visible);
+
+      if (visible || groupMemberRoleLevel != null) {
+        MessageVisibilityCache.instance.setVisibility(message, visible);
+      }
       return visible;
     } catch (e) {
       return false;
     }
   }
 
-  bool shouldShowMemberMutedMessages(Message message) {
+  bool shouldShowMemberMutedMessages(Message message,
+      [int? groupMemberRoleLevel]) {
     if (showMemberMutedMessages) {
+      return true;
+    }
+
+    // Admin/Owner should always see kicked messages
+    if (isAdminOrOwner(groupMemberRoleLevel)) {
       return true;
     }
     try {
@@ -283,7 +305,13 @@ class ClientConfigController extends GetxController {
       final ntf = MuteMemberNotification.fromJson(map);
       final isSelfOperator = ntf.opUser?.userID == OpenIM.iMManager.userID;
       final isSelfMuted = ntf.mutedUser?.userID == OpenIM.iMManager.userID;
-      return isSelfOperator || isSelfMuted;
+      final visible = isSelfOperator || isSelfMuted;
+
+      // Logic not cached? Original code didn't cache. Assuming cheap.
+      // But if we want caching:
+      // if (visible || groupMemberRoleLevel != null) { ... }
+      // For now, leaving as original (no cache) but return calculated 'visible'.
+      return visible;
     } catch (e) {
       return false;
     }
@@ -293,7 +321,7 @@ class ClientConfigController extends GetxController {
   bool isMessageHidden(Message message, [int? groupMemberRoleLevel]) {
     switch (message.contentType) {
       case MessageType.memberKickedNotification:
-        return !shouldShowMemberKickedMessages(message);
+        return !shouldShowMemberKickedMessages(message, groupMemberRoleLevel);
       case MessageType.memberEnterNotification:
       case MessageType.memberInvitedNotification:
         return !shouldShowMemberJoinedMessage(message, groupMemberRoleLevel);
@@ -303,7 +331,7 @@ class ClientConfigController extends GetxController {
         return !shouldShowMemberQuitMessage(message, groupMemberRoleLevel);
       case MessageType.groupMemberMutedNotification:
       case MessageType.groupMemberCancelMutedNotification:
-        return !shouldShowMemberMutedMessages(message);
+        return !shouldShowMemberMutedMessages(message, groupMemberRoleLevel);
       default:
         return false;
     }

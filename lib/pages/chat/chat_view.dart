@@ -334,6 +334,9 @@ class ChatPage extends StatelessWidget {
         key: logic.voiceRecordKey,
         onCompleted: logic.sendVoice,
         builder: (bar) => Obx(() {
+          // Register dependency on groupMemberRoleLevel to rebuild list when role changes
+          // ignore: unused_local_variable
+          final roleLevel = logic.groupMemberRoleLevel.value;
           return GradientScaffold(
             titleWidget: _userInfo(),
             showBackButton: true,

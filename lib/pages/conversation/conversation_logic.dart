@@ -330,6 +330,9 @@ class ConversationLogic extends SuperController {
           .firstWhereOrNull((c) => c.conversationID == newValue.conversationID);
 
       if (existingConv != null) {
+        // Preserve tempRoleLevel from existing conversation
+        newValue.tempRoleLevel = existingConv.tempRoleLevel;
+
         // Existing conversation - remove it first
         list.removeWhere((c) => c.conversationID == newValue.conversationID);
         removedCount++;

@@ -167,7 +167,7 @@ class GroupSetupPage extends StatelessWidget {
                             label: StrRes.groupAc,
                             onTap: logic.editGroupAnnouncement,
                           ),
-                          if (logic.isOwnerOrAdmin)
+                          if (logic.showOnlineInfo)
                             SettingsMenuItem(
                               icon: CupertinoIcons.person_2,
                               label: StrRes.onlineInfo,
@@ -281,14 +281,13 @@ class GroupSetupPage extends StatelessWidget {
 
   Widget _buildAvatar() {
     return Obx(() => ProfileHeaderAvatar(
-          url: logic.groupInfo.value.faceURL,
-          text: logic.groupInfo.value.groupName,
-          onTap: logic.modifyGroupAvatar,
-          isGroup: true,
-          showEditIcon: logic.isOwnerOrAdmin,
-          enabled: logic.isOwnerOrAdmin,
-          enabledPreview: true
-        ));
+        url: logic.groupInfo.value.faceURL,
+        text: logic.groupInfo.value.groupName,
+        onTap: logic.modifyGroupAvatar,
+        isGroup: true,
+        showEditIcon: logic.isOwnerOrAdmin,
+        enabled: logic.isOwnerOrAdmin,
+        enabledPreview: true));
   }
 
   Widget _buildGroupMembersGrid() {

@@ -262,6 +262,9 @@ class GroupSetupLogic extends GetxController {
   bool get showGroupManagement =>
       clientConfigLogic.adminHasManagementAccess ? isOwnerOrAdmin : isOwner;
 
+  bool get showOnlineInfo => clientConfigLogic
+      .shouldShowGroupOnlineInfo(myGroupMembersInfo.value.roleLevel ?? 1);
+
   /// Get display name for a member: prioritize remark name, fallback to nickname
   String getDisplayName(GroupMembersInfo member) {
     if (member.userID != null &&

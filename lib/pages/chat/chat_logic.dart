@@ -267,7 +267,11 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     }
     _isInitialized = true;
     conversationInfo = convInfo;
-    onlineInfoLogic.clear();
+    // Defer clear() to after build phase to prevent "setState during build" error
+    // because clear() modifies RxList which triggers Obx rebuild
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onlineInfoLogic.clear();
+    });
     searchMessage = arguments['searchMessage'];
     nickname.value = conversationInfo.showName ?? '';
     faceUrl.value = conversationInfo.faceURL ?? '';

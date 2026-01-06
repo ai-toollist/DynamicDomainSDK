@@ -287,6 +287,7 @@ class GroupSetupPage extends StatelessWidget {
           isGroup: true,
           showEditIcon: logic.isOwnerOrAdmin,
           enabled: logic.isOwnerOrAdmin,
+          enabledPreview: true
         ));
   }
 

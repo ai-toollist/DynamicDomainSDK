@@ -11,6 +11,7 @@ class ProfileHeaderAvatar extends StatelessWidget {
   final bool isGroup;
   final bool showEditIcon;
   final bool enabled;
+  final bool enabledPreview;
 
   const ProfileHeaderAvatar({
     Key? key,
@@ -20,6 +21,7 @@ class ProfileHeaderAvatar extends StatelessWidget {
     this.isGroup = false,
     this.showEditIcon = false,
     this.enabled = true,
+    this.enabledPreview = false,
   }) : super(key: key);
 
   @override
@@ -49,6 +51,7 @@ class ProfileHeaderAvatar extends StatelessWidget {
               height: 100.w,
               textStyle: TextStyle(fontSize: 32.sp, color: Colors.white),
               isCircle: true,
+              enabledPreview: enabledPreview,
               isGroup: isGroup,
             ),
           ),

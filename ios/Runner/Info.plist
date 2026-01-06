@@ -82,6 +82,8 @@
 	<string>应用需要访问您的提醒事项以便您可以创建和管理任务列表。</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>我们需要您的同意来跟踪您的活动，以便为您提供更好的广告体验。</string>
+	<key>NSFaceIDUsageDescription</key>
+    <string>应用需要使用Face ID进行安全身份验证。</string>
 	<key>RTCAppGroupIdentifier</key>
 	<string>group.cn.rentsoft.openim.flutter.rtc</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

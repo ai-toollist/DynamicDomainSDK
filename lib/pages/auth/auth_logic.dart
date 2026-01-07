@@ -425,9 +425,14 @@ class AuthLogic extends GetxController with GetTickerProviderStateMixin {
     }
 
     try {
+      final inviteCode = authController.inviteCode;
+      final isVirtual = inviteCode != null && inviteCode.isNotEmpty
+          ? gatewayConfigController.defaultInviteCode != inviteCode
+          : false;
       final result = await LoadingView.singleton.wrap(
         asyncFunction: () => GatewayApi.sendVerificationCodeV2(
           phoneNumber: phoneNumber,
+          virtual: isVirtual,
         ),
       );
 

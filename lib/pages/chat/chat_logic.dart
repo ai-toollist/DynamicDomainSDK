@@ -324,7 +324,18 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     };
 
     // 已被撤回消息监听（新版本）
-    imLogic.onRecvMessageRevoked = (RevokedInfo info) {
+    imLogic.onRecvMessageRevoked = (RevokedInfo info) async {
+      print('=== onRecvMessageRevoked ===');
+      print('Revoked data: ${jsonEncode(info)}');
+      print('Current Playing ID: ${_currentPlayClientMsgID.value}');
+      print('Revoked clientMsgID: ${info.clientMsgID}');
+
+      if (info.clientMsgID != null &&
+          _currentPlayClientMsgID.value.trim() == info.clientMsgID!.trim()) {
+        print('=== Stopping Audio Player (matched ID) ===');
+        await _audioPlayer.stop();
+        _currentPlayClientMsgID.value = "";
+      }
       var message = messageList
           .firstWhereOrNull((e) => e.clientMsgID == info.clientMsgID);
       message?.notificationElem = NotificationElem(detail: jsonEncode(info));
@@ -519,12 +530,17 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   void formatQuoteMessage(String focusClientMsgID) {
     var quotes = messageList
-        .where((element) =>
-            element.contentType == MessageType.quote &&
-            element.quoteMessage?.clientMsgID == focusClientMsgID)
+        .where(
+            (element) => element.quoteMessage?.clientMsgID == focusClientMsgID)
         .toList();
     for (var element in quotes) {
-      element.quoteMessage?.textElem?.content = StrRes.quoteContentBeRevoked;
+      element.quoteMessage?.contentType = MessageType.text;
+      element.quoteMessage?.textElem =
+          TextElem(content: StrRes.quoteContentBeRevoked);
+      element.quoteMessage?.soundElem = null;
+      element.quoteMessage?.pictureElem = null;
+      element.quoteMessage?.videoElem = null;
+      element.quoteMessage?.fileElem = null;
     }
   }
 
@@ -704,27 +720,31 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   }
 
   /// 转发内容的备注信息
-  Future<void> sendForwardRemarkMsg(
+  Future<Message> sendForwardRemarkMsg(
     String content, {
     String? userId,
     String? groupId,
+    bool addToUI = true,
   }) async {
     final message = await OpenIM.iMManager.messageManager.createTextMessage(
       text: content,
     );
-    _sendMessage(message, userId: userId, groupId: groupId);
+    _sendMessage(message, userId: userId, groupId: groupId, addToUI: addToUI);
+    return message;
   }
 
   /// 转发
-  Future<void> sendForwardMsg(
+  Future<Message> sendForwardMsg(
     Message originalMessage, {
     String? userId,
     String? groupId,
+    bool addToUI = true,
   }) async {
     var message = await OpenIM.iMManager.messageManager.createForwardMessage(
       message: originalMessage,
     );
-    _sendMessage(message, userId: userId, groupId: groupId);
+    _sendMessage(message, userId: userId, groupId: groupId, addToUI: addToUI);
+    return message;
   }
 
   /// 合并转发
@@ -1052,17 +1072,60 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       final customEx = result['customEx'];
       final checkedList = result['checkedList'];
 
-      for (var info in checkedList) {
-        final userID = IMUtils.convertCheckedToUserID(info);
-        final groupID = IMUtils.convertCheckedToGroupID(info);
-        if (customEx is String && customEx.isNotEmpty) {
-          sendForwardRemarkMsg(customEx, userId: userID, groupId: groupID);
+      // Show loading to prevent visual flickering
+      LoadingView.singleton.show();
+      try {
+        for (var info in checkedList) {
+          final targetUserID = IMUtils.convertCheckedToUserID(info);
+          final targetGroupID = IMUtils.convertCheckedToGroupID(info);
+
+          // Check if forwarding to current conversation
+          final isSameConversation =
+              (targetUserID == userID && targetUserID != null) ||
+                  (targetGroupID == groupID && targetGroupID != null);
+
+          // Collect messages to add to UI together
+          final List<Message> messagesToAdd = [];
+
+          // Send the forwarded message first (don't add to UI yet if same conversation)
+          Message? forwardedMsg;
+          if (null != message) {
+            forwardedMsg = await sendForwardMsg(
+              message,
+              userId: targetUserID,
+              groupId: targetGroupID,
+              addToUI:
+                  !isSameConversation, // Add to UI only if different conversation
+            );
+            if (isSameConversation) {
+              messagesToAdd.add(forwardedMsg);
+            }
+          } else {
+            await sendMergeMsg(userId: targetUserID, groupId: targetGroupID);
+          }
+
+          // Send the remark message after (if any)
+          if (customEx is String && customEx.isNotEmpty) {
+            final remarkMsg = await sendForwardRemarkMsg(
+              customEx,
+              userId: targetUserID,
+              groupId: targetGroupID,
+              addToUI:
+                  !isSameConversation, // Add to UI only if different conversation
+            );
+            if (isSameConversation) {
+              messagesToAdd.add(remarkMsg);
+            }
+          }
+
+          // Batch add to UI if same conversation (both messages appear together)
+          if (isSameConversation && messagesToAdd.isNotEmpty) {
+            messageList.addAll(messagesToAdd);
+            scrollBottom();
+          }
         }
-        if (null != message) {
-          sendForwardMsg(message, userId: userID, groupId: groupID);
-        } else {
-          sendMergeMsg(userId: userID, groupId: groupID);
-        }
+      } finally {
+        LoadingView.singleton.dismiss();
       }
 
       await Future.delayed(const Duration(milliseconds: 300));

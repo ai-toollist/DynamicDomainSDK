@@ -80,8 +80,18 @@ class MerchantListLogic extends GetxController
 
     if (value.isEmpty) {
       searchedMerchant.value = null;
+      noData.value = false;
       return;
     }
+
+    // Only do local filtering here, API search is manual via searchMerchant()
+    searchedMerchant.value = null;
+  }
+
+  /// Manual search - called when user taps search button
+  Future<void> searchMerchant() async {
+    final value = searchController.text.trim();
+    if (value.isEmpty) return;
 
     // Check if value matches any existing merchant
     final query = value.toLowerCase();
@@ -92,7 +102,7 @@ class MerchantListLogic extends GetxController
     });
 
     // If no match in existing list, search via API
-    if (!hasMatch && value.length >= 5) {
+    if (!hasMatch) {
       await _searchMerchantByCode(value);
     } else {
       searchedMerchant.value = null;

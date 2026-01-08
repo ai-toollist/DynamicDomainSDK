@@ -1989,8 +1989,12 @@ class IMUtils {
         mimeType ==
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       return ImageRes.fileExcel;
-    } else if (mimeType == 'application/vnd.ms-powerpoint') {
+    } else if (mimeType == 'application/vnd.ms-powerpoint' ||
+        mimeType ==
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
       return ImageRes.filePpt;
+    } else if (mimeType == 'text/plain') {
+      return ImageRes.fileTxt;
     } else if (mimeType.startsWith('audio/')) {
     } else if (mimeType == 'application/zip' ||
         mimeType == 'application/x-rar-compressed') {

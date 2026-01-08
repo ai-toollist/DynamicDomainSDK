@@ -18,56 +18,43 @@ class ChatFileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isISend ? Colors.transparent : Styles.c_FFFFFF;
-    final subTextStyle = isISend
-        ? TextStyle(fontSize: 12.sp, color: Colors.white.withOpacity(0.7))
-        : Styles.ts_8E9AB0_14sp;
-    final borderColor =
-        isISend ? Colors.white.withOpacity(0.2) : Styles.c_E8EAEF;
+    final fileName = message.fileElem?.fileName ?? '';
+    final fileSize = IMUtils.formatBytes(message.fileElem?.fileSize ?? 0);
+    final textColor = Styles.c_8E9AB0;
+    final nameStyle = TextStyle(
+      fontSize: 11.sp,
+      color: textColor,
+      fontWeight: FontWeight.w500,
+    );
+    final sizeStyle = TextStyle(
+      fontSize: 10.sp,
+      color: textColor,
+    );
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      width: maxWidth,
-      height: 64.h,
+      constraints: BoxConstraints(maxWidth: 180.w),
+      padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
-        color: bgColor,
-        border: Border.all(color: borderColor, width: 1),
-        borderRadius: borderRadius(isISend),
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextWithMidEllipsis(
-                      message.fileElem?.fileName ?? '',
-                      style: isISend
-                          ? TextStyle(
-                              fontSize: 17.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500)
-                          : Styles.ts_0C1C33_17sp,
-                      endPartLength: 8,
-                    ),
-                    Text(
-                      IMUtils.formatBytes(message.fileElem?.fileSize ?? 0),
-                      style: subTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-              10.horizontalSpace,
-              ChatFileIconView(
-                message: message,
-                sendProgressStream: sendProgressStream,
-                downloadProgressView: fileDownloadProgressView,
-              ),
-            ],
+          // File icon
+          ChatFileIconView(
+            message: message,
+            sendProgressStream: sendProgressStream,
+            downloadProgressView: fileDownloadProgressView,
+          ),
+          8.verticalSpace,
+          // File name
+          Text(
+            "$fileName ($fileSize)",
+            style: nameStyle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
         ],
       ),

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:lpinyin/lpinyin.dart';
+
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
 import 'package:openim/core/controller/client_config_controller.dart';
@@ -47,10 +49,12 @@ class GroupListLogic extends GetxController {
       final index = allGroups.indexWhere((g) => g.groupID == groupInfo.groupID);
       if (index == -1) {
         allGroups.add(groupInfo);
+        _sortGroups();
         print('  - Added to group list');
       } else {
         print('  - Group already exists, updating info');
         allGroups[index] = groupInfo;
+        _sortGroups();
       }
     });
 
@@ -70,6 +74,7 @@ class GroupListLogic extends GetxController {
       final index = allGroups.indexWhere((g) => g.groupID == groupInfo.groupID);
       if (index != -1) {
         allGroups[index] = groupInfo;
+        _sortGroups();
         print('  - Updated group info in list');
       }
     });
@@ -81,6 +86,7 @@ class GroupListLogic extends GetxController {
     final length = await _load(offset);
 
     if (length >= count) offset += length;
+    _sortGroups();
   }
 
   void loadMore() async {
@@ -106,6 +112,7 @@ class GroupListLogic extends GetxController {
           allGroups[existingIndex] = group;
         }
       }
+      _sortGroups();
       return list.length;
     } catch (e) {
       print('Error loading groups: $e');
@@ -121,5 +128,17 @@ class GroupListLogic extends GetxController {
 
   bool shouldShowMemberCount(String ownerUserID) {
     return clientConfigLogic.shouldShowMemberCount(ownerUserID: ownerUserID);
+  }
+
+  void _sortGroups() {
+    allGroups.sort((a, b) {
+      String nameA = a.groupName ?? '';
+      String nameB = b.groupName ?? '';
+      String pinyinA = PinyinHelper.getPinyinE(nameA);
+      String pinyinB = PinyinHelper.getPinyinE(nameB);
+      if (pinyinA.isEmpty) pinyinA = '#';
+      if (pinyinB.isEmpty) pinyinB = '#';
+      return pinyinA.toLowerCase().compareTo(pinyinB.toLowerCase());
+    });
   }
 }

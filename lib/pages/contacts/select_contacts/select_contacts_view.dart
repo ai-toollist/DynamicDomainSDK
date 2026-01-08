@@ -415,7 +415,7 @@ class CheckedConfirmView extends StatelessWidget {
                                         fontWeight: FontWeight.w400,
                                         color: const Color(0xFF64748B),
                                       ),
-                                      maxLines: 1,
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],

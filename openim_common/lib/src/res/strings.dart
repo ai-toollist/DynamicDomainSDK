@@ -1058,6 +1058,7 @@ class StrRes {
   static String get nPerson => 'nPerson'.tr;
 
   static String get searchNotFound => 'searchNotFound'.tr;
+  static String get tryDifferentKeyword => 'tryDifferentKeyword'.tr;
   static String get noSearchResultsContacts => 'noSearchResultsContacts'.tr;
   static String get noSearchResultsGroup => 'noSearchResultsGroup'.tr;
   static String get noSearchResultsMessages => 'noSearchResultsMessages'.tr;

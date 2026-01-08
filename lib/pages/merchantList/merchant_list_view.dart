@@ -25,8 +25,8 @@ class MerchantListView extends StatelessWidget {
         enabled: true,
         controller: logic.searchController,
         hintText: StrRes.searchCompanyCode,
-        onSubmitted: (_) {},
-        onCleared: logic.clearSearch,
+        onSubmitted: (_) => logic.searchMerchant(),
+        onCleared: logic.clearSearch
       ),
       body: Obx(() {
         final filteredList = logic.filteredMerchantList;

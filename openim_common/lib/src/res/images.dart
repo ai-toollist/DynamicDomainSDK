@@ -41,6 +41,7 @@ class ImageRes {
   static const fileExcel = "$_dir/ic_file_excel.png";
   static const filePdf = "$_dir/ic_file_pdf.png";
   static const filePpt = "$_dir/ic_file_ppt.png";
+  static const fileTxt = "$_dir/ic_file_txt.png";
   static const fileUnknown = "$_dir/ic_file_unknown.png";
   static const fileWord = "$_dir/ic_file_word.png";
   static const fileZip = "$_dir/ic_file_zip.png";

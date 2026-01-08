@@ -213,7 +213,7 @@ class GroupMemberListPage extends StatelessWidget {
                 ),
                 8.verticalSpace,
                 Text(
-                  'Try a different keyword',
+                  StrRes.tryDifferentKeyword,
                   style: TextStyle(
                     fontFamily: 'FilsonPro',
                     fontSize: 14.sp,

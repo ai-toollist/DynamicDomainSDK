@@ -579,6 +579,7 @@ const Map<String, String> en_US = {
   "iJoinedGroup": "I Joined",
   "nPerson": "%s people",
   "searchNotFound": "No relevant results found",
+  "tryDifferentKeyword": "Try a different keyword",
   "noSearchResultsContacts": "No contacts found",
   "noSearchResultsGroup": "No groups found",
   "noSearchResultsMessages": "No messages found",
@@ -773,7 +774,7 @@ const Map<String, String> en_US = {
   "memberSettings": "Member Settings",
   "anyoneCanJoinWithoutApproval": "Anyone can join without approval",
   "membersCanInviteAdminApprovalRequired":
-      "Members can invite, admin approval required",
+      "Members can invite, no approval required",
   "allRequestsRequireAdminApproval": "All requests require admin approval",
   "nicknameInGroup": "Nickname in Group",
   "chatSettings": "Chat Settings",

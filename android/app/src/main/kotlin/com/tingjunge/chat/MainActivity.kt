@@ -1,4 +1,4 @@
-package com.cnl.chat
+package com.cnl.chat.v2
 
 import android.app.DownloadManager
 import android.content.Context

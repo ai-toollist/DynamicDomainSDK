@@ -49,7 +49,7 @@ class HttpUtil {
         onRequest: (options, handler) async {
           options.headers['version'] = packageInfo.version;
           options.headers['buildNumber'] = packageInfo.buildNumber;
-          options.headers['packageName'] = 'com.cnl.chat';
+          options.headers['packageName'] = 'com.cnl.chat.v2';
           options.headers['brand'] =
               brand ?? (brand = await DeviceInfoUtil.getDeviceInfoBrand());
           options.headers['platform'] =

@@ -179,7 +179,9 @@ class _ClayProtocolDialog extends StatelessWidget {
             child: FadeInAnimation(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.95,
-                height: MediaQuery.of(context).size.height * 0.9,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
                 // constraints: BoxConstraints(
                 //   maxHeight: 600.h,
                 // ),
@@ -266,7 +268,8 @@ class _ClayProtocolDialog extends StatelessWidget {
                         ),
 
                         // Content section
-                        Expanded(
+                        Flexible(
+                          fit: FlexFit.loose,
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 24.w,

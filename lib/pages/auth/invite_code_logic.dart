@@ -29,7 +29,7 @@ class InviteCodeLogic extends GetxController {
 
   Widget get currentFlagImage {
     if (languageIndex.value == 0) {
-      return Icon(Icons.public, size: 24.w, color: Colors.black87);
+      return ImageRes.earthFlag.toImage;
     }
     if (currentLocale.value?.languageCode == 'zh') {
       return ImageRes.chinaFlag.toImage;

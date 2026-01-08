@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.cnl.chat">
+          package="com.cnl.chat.v2">
     <queries>   
         <intent>
             <action android:name="com.getui.sdk.action" />

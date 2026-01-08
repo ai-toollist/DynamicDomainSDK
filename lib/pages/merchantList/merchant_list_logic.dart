@@ -39,12 +39,20 @@ class MerchantListLogic extends GetxController
 
     // If found in existing list, return it
     if (filtered.isNotEmpty) {
-      searchedMerchant.value = null; // Clear API search result
       return filtered;
     }
 
-    // If not found and we have a search result from API, show it
+    // If not found locally but API found a merchant
     if (searchedMerchant.value != null) {
+      // Check if the API result already exists in the list
+      final existingMerchant = merchantList.firstWhereOrNull(
+        (m) => m.id == searchedMerchant.value!.id,
+      );
+      if (existingMerchant != null) {
+        // Return the existing merchant from the list
+        return [existingMerchant];
+      }
+      // Return the API result (new merchant to bind)
       return [searchedMerchant.value!];
     }
 
@@ -94,18 +102,19 @@ class MerchantListLogic extends GetxController
   Future<void> _searchMerchantByCode(String code) async {
     try {
       isSearching.value = true;
+      print('===SEARCH=== Searching for code: $code');
       final merchant = await GatewayApi.searchMerchant(
         code: code,
         showErrorToast: false,
       );
+      print('===SEARCH=== Found merchant: ${merchant.inviteCode}');
 
-      // Check if this merchant is already in the list
-      if (!isExists(merchant)) {
-        searchedMerchant.value = merchant;
-      } else {
-        searchedMerchant.value = null;
-      }
+      // Always set the result - filteredMerchantList will handle display logic
+      searchedMerchant.value = merchant;
+      print(
+          '===SEARCH=== Set as searchedMerchant (exists: ${isExists(merchant)})');
     } catch (e) {
+      print('===SEARCH=== Error: $e');
       searchedMerchant.value = null;
     } finally {
       isSearching.value = false;

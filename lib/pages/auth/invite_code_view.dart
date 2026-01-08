@@ -180,8 +180,7 @@ class InviteCodeView extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             _buildLanguageItem(
-                              Icon(Icons.public,
-                                  size: 24.w, color: Colors.black87),
+                              ImageRes.earthFlag.toImage,
                               StrRes.followSystem,
                               logic.languageIndex.value == 0,
                               () {

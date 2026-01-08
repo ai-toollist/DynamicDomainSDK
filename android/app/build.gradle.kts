@@ -31,7 +31,7 @@ plugins {
 }
 
 android {
-    namespace = "com.cnl.chat"
+    namespace = "com.cnl.chat.v2"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
@@ -47,7 +47,7 @@ android {
         // TODO: Specify your own unique Application ID
         // (https://developer.android.com/studio/build/application-id.html).
         // applicationId = "com.tingjunge.cnl"
-        applicationId = "com.cnl.chat"
+        applicationId = "com.cnl.chat.v2"
         // You can update the following values to match your application needs.
         // For more information, see:
         // https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.

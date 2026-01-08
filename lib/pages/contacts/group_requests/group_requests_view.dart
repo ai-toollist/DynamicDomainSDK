@@ -308,8 +308,8 @@ class GroupRequestsPage extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
           children: [
-            const TextSpan(
-              text: 'applied to join ',
+            TextSpan(
+              text: '${StrRes.appliedToJoin} ',
               style: TextStyle(
                 fontFamily: 'FilsonPro',
                 color: Color(0xFF6B7280),
@@ -344,8 +344,8 @@ class GroupRequestsPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const TextSpan(
-              text: ' invited you to ',
+            TextSpan(
+              text: ' ${StrRes.invitedYouToJoin} ',
               style: TextStyle(
                 fontFamily: 'FilsonPro',
                 color: Color(0xFF6B7280),

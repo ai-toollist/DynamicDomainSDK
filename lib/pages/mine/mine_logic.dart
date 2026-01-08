@@ -14,6 +14,7 @@ import '../../core/controller/im_controller.dart';
 import '../../core/controller/push_controller.dart';
 import '../../routes/app_navigator.dart';
 import '../../core/controller/trtc_controller.dart';
+import '../contacts/friend_list_logic.dart';
 
 class MineLogic extends GetxController {
   final imLogic = Get.find<IMController>();
@@ -84,6 +85,10 @@ class MineLogic extends GetxController {
     await DataSp.removeLoginCertificate();
     pushLogic.logout();
     trtcLogic.logout();
+    // Clear friend list data to prevent showing previous account's contacts
+    if (Get.isRegistered<FriendListLogic>()) {
+      Get.find<FriendListLogic>().clearData();
+    }
   }
 
   // 清除缓存时同时清除邀请码和登录信息
@@ -96,6 +101,9 @@ class MineLogic extends GetxController {
       await DataSp.clearSavedInviteCode();
       pushLogic.logout();
       trtcLogic.logout();
+      if (Get.isRegistered<FriendListLogic>()) {
+        Get.find<FriendListLogic>().clearData();
+      }
       AppNavigator.startInviteCode();
     }
   }
@@ -108,6 +116,9 @@ class MineLogic extends GetxController {
     await DataSp.removeLoginCertificate();
     pushLogic.logout();
     trtcLogic.logout();
+    if (Get.isRegistered<FriendListLogic>()) {
+      Get.find<FriendListLogic>().clearData();
+    }
     AppNavigator.startInviteCode();
   }
 

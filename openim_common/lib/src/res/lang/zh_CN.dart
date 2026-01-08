@@ -1046,6 +1046,7 @@ const Map<String, String> zh_CN = {
   "settingsAndPrivacy": "设置与隐私",
   "chooseYourLanguage": "选择您的语言",
   "blockedContacts": "已屏蔽联系人",
+  "nBlockedContacts": "%s 位已屏蔽联系人",
   "shareYourQRCode": "分享您的二维码",
   "groupBannedMessage": "该群组因涉及相关违规条例，已被封停，不能使用",
   "unreadMessages": "未读消息",
@@ -1156,5 +1157,7 @@ const Map<String, String> zh_CN = {
   "permDefaultMessage": "需要获取相关权限以便提供更好的服务。",
 
   // Friend status messages
-  "notFriendHint": "您已不是好友。请先添加对方为好友后再发送消息。"
+  "notFriendHint": "您已不是好友。请先添加对方为好友后再发送消息。",
+  "appliedToJoin": "申请加入",
+  "invitedYouToJoin": "邀请你加入",
 };

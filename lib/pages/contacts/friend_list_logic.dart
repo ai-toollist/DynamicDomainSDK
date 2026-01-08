@@ -121,7 +121,7 @@ class FriendListLogic extends GetxController {
   }
 
   _friendInfoChanged(FriendInfo user) {
-   friendList.removeWhere((e) => e.userID == user.userID);
+    friendList.removeWhere((e) => e.userID == user.userID);
     _addUser(user.toJson());
   }
 
@@ -141,6 +141,15 @@ class FriendListLogic extends GetxController {
 
   void friendListRefresh() {
     friendList.refresh();
+  }
+
+  /// Clear all friend data (call on logout)
+  void clearData() {
+    friendList.clear();
+    userRemarkMap.clear();
+    friendIDMap.clear();
+    imLogic.userRemarkMap.clear();
+    imLogic.friendIDMap.clear();
   }
 
   void viewFriendInfo(ISUserInfo info) => AppNavigator.startUserProfilePane(

@@ -289,6 +289,7 @@ class HomeLogic extends SuperController with UpgradeManger {
     await DataSp.removeLoginCertificate();
     pushLogic.logout();
     trtcLogic.logout();
+    friendListLogic.clearData();
     AppNavigator.startInviteCode();
   }
 

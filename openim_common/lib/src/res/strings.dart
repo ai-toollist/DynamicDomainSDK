@@ -1671,6 +1671,7 @@ class StrRes {
   static String get settingsAndPrivacy => 'settingsAndPrivacy'.tr;
   static String get chooseYourLanguage => 'chooseYourLanguage'.tr;
   static String get blockedContacts => 'blockedContacts'.tr;
+  static String get nBlockedContacts => 'nBlockedContacts'.tr;
   static String get shareYourQRCode => 'shareYourQRCode'.tr;
   static String get groupBannedMessage => 'groupBannedMessage'.tr;
   static String get unreadConversations => 'unreadConversations'.tr;
@@ -1781,4 +1782,6 @@ class StrRes {
 
   // Friend status messages
   static String get notFriendHint => 'notFriendHint'.tr;
+  static String get appliedToJoin => 'appliedToJoin'.tr;
+  static String get invitedYouToJoin => 'invitedYouToJoin'.tr;
 }

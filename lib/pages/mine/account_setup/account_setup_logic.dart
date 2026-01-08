@@ -181,7 +181,8 @@ class AccountSetupLogic extends GetxController {
             margin: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.h),
             alignment: Alignment.centerLeft,
             child: Obx(() => Text(
-                  '${blacklist.length} ${StrRes.blockedContacts}',
+                  StrRes.nBlockedContacts
+                      .replaceFirst('%s', '${blacklist.length}'),
                   style: TextStyle(
                     fontFamily: 'FilsonPro',
                     fontSize: 13.sp,

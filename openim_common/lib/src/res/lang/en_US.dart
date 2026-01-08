@@ -1089,6 +1089,7 @@ const Map<String, String> en_US = {
   "settingsAndPrivacy": "Settings & Privacy",
   "chooseYourLanguage": "Choose Your Language",
   "blockedContacts": "Blocked Contacts",
+  "nBlockedContacts": "%s Blocked Contacts",
   "shareYourQRCode": "Share your QR code",
   "groupBannedMessage":
       "This group has been banned due to violations and cannot be used",
@@ -1207,5 +1208,7 @@ const Map<String, String> en_US = {
 
   // Friend status messages
   "notFriendHint":
-      "You are no longer friends. Please add them as a friend first to send messages."
+      "You are no longer friends. Please add them as a friend first to send messages.",
+  "appliedToJoin": "applied to join ",
+  "invitedYouToJoin": " invited you to ",
 };

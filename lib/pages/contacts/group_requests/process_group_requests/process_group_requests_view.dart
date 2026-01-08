@@ -76,7 +76,7 @@ class ProcessGroupRequestsPage extends StatelessWidget {
                             8.verticalSpace,
                             RichText(
                               text: TextSpan(
-                                text: 'applied to join ',
+                                text: '${StrRes.appliedToJoin} ',
                                 style: TextStyle(
                                   fontFamily: 'FilsonPro',
                                   fontSize: 14.sp,

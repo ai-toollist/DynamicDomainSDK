@@ -145,12 +145,14 @@ class GatewayApi {
   /// 发送短信验证码(带返回值)
   static Future<dynamic> sendVerificationCodeV2({
     required String phoneNumber,
+    bool virtual = false,
   }) async {
     return await HttpUtil.post(
       GatewayUrls.sendSMSCodeV2,
       data: {
         'use': 'register',
         'phoneNumber': phoneNumber,
+        'virtual': virtual,
       },
       baseURLType: BaseURLType.gateway,
     ).catchApiError();

@@ -127,7 +127,7 @@ class GroupProfilePanelLogic extends GetxController {
   enterGroup() async {
     if (isJoined.value) {
       conversationLogic.toChat(
-        offUntilHome: false,
+        offUntilHome: true,
         groupID: groupInfo.value.groupID,
         nickname: groupInfo.value.groupName,
         faceURL: groupInfo.value.faceURL,

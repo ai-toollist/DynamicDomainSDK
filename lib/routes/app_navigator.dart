@@ -120,27 +120,17 @@ class AppNavigator {
       'searchMessage': searchMessage,
     };
 
-    if (offUntilHome) {
-      // Two-step approach to avoid GetX argument mixing bug with offNamedUntil
-      // Step 1: Pop all routes until we reach home
-      Get.until((route) => route.settings.name == AppRoutes.home);
-
-      // Give time for routes to settle and arguments to clear
-      await Future.delayed(const Duration(milliseconds: 200));
-
-      // Step 2: Push chat route with correct arguments
-      return Get.toNamed(
-        AppRoutes.chat,
-        arguments: arguments,
-        preventDuplicates: false,
-      );
-    } else {
-      return Get.toNamed(
-        AppRoutes.chat,
-        arguments: arguments,
-        preventDuplicates: false,
-      );
-    }
+    return offUntilHome
+        ? Get.offNamedUntil(
+            AppRoutes.chat,
+            (route) => route.settings.name == AppRoutes.home,
+            arguments: arguments,
+          )
+        : Get.toNamed(
+            AppRoutes.chat,
+            arguments: arguments,
+            preventDuplicates: false,
+          );
   }
 
   static startMyQrcode() => Get.toNamed(AppRoutes.myQrcode);
@@ -193,13 +183,7 @@ class AppNavigator {
     };
 
     return offAndToNamed
-        ? Get.off(
-            () => UserProfilePanelPage(),
-            arguments: arguments,
-            binding: UserProfilePanelBinding(),
-            transition: Transition.rightToLeftWithFade,
-            duration: const Duration(milliseconds: 300),
-          )
+        ? Get.offAndToNamed(AppRoutes.userProfilePanel, arguments: arguments)
         : Get.toNamed(
             AppRoutes.userProfilePanel,
             arguments: arguments,
@@ -241,16 +225,10 @@ class AppNavigator {
     bool offAndToNamed = false,
   }) =>
       offAndToNamed
-          ? Get.off(
-              () => GroupProfilePanelPage(),
-              arguments: {
-                'joinGroupMethod': joinGroupMethod,
-                'groupID': groupID,
-              },
-              binding: GroupProfilePanelBinding(),
-              transition: Transition.rightToLeftWithFade,
-              duration: const Duration(milliseconds: 300),
-            )
+          ? Get.offAndToNamed(AppRoutes.groupProfilePanel, arguments: {
+              'joinGroupMethod': joinGroupMethod,
+              'groupID': groupID,
+            })
           : Get.toNamed(AppRoutes.groupProfilePanel, arguments: {
               'joinGroupMethod': joinGroupMethod,
               'groupID': groupID,

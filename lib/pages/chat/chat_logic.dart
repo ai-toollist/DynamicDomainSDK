@@ -293,8 +293,13 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       if (isCurrentChat(message)) {
         if (message.contentType == MessageType.typing) {
         } else {
-          if (!messageList.contains(message) &&
-              !scrollingCacheMessageList.contains(message)) {
+          // Check for duplicate by clientMsgID (not object reference) to prevent
+          // adding messages that we already added locally (e.g. during forward)
+          final isDuplicate =
+              messageList.any((m) => m.clientMsgID == message.clientMsgID) ||
+                  scrollingCacheMessageList
+                      .any((m) => m.clientMsgID == message.clientMsgID);
+          if (!isDuplicate) {
             _isReceivedMessageWhenSyncing = true;
             _parseAnnouncement(message);
             if (isShowPopMenu.value ||
@@ -758,6 +763,9 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       summaryList.add(IMUtils.createSummary(msg));
       if (summaryList.length >= 4) break;
     }
+
+    Logger.print('Combined Forward - Summary List: $summaryList');
+
     if (isGroupChat) {
       title = "${StrRes.groupChat}${StrRes.chatRecord}";
     } else {
@@ -765,6 +773,9 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       var partner2 = nickname.value;
       title = "$partner1${StrRes.and}$partner2${StrRes.chatRecord}";
     }
+
+    Logger.print('Combined Forward - Title: $title');
+
     var message = await OpenIM.iMManager.messageManager.createMergerMessage(
       messageList: multiSelList,
       title: title,
@@ -2833,13 +2844,19 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       final isOnline = status.status == 1;
       onlineStatus.value = isOnline;
 
-      if (isOnline &&
-          status.platformIDs != null &&
-          status.platformIDs!.isNotEmpty) {
-        // Show platform names when online
-        final platformDesc = _onlineStatusDes(status.platformIDs!);
-        onlineStatusDesc.value =
-            platformDesc.isNotEmpty ? platformDesc : StrRes.online;
+      if (isOnline) {
+        // Only show platform names if backend config allows it
+        if (clientConfigLogic.showOnlineDevices &&
+            status.platformIDs != null &&
+            status.platformIDs!.isNotEmpty) {
+          // Show platform names when online and config allows
+          final platformDesc = _onlineStatusDes(status.platformIDs!);
+          onlineStatusDesc.value =
+              platformDesc.isNotEmpty ? platformDesc : StrRes.online;
+        } else {
+          // Just show "Online" without device info
+          onlineStatusDesc.value = StrRes.online;
+        }
       } else {
         onlineStatusDesc.value = StrRes.offline;
       }

@@ -2108,7 +2108,33 @@ class IMUtils {
   }
 
   static String createSummary(Message message) {
-    return '${message.senderNickname}：${parseMsg(message, replaceIdToNickname: true)}';
+    try {
+      final nickname = message.senderNickname ?? 'Unknown';
+      var content = parseMsg(message, replaceIdToNickname: true);
+
+      // If content is just "Unsupported Message", try to get more info
+      if (content == '[${StrRes.unsupportedMessage}]' || content.isEmpty) {
+        if (message.contentType == MessageType.quote) {
+          content = message.quoteElem?.text ?? content;
+        } else if (message.contentType == MessageType.atText) {
+          content = message.atTextElem?.text ?? content;
+        } else if (message.contentType == MessageType.text) {
+          content = message.textElem?.content ?? content;
+        }
+      }
+
+      // Check for empty content one more time
+      if (content.trim().isEmpty) {
+        Logger.print(
+            'Warning: Empty content for summary of msgID: ${message.clientMsgID}, type: ${message.contentType}');
+        content = '[${StrRes.unsupportedMessage}]';
+      }
+
+      return '$nickname：$content';
+    } catch (e) {
+      Logger.print('Error creating summary for message: $e');
+      return '${message.senderNickname ?? "User"}：[Error Message]';
+    }
   }
 
   static List<UserInfo>? convertSelectContactsResultToUserInfo(result) {

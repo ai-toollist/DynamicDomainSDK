@@ -385,9 +385,16 @@ class _ChatItemViewState extends State<ChatItemView> {
 
       // Add the localized suffix
       title += ' (${StrRes.chatRecord})';
+
+      final abstractList = _message.mergeElem?.abstractList ?? [];
+      if (abstractList.isEmpty) {
+        Logger.print(
+            'WARNING: Merger message abstractList is empty! MsgID: ${_message.clientMsgID}');
+      }
+
       child = ChatMergeMsgView(
         title: title,
-        summaryList: _message.mergeElem?.abstractList ?? [],
+        summaryList: abstractList,
       );
     } else if (_message.isCardType) {
       child = ChatCarteView(cardElem: _message.cardElem!);

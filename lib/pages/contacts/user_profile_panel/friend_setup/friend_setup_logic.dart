@@ -7,7 +7,7 @@ import '../../../../routes/app_navigator.dart';
 import '../../../chat/chat_logic.dart';
 import '../../../conversation/conversation_logic.dart';
 import '../../select_contacts/select_contacts_logic.dart';
-import '../user_profile _panel_logic.dart';
+import '../user_profile_panel_logic.dart';
 
 class FriendSetupLogic extends GetxController {
   final conversationLogic = Get.find<ConversationLogic>();

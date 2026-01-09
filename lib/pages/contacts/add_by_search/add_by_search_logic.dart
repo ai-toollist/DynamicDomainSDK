@@ -153,7 +153,8 @@ class AddContactsBySearchLogic extends GetxController {
 
   String? getShowName(dynamic info) {
     if (info is UserFullInfo) {
-      return info.nickname;
+      // Show remark if available, otherwise show nickname
+      return (info.remark?.isNotEmpty ?? false) ? info.remark : info.nickname;
     } else if (info is GroupInfo) {
       return info.groupName;
     }
@@ -161,11 +162,13 @@ class AddContactsBySearchLogic extends GetxController {
   }
 
   void viewInfo(dynamic info) {
+    focusNode.unfocus();
     if (info is UserFullInfo) {
       AppNavigator.startUserProfilePane(
         userID: info.userID!,
         nickname: info.nickname,
         faceURL: info.faceURL,
+        isFromSearch: true,
       );
     } else if (info is GroupInfo) {
       AppNavigator.startGroupProfilePanel(

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:openim_common/openim_common.dart';
 
 import '../group_profile_panel/group_profile_panel_logic.dart';
-import '../user_profile_panel/user_profile _panel_logic.dart';
+import '../user_profile_panel/user_profile_panel_logic.dart';
 
 class SendVerificationApplicationLogic extends GetxController {
   final inputCtrl = TextEditingController();

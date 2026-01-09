@@ -7,6 +7,10 @@ import '../pages/chat/group_setup/group_member_list/group_member_list_logic.dart
 import '../pages/contacts/add_by_search/add_by_search_logic.dart';
 import '../pages/contacts/contacts_logic.dart';
 import '../pages/contacts/group_profile_panel/group_profile_panel_logic.dart';
+import '../pages/contacts/group_profile_panel/group_profile_panel_view.dart';
+import '../pages/contacts/group_profile_panel/group_profile_panel_binding.dart';
+import '../pages/contacts/user_profile_panel/user_profile_panel_view.dart';
+import '../pages/contacts/user_profile_panel/user_profile_panel_binding.dart';
 import '../pages/contacts/select_contacts/select_contacts_logic.dart';
 import '../pages/mine/edit_my_info/edit_my_info_logic.dart';
 import '../pages/auth/invite_code_binding.dart';
@@ -175,6 +179,7 @@ class AppNavigator {
     String? faceURL,
     bool offAllWhenDelFriend = false,
     bool offAndToNamed = false,
+    bool isFromSearch = false,
   }) {
     GetTags.createUserProfileTag();
 
@@ -184,10 +189,17 @@ class AppNavigator {
       'nickname': nickname,
       'faceURL': faceURL,
       'offAllWhenDelFriend': offAllWhenDelFriend,
+      'isFromSearch': isFromSearch,
     };
 
     return offAndToNamed
-        ? Get.offAndToNamed(AppRoutes.userProfilePanel, arguments: arguments)
+        ? Get.off(
+            () => UserProfilePanelPage(),
+            arguments: arguments,
+            binding: UserProfilePanelBinding(),
+            transition: Transition.rightToLeftWithFade,
+            duration: const Duration(milliseconds: 300),
+          )
         : Get.toNamed(
             AppRoutes.userProfilePanel,
             arguments: arguments,
@@ -229,10 +241,16 @@ class AppNavigator {
     bool offAndToNamed = false,
   }) =>
       offAndToNamed
-          ? Get.offAndToNamed(AppRoutes.groupProfilePanel, arguments: {
-              'joinGroupMethod': joinGroupMethod,
-              'groupID': groupID,
-            })
+          ? Get.off(
+              () => GroupProfilePanelPage(),
+              arguments: {
+                'joinGroupMethod': joinGroupMethod,
+                'groupID': groupID,
+              },
+              binding: GroupProfilePanelBinding(),
+              transition: Transition.rightToLeftWithFade,
+              duration: const Duration(milliseconds: 300),
+            )
           : Get.toNamed(AppRoutes.groupProfilePanel, arguments: {
               'joinGroupMethod': joinGroupMethod,
               'groupID': groupID,

@@ -6,7 +6,7 @@ import 'package:openim/core/controller/client_config_controller.dart';
 import 'package:openim_common/openim_common.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../user_profile _panel_logic.dart';
+import '../user_profile_panel_logic.dart';
 
 class PersonalInfoLogic extends GetxController {
   final userProfilesLogic = Get.find<UserProfilePanelLogic>(tag: GetTags.userProfile);

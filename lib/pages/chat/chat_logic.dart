@@ -1344,14 +1344,13 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
               return true;
             }));
     if (null != assets) {
-      LoadingView.singleton.show();
       try {
         // Process assets sequentially to avoid concurrent video compression issues on iOS
         for (var asset in assets) {
           await _handleAssets(asset);
         }
-      } finally {
-        LoadingView.singleton.dismiss();
+      } catch (e) {
+        Logger.print('Failed to handle assets: $e');
       }
     }
   }

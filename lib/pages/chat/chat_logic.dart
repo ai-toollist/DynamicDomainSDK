@@ -749,7 +749,8 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     var message = await OpenIM.iMManager.messageManager.createForwardMessage(
       message: originalMessage,
     );
-    _sendMessage(message, userId: userId, groupId: groupId, addToUI: addToUI);
+    await _sendMessage(message,
+        userId: userId, groupId: groupId, addToUI: addToUI);
     return message;
   }
 
@@ -776,7 +777,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       title: title,
       summaryList: summaryList,
     );
-   await _sendMessage(message, userId: userId, groupId: groupId);
+    await _sendMessage(message, userId: userId, groupId: groupId);
   }
 
   /// 提示对方正在输入
@@ -988,7 +989,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   /// todo
   Future<void> _completed() async {
     messageList.refresh();
-   await _loadHistoryForSyncEnd();
+    await _loadHistoryForSyncEnd();
     // setQuoteMsg(-1);
     // closeMultiSelMode();
     // inputCtrl.clear();
@@ -1198,12 +1199,12 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
 
   void openMultiSelMode(Message message) {
     multiSelMode.value = true;
+    multiSelList.clear();
     multiSelMsg(message, true);
   }
 
   void closeMultiSelMode() {
     multiSelMode.value = false;
-    multiSelList.clear();
   }
 
   /// 触摸其他地方强制关闭工具箱

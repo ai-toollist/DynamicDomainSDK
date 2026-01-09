@@ -293,6 +293,10 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
       if (isCurrentChat(message)) {
         if (message.contentType == MessageType.typing) {
         } else {
+          if (message.sendID == OpenIM.iMManager.userID) {
+            return;
+          }
+
           // Check for duplicate by clientMsgID (not object reference) to prevent
           // adding messages that we already added locally (e.g. during forward)
           final isDuplicate =
@@ -313,16 +317,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
                 scrollController.hasClients) {
               _markMessageAsRead(message, isNewMessage: true);
             }
-            // ios 退到后台再次唤醒消息乱序
-            // messageList.sort((a, b) {
-            //   if (a.sendTime! > b.sendTime!) {
-            //     return 1;
-            //   } else if (a.sendTime! > b.sendTime!) {
-            //     return -1;
-            //   } else {
-            //     return 0;
-            //   }
-            // });
           }
         }
       }
@@ -730,6 +724,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     String? userId,
     String? groupId,
     bool addToUI = true,
+    bool waitForServer = false,
   }) async {
     final message = await OpenIM.iMManager.messageManager.createTextMessage(
       text: content,
@@ -745,6 +740,7 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
     String? userId,
     String? groupId,
     bool addToUI = true,
+    bool waitForServer = false,
   }) async {
     var message = await OpenIM.iMManager.messageManager.createForwardMessage(
       message: originalMessage,
@@ -1092,8 +1088,6 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
           await sendMergeMsg(userId: userID, groupId: groupID);
         }
       }
-
-      await Future.delayed(const Duration(milliseconds: 300));
       IMViews.showToast(StrRes.sendSuccessfully, type: 1);
     }
   }
@@ -1238,14 +1232,13 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
               return true;
             }));
     if (null != assets) {
-      LoadingView.singleton.show();
       try {
         // Process assets sequentially to avoid concurrent video compression issues on iOS
         for (var asset in assets) {
           await _handleAssets(asset);
         }
-      } finally {
-        LoadingView.singleton.dismiss();
+      } catch (e) {
+        Logger.print('Failed to handle assets: $e');
       }
     }
   }

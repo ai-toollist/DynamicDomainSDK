@@ -2770,19 +2770,22 @@ class ChatLogic extends SuperController with FullLifeCycleMixin {
   }
 
   void _queryUserOnlineStatus() {
-    if (isSingleChat) {
-      final cachedStatus = conversationLogic.userOnlineStatusMap[userID!];
-      if (cachedStatus != null) {
-        onlineStatus.value = cachedStatus;
-        onlineStatusDesc.value = cachedStatus ? StrRes.online : StrRes.offline;
-      }
+    if (isSingleChat && userID != null) {
+      // 1. Set initial value from cache (default to false if no cache)
+      final cachedStatus =
+          conversationLogic.userOnlineStatusMap[userID!] ?? false;
+      onlineStatus.value = cachedStatus;
+      onlineStatusDesc.value = cachedStatus ? StrRes.online : StrRes.offline;
 
-      conversationLogic.ensureUserStatusSubscribed(userID!);
+      // 2. Create listener BEFORE subscribing to ensure we catch all events
       userStatusChangedSub = imLogic.userStatusChangedSubject.listen((value) {
         if (value.userID == userID) {
           _configUserStatusChanged(value);
         }
       });
+
+      // 3. Subscribe to get status updates (this will trigger callback)
+      conversationLogic.ensureUserStatusSubscribed(userID!);
     }
   }
 

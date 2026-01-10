@@ -161,6 +161,18 @@ class ConversationLogic extends SuperController {
         // Refresh friends list when sync is completed (after login)
       }
     });
+
+    // Listen to user status changes - CREATE ONLY ONCE
+    _userOnlineStatusChangedSub =
+        imLogic.userStatusChangedSubject.listen((userStatus) {
+      if (userStatus.userID != null) {
+        userOnlineStatusMap[userStatus.userID!] = userStatus.status == 1;
+        // Refresh the list to update online indicators
+        list.refresh();
+        friendListLogic.friendListRefresh();
+      }
+    });
+
     _initNetworkListener();
 
     if (gatewayConfigController.enableNetworkCheckAndFallback) {
@@ -424,17 +436,6 @@ class ConversationLogic extends SuperController {
           friendListLogic.friendListRefresh();
         },
       );
-
-      // Listen to user status changes
-      _userOnlineStatusChangedSub =
-          imLogic.userStatusChangedSubject.listen((userStatus) {
-        if (userStatus.userID != null) {
-          userOnlineStatusMap[userStatus.userID!] = userStatus.status == 1;
-          // Refresh the list to update online indicators
-          list.refresh();
-          friendListLogic.friendListRefresh();
-        }
-      });
     }
   }
 

@@ -3,3 +3,4 @@
 *.framework filter=lfs diff=lfs merge=lfs -text
 ios/Frameworks/TunnelCore.xcframework/** filter=lfs diff=lfs merge=lfs -text
 ios/Frameworks/Tunnel_core.xcframework/** filter=lfs diff=lfs merge=lfs -text
+android/libs/tunnel_core.aar filter=lfs diff=lfs merge=lfs -text

@@ -46,6 +46,9 @@ class DynamicDomain {
     if (_isTransitioning) throw Exception("SDK is busy with another operation");
     _isTransitioning = true;
     try {
+      // 0. 基础联网检查
+      await _ensureNetworkAvailable();
+
       final targetAppId = appId ?? SecretKeeper.defaultAppId;
 
       // 1. 准备资源（将 geoip/geosite 复制到文件系统）
@@ -55,6 +58,27 @@ class DynamicDomain {
       await DynamicDomainPlatform.instance.init(targetAppId);
     } finally {
       _isTransitioning = false;
+    }
+  }
+
+  /// 内部方法：确保基础网络可用
+  Future<void> _ensureNetworkAvailable() async {
+    try {
+      // 尝试连接 Google 公共 DNS (8.8.8.8) 的 53 端口
+      // 这是一个非常快速且不依赖 HTTP 栈的底层检查
+      final socket = await Socket.connect(
+        '8.8.8.8',
+        53,
+        timeout: const Duration(seconds: 2),
+      );
+      await socket.close();
+    } catch (_) {
+      throw Exception(
+        "Network Unreachable: 基础网络连接失败。请检查：\n"
+        "1. 设备是否开启了移动数据或 Wi-Fi；\n"
+        "2. 如果是模拟器，请确保宿主机网络正常且模拟器未断网；\n"
+        "3. 检查 AndroidManifest.xml 是否包含了 INTERNET 权限。",
+      );
     }
   }
 
@@ -91,7 +115,8 @@ class DynamicDomain {
   /// 获取远程配置（带有回退逻辑）。
   ///
   /// 如果 [appId] 为空，将使用内置的默认 App ID。
-  Future<String> fetchRemoteConfig([String? appId]) {
+  Future<String> fetchRemoteConfig([String? appId]) async {
+    await _ensureNetworkAvailable();
     return _configManager.fetchConfig(appId);
   }
 

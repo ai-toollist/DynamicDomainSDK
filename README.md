@@ -153,6 +153,28 @@ void dispose() {
 *   **Native 层 (Kotlin/Swift)**: 负责启动 Go 编写的 `tunnel_core` 动态库，管理后台服务保活。
 *   **Go Core**: 封装 Xray-core，负责实际的代理协议握手和流量转发。
 
+## 排障与常见问题
+
+### 1. 启动或获取配置超时 (TimeoutException)
+如果您在初始化或调用 `fetchRemoteConfig` 时遇到超时，请检查：
+- **基础联网**: 确保设备（尤其是 Android 模拟器）能够正常访问互联网。
+- **模拟器设置**: 部分 Android 模拟器（如 Genymotion 或部分版本的 AVD）需要手动设置系统代理或 DNS 才能正常访问海外 DoH 服务。
+- **网络权限**: 确保 `AndroidManifest.xml` 中已声明 `INTERNET` 权限。
+
+### 2. Android 类冲突
+如果在集成 OpenIM 等同样基于 Gomobile 的 SDK 时报错 `Duplicate class go.Seq`，请参考以下步骤：
+- **常规方案**: 在 `android/app/build.gradle` 中配置 `packagingOptions { pickFirst 'go/Seq.class' ... }`。
+- **终极方案**: 如果 D8 依然报错 `Duplicate class`（合并 DEX 失败），说明冲突类已硬编码在 AAR 内。需通过脚本物理移除 `tunnel_core.aar` 中的 `go/` 目录。
+  ```bash
+  # 剥离脚本核心逻辑
+  mkdir temp && unzip tunnel_core.aar -d temp
+  mkdir temp/jar && unzip temp/classes.jar -d temp/jar
+  rm -rf temp/jar/go/  # 移除重复运行时
+  cd temp/jar && zip -r ../classes.jar . && cd ..
+  zip -r ../tunnel_core_stripped.aar .
+  ```
+- 详细指南请访问 [官网集成指南](https://domain.zm-tool.me/guide/openim#android-依赖冲突处理)。
+
 ## 注意事项
 
 *   **Android 权限**: 确保 `AndroidManifest.xml` 中声明了网络权限。

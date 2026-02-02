@@ -69,10 +69,19 @@ class ConfigurationManager {
             );
           }
         } else if (response.statusCode == 403) {
-          // 账户被禁用或无效 (由服务端 Handler 返回)
-          throw Exception(
-            'Account Forbidden (403): 该 AppID 已被禁用、过期或流量超限。请联系管理员。',
-          );
+          // 账户被禁用、过期或超限 (由服务端 Handler 返回详细 JSON)
+          String errorDetail = '该 AppID 已被禁用、过期或流量超限。';
+          try {
+            final json = jsonDecode(response.body);
+            if (json is Map && json.containsKey('code')) {
+              final code = json['code'];
+              if (code == 40301) errorDetail = '该应用已被禁用，请联系管理员。';
+              if (code == 40302) errorDetail = '该应用已过期，请及时续费。';
+              if (code == 40303) errorDetail = '该应用流量已超限，请升级套餐。';
+            }
+          } catch (_) {}
+
+          throw Exception('Account Forbidden (403): $errorDetail');
         } else if (response.statusCode == 401) {
           throw Exception(
             'Unauthorized (401): SDK 配置的 API Key 错误，请检查 SecretKeeper 设置。',

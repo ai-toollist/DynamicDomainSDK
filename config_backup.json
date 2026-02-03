@@ -1,0 +1,49 @@
+{
+  "log": { "loglevel": "warning" },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": { "udp": true }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "protocol": "http"
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "你的服务器IP",
+            "port": 443,
+            "users": [
+              {
+                "id": "用户的UUID",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "fingerprint": "chrome",
+          "serverName": "伪装域名.com",
+          "publicKey": "你的REALITY公钥",
+          "shortId": "你的ShortId",
+          "spiderX": "/"
+        }
+      }
+    },
+    { "protocol": "freedom", "tag": "direct" }
+  ]
+}
